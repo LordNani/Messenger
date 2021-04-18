@@ -46,25 +46,12 @@ class ChatListElement extends React.Component<IOwnProps> {
         const {elementData, onClick, selected} = this.props;
         const classes = classNames(styles.wrapper, selected && styles.selected);
         const iconName = this.iconOfChat(elementData);
-        const pictureStyle = {
-            maxWidth: '60px',
-            minWidth: '60px',
-            height : '60px',
-            minHeight : '60px',
-            borderRadius:'50%',
-            margin:'5px 20px 5px 0px',
-        };
-        const wrapperStyle = {
-            display: 'flex',
-            justifyContent:'start',
-            padding:'20px 20px',
-        };
         const defaultUserPicture = 
             'https://www.pngkey.com/png/full/282-2820067_taste-testing-at-baskin-robbins-empty-profile-picture.png';
         return (
-            <div className={classes} onClick={onClick} style={wrapperStyle}>
+            <div className={classes} onClick={onClick} >
                 <span>
-                    <img src={elementData.picture || defaultUserPicture} style={pictureStyle} />
+                    <img src={elementData.picture || defaultUserPicture} className={styles.pictureStyle} />
                 </span>
 
                 <div>
