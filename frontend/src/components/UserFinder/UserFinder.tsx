@@ -1,5 +1,4 @@
 import React from "react";
-import styles from "./UserFinder.module.sass";
 import Input from "../FormComponents/Input/Input";
 import userService from "../../api/user/userService";
 

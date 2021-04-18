@@ -17,10 +17,10 @@ public class LastMessageResponseDto {
     public static LastMessageResponseDto fromEntity(MessageEntity messageEntity) {
         return LastMessageResponseDto.builder()
                 .text(messageEntity.getMessageBody())
-                .createdAt(messageEntity.getCreatedAt())
+                .createdAt(messageEntity.getCreatedAt().getTime())
                 .build();
     }
 
     private String text;
-    private Date createdAt;
+    private Long createdAt;
 }

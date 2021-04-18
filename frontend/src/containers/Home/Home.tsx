@@ -12,7 +12,7 @@ import ChatsList from "../../components/ChatsList/ChatsList";
 import styles from "./Home.module.sass";
 import Chat from "../../components/Chat/Chat";
 import {chatsListActions} from "../../reducers/chatsList/actions";
-import {ChatTypeEnum, IChatDetails, ILastSeen} from "../../api/chat/general/generalChatModels";
+import {IChatDetails, ILastSeen} from "../../api/chat/general/generalChatModels";
 import generalChatService from "../../api/chat/general/generalChatService";
 import {IChatCache} from "../../reducers/chatsList/reducer";
 import messageService from "../../api/message/messageService";
@@ -26,7 +26,6 @@ import CreateGroupChat from "../../components/CreateGroupChat/CreateGroupChat";
 import {toastr} from 'react-redux-toastr';
 import SockJS from "sockjs-client";
 import tokenService from "../../api/token/tokenService";
-import {IMessage} from "../../api/message/messageModels";
 import {CompatClient, Stomp} from "@stomp/stompjs";
 import ProfileEdit from "../../components/ProfileEdit/ProfileEdit";
 import {IPasswordChange, IProfileEdit} from "../../api/user/userModels";
@@ -122,7 +121,6 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
             this.stompClient.disconnect(() => console.log('disconnected'));
         } catch (e) {
             console.log("already disconnected exception:");
-            // console.log(e);
         }
     }
 

@@ -93,11 +93,20 @@ export const authReducer = (
                 ...state,
                 chatsList: state.chatsList?.map(c => c.id !== action.payload.id
                     ? c
-                    : action.payload
+                    : {
+                        ...action.payload,
+                        seenAt: c.seenAt
+                    }
                 ),
                 chatsDetailsCached: state.chatsDetailsCached?.map(c => c.details.id !== action.payload.id
                     ? c
-                    : {...c, details: action.payload}
+                    : {
+                        ...c,
+                        details: {
+                            ...action.payload,
+                            seenAt: c.details.seenAt
+                        }
+                    }
                 ),
             };
         case REMOVE_CHAT_FROM_LIST:

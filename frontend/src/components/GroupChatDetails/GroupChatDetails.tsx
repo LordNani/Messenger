@@ -206,6 +206,7 @@ class GroupChatDetails extends React.Component<IOwnProps, IState> {
                 )}
                 {info?.members.map(user => (
                     <UserManager
+                        key={user.id}
                         user={user}
                         deletable={
                             (info?.permissionLevel !== RoleEnum.MEMBER && user.permissionLevel === RoleEnum.MEMBER) ||

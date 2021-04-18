@@ -1,6 +1,5 @@
 import React from "react";
 import styles from "./MessageWrapper.module.sass";
-import {IMessage} from "../../api/message/messageModels";
 import Message from "../Message/Message";
 import {ICurrentUser} from "../../api/auth/authModels";
 import classnames from "classnames";

@@ -1,13 +1,11 @@
 import React from "react";
 import styles from "./PasswordChange.module.sass";
 import Button from "../FormComponents/Button/Button";
-import UserFinder from "../UserFinder/UserFinder";
 import ErrorMessage from "../FormComponents/ErrorMessage/ErrorMessage";
 import * as Yup from "yup";
 import {Form, Formik} from "formik";
 import Input from "../FormComponents/Input/Input";
-import {IPasswordChange, IProfileEdit} from "../../api/user/userModels";
-import {ICurrentUser} from "../../api/auth/authModels";
+import {IPasswordChange} from "../../api/user/userModels";
 
 interface IOwnProps {
     changePassword: (request: IPasswordChange) => Promise<void>;

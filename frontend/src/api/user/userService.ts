@@ -1,6 +1,5 @@
 import {IPasswordChange, IProfileEdit, IUserSearchDto} from "./userModels";
 import apiClient from "../apiClient";
-import {IAuthResponse} from "../auth/authModels";
 import tokenService from "../token/tokenService";
 
 const userService = {

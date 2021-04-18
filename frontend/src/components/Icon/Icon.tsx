@@ -1,5 +1,4 @@
 import React from "react";
-import styles from "./Icon.module.sass";
 import classnames from "classnames";
 
 interface IOwnProps {

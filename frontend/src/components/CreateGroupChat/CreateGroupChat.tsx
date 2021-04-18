@@ -1,7 +1,6 @@
 import React from "react";
 import styles from "./CreateGroupChat.module.sass";
 import Button from "../FormComponents/Button/Button";
-import UserFinder from "../UserFinder/UserFinder";
 import ErrorMessage from "../FormComponents/ErrorMessage/ErrorMessage";
 import * as Yup from "yup";
 import {Form, Formik} from "formik";

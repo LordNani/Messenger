@@ -32,8 +32,9 @@ class MessagesListWrapper extends React.Component<IOwnProps> {
         return (
             <div className={styles.wrapper}>
                 <LoaderWrapper loading={!messages}>
-                    {messages?.map(message => (
+                    {messages?.map((message, i) => (
                        <MessageWrapper
+                           key={i}
                            message={message}
                            currentUser={currentUser}
                            isVisibleName={isVisibleName}
