@@ -45,6 +45,11 @@ public class GroupChatController {
         groupChatService.removeMemberFromChat(requestDto);
     }
 
+    @PostMapping("/leave/{chatId}")
+    public void leaveChatById(@PathVariable UUID chatId) {
+        groupChatService.leaveChatById(chatId);
+    }
+
 
     //just for test todo delete this (or no)
     @GetMapping("/users/list")

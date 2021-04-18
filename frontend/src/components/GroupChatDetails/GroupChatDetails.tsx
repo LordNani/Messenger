@@ -22,6 +22,7 @@ interface IOwnProps {
 interface IState {
     info?: IGroupChatInfo;
     deleting: boolean;
+    leaving: boolean;
     adding: boolean;
     changing: boolean;
     toAddUserId?: string;
@@ -40,6 +41,7 @@ class GroupChatDetails extends React.Component<IOwnProps, IState> {
 
     state = {
         deleting: false,
+        leaving: false,
         adding: false,
         changing: false,
     } as IState;
@@ -60,6 +62,14 @@ class GroupChatDetails extends React.Component<IOwnProps, IState> {
         this.setState({deleting: true});
         await groupChatService.deleteById(id);
         this.setState({deleting: false});
+        this.props.deleteChatFromList(id);
+    }
+
+    handleLeave = async () => {
+        const id = this.props.chatDetails.id;
+        this.setState({leaving: true});
+        await groupChatService.leaveChatById(id);
+        this.setState({leaving: false});
         this.props.deleteChatFromList(id);
     }
 
@@ -140,7 +150,7 @@ class GroupChatDetails extends React.Component<IOwnProps, IState> {
     }
 
     render() {
-        const {info, deleting, adding, changing, error, toAddUserId} = this.state;
+        const {info, deleting, adding, changing, error, toAddUserId, leaving} = this.state;
 
         return (
             <LoaderWrapper loading={!info}>
@@ -224,6 +234,15 @@ class GroupChatDetails extends React.Component<IOwnProps, IState> {
                             text="Delete group chat"
                             onClick={this.handleDelete}
                             loading={deleting}
+                        />
+                    </div>
+                )}
+                {info?.permissionLevel !== RoleEnum.OWNER && (
+                    <div className={styles.buttonWrapper}>
+                        <Button
+                            text="Leave group chat"
+                            onClick={this.handleLeave}
+                            loading={leaving}
                         />
                     </div>
                 )}
