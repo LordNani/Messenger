@@ -38,7 +38,7 @@ class ChatListElement extends React.Component<IOwnProps> {
             case ChatTypeEnum.GROUP:
                 return "fas fa-users";
             default:
-                return elementData.picture;
+                return "";
         }
     }
 
