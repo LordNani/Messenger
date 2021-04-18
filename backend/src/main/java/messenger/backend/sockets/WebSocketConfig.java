@@ -39,7 +39,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic");
         config.setApplicationDestinationPrefixes("/app");
-//        System.out.println("FRONTEND URL:  " + frontendUrl);
     }
 
     @Override
@@ -66,12 +65,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     UUID urlUserId = UUID.fromString(urlParts[urlParts.length-1]);
 
                     if (!contextUser.getId().equals(urlUserId))
-//                        return null;
                         throw new ValidationException("Can't subscribe on another user messages");
-//                    System.out.println("SUBSCRIBE destination: " + message.getHeaders().get("simpDestination"));
-//                    System.out.println("URL ID: " + urlUserId);
-//                    System.out.println("USER ID: " + contextUser.getId());
-//                    System.out.println("-------------------");
                 }
                 return message;
             }
