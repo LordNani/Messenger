@@ -11,4 +11,5 @@ export interface IGroupChatInfo {
     title: string;
     members: IUserShortDto[];
     permissionLevel: RoleEnum;
+    picture: string;
 }

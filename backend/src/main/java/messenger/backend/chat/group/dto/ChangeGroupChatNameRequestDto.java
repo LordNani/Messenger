@@ -17,4 +17,6 @@ public class ChangeGroupChatNameRequestDto {
     @NotBlank
     @Size(min = 4, max = 32)
     private String newChatName;
+    @Size(min=5,max=256)
+    private String picture;
 }

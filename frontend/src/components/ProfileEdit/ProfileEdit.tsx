@@ -25,7 +25,8 @@ const validationSchema = Yup.object().shape({
         .required('This field is required'),
     bio: Yup.string()
         .max(100, 'Too Long! Need to be 4-16 digits.'),
-
+    picture: Yup.string()
+        .max(256, 'Too Long! Need to be 5-256 characters.'),
 });
 
 class ProfileEdit extends React.Component<IOwnProps, IState> {
@@ -76,7 +77,7 @@ class ProfileEdit extends React.Component<IOwnProps, IState> {
                                  handleBlur,
                                  values
                              }) => {
-                        const valid = !errors.fullName && !errors.bio;
+                        const valid = !errors.fullName && !errors.bio && !errors.picture;
                         return (
                             <Form>
                                 <div style={wrapperPicture}><img style={pictureStyle} src={values.picture} /></div>
@@ -108,8 +109,8 @@ class ProfileEdit extends React.Component<IOwnProps, IState> {
                                     name="picture"
                                     onChange={handleChange}
                                     onBlur={handleBlur}
-                                    error={errors.bio}
-                                    touched={touched.bio}
+                                    error={errors.picture}
+                                    touched={touched.picture}
                                 />
                                 <div className={styles.buttonWrapper}>
                                     <Button

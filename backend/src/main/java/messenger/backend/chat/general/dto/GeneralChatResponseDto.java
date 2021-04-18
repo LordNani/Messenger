@@ -36,7 +36,7 @@ public class GeneralChatResponseDto {
                 .id(chat.getId())
                 .type(ChatType.GROUP.getType())
                 .title(chat.getGroupName())
-                .picture(Optional.of("https://image.flaticon.com/icons/png/128/1077/1077114.png"))
+                .picture(Optional.ofNullable(chat.getPicture()))
                 .lastMessage(lastMessage)
                 .build();
     }

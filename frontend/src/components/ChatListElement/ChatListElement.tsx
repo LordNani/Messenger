@@ -60,6 +60,12 @@ class ChatListElement extends React.Component<IOwnProps> {
         return (
             <div className={classes} onClick={onClick} style={wrapperStyle}>
                 <span>{iconName && (<img src={elementData.picture} style={pictureStyle} />)}</span>
+                {iconName && (
+                        <Icon
+                            iconName={iconName}
+                            className={styles.icon}
+                        />
+                    )}
                 <div>
                     <div className={styles.header}>
                     {elementData.title}
