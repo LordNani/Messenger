@@ -23,7 +23,7 @@ import java.util.UUID;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(value = {"/sql/clean.sql", "/sql/init.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class PersonalChatIT {
+public class PersonalChatControllerIT {
 
     @Autowired
     private ObjectMapper objectMapper;

@@ -1,9 +1,13 @@
-package messenger.backend.chat.general;
+package messenger.backend.message;
+
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
+import lombok.SneakyThrows;
 import messenger.backend.auth.dto.AuthRequestDto;
+import messenger.backend.chat.group.dto.CreateGroupChatRequestDto;
+import messenger.backend.message.dto.SendMessageRequestDto;
 import messenger.backend.utils.Response;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
@@ -14,12 +18,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.LinkedHashMap;
-
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.UUID;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(value = {"/sql/clean.sql", "/sql/init.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-class GeneralChatControllerIT {
+public class MessageControllerIT {
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -30,37 +33,37 @@ class GeneralChatControllerIT {
     }
 
     @Test
-    void shouldGetChatsList() throws JsonProcessingException {
+    @SneakyThrows
+    public void shouldGetAllMessagesByChatId() {
         RestAssured
                 .given()
                 .header("Authorization", getAccessToken())
                 .when()
-                .get("/api/chat/general/all")
+                .get("/api/messages/chat/06dfa92e-532d-4b38-bd21-355328bc4270")
                 .then()
                 .statusCode(HttpStatus.SC_OK);
     }
 
     @Test
-    void shouldGetSeenList() throws JsonProcessingException {
+    @SneakyThrows
+    public void shouldSendMessage() {
+        SendMessageRequestDto dto = new SendMessageRequestDto();
+        dto.setChatId(UUID.fromString("06dfa92e-532d-4b38-bd21-355328bc4270"));
+        dto.setText("text");
+        dto.setLoadingId(UUID.randomUUID());
+        String json = objectMapper.writeValueAsString(dto);
+
         RestAssured
                 .given()
                 .header("Authorization", getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(json)
                 .when()
-                .get("/api/chat/general/seen")
+                .post("/api/messages/chat")
                 .then()
                 .statusCode(HttpStatus.SC_OK);
     }
 
-    @Test
-    void shouldRead() throws JsonProcessingException {
-        RestAssured
-                .given()
-                .header("Authorization", getAccessToken())
-                .when()
-                .post("/api/chat/general/read/51c07af2-5ed1-4e30-b054-e5a3d51da5a5")
-                .then()
-                .statusCode(HttpStatus.SC_OK);
-    }
 
     public String getAccessToken() throws JsonProcessingException {
         String json = objectMapper.writeValueAsString(
