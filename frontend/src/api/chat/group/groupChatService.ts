@@ -39,6 +39,10 @@ const groupChatService = {
     deleteById: async (chatId: string): Promise<void> => {
         await apiClient.post(`/api/chat/group/delete`, {chatId});
     },
+
+    leaveChatById: async (chatId: string): Promise<void> => {
+        await apiClient.post(`/api/chat/group/leave/${chatId}`);
+    },
 };
 
 export default groupChatService;

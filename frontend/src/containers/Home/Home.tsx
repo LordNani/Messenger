@@ -102,7 +102,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
     private configureSocket = () => {
         this.stompClient.debug = str => {
             // todo change to empty function
-            console.log('----- DEBUG SOCKET LOG:\n' + str);
+            // console.log('----- DEBUG SOCKET LOG:\n' + str);
         };
         this.stompClient.reconnectDelay = 5000;
         this.stompClient.connectionTimeout = 5000;
