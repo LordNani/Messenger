@@ -32,4 +32,8 @@ public class GroupChatEntity extends ChatSuperclass {
 
     @Column(name = "group_name", length = 64, nullable = false)
     private String groupName;
+
+    @ToString.Exclude
+    @Column(name = "picture", length = 256)
+    private String picture;
 }

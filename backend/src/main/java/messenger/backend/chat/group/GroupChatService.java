@@ -249,7 +249,7 @@ public class GroupChatService {
             throw new NotEnoughPermissionLevelException();
 
         groupChatEntity.setGroupName(requestDto.getNewChatName());
-
+        groupChatEntity.setPicture(requestDto.getPicture());
         groupChatRepository.saveAndFlush(groupChatEntity);
 
         List<UUID> uuidList = groupChatEntity.getUserChats().stream()

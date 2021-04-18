@@ -19,6 +19,7 @@ public class UserShortDto {
                 .fullName(userChat.getUser().getFullName())
                 .username(userChat.getUser().getUsername())
                 .bio(userChat.getUser().getBio())
+                .picture(userChat.getUser().getPicture())
                 .permissionLevel(userChat.getPermissionLevel())
                 .build();
     }
@@ -27,5 +28,6 @@ public class UserShortDto {
     private String fullName;
     private String username;
     private String bio;
+    private String picture;
     private UserChat.PermissionLevel permissionLevel;
 }

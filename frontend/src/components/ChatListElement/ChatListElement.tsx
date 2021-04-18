@@ -46,9 +46,15 @@ class ChatListElement extends React.Component<IOwnProps> {
         const {elementData, onClick, selected} = this.props;
         const classes = classNames(styles.wrapper, selected && styles.selected);
         const iconName = this.iconOfChat(elementData);
-
+        const defaultUserPicture = 
+            'https://www.pngkey.com/png/full/282-2820067_taste-testing-at-baskin-robbins-empty-profile-picture.png';
         return (
-            <div className={classes} onClick={onClick}>
+            <div className={classes} onClick={onClick} >
+                <span>
+                    <img src={elementData.picture || defaultUserPicture} className={styles.pictureStyle} />
+                </span>
+
+                <div>
                 <div className={styles.header}>
                     {iconName && (
                         <Icon
@@ -61,6 +67,8 @@ class ChatListElement extends React.Component<IOwnProps> {
                 <div className={styles.message}>
                     {this.lastMessageMapper(elementData.lastMessage?.text)}
                 </div>
+                </div>
+
                 {!this.isRead(elementData) && (
                     <div className={styles.unread} />
                 )}

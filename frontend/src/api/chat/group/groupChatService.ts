@@ -14,8 +14,9 @@ const groupChatService = {
         return response.data.data;
     },
 
-    changeInfo: async (chatId: string, newChatName: string): Promise<void> => {
-        const response = await apiClient.post(`/api/chat/group/change-info`, {chatId, newChatName});
+    changeInfo: async (chatId: string, newChatName: string, picture: string): Promise<void> => {
+        // picture = 'https://cdn3.iconfinder.com/data/icons/avatars-round-flat/33/avat-01-512.png';
+        const response = await apiClient.post(`/api/chat/group/change-info`, {chatId, newChatName,picture });
         return response.data.data;
     },
 
