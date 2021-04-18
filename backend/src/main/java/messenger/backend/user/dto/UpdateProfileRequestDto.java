@@ -18,6 +18,6 @@ public class UpdateProfileRequestDto {
     @NotNull
     private String bio;
     @NotNull
-    @Size(min = 5, max = 256)
+    @Size( max = 256)
     private String picture;
 }

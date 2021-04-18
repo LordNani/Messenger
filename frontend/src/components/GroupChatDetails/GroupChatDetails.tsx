@@ -34,8 +34,7 @@ const validationSchema = Yup.object().shape({
         .max(16, 'Too Long! Need to be 4-16 digits.')
         .required('This field is required'),
     picture: Yup.string()
-        .min(5, 'Too Short! Need to be 5-256 digits.')
-        .max(256, 'Too Long! Need to be 5-256 digits.')
+        .max(256, 'Too Long! Need to be less than 256 characters.')
         
 });
 
@@ -144,23 +143,15 @@ class GroupChatDetails extends React.Component<IOwnProps, IState> {
 
     render() {
         const {info, deleting, adding, changing, error, toAddUserId} = this.state;
-        const pictureStyle = {
-            maxWidth: '200px',
-            height : '200px',
-        };
-        const wrapperPicture = {
-            display: 'flex',
-            justifyContent : 'center',
-            margin: '10px',
-        };
+
         const defaultUserPicture = 
             'https://www.pngkey.com/png/full/282-2820067_taste-testing-at-baskin-robbins-empty-profile-picture.png';
         return (
             <LoaderWrapper loading={!info}>
                 {info && (
                     <div>
-                        <div style={wrapperPicture}>
-                            <img style={pictureStyle} src={info?.picture ||  defaultUserPicture} />
+                        <div className={styles.wrapperPicture}>
+                            <img className={styles.pictureStyle} src={info?.picture ||  defaultUserPicture} />
                         </div>
                         <div className={styles.title}>{info.title}</div>
                         <div className={styles.permission}>{info.permissionLevel}</div>
@@ -172,7 +163,7 @@ class GroupChatDetails extends React.Component<IOwnProps, IState> {
                 {(info?.permissionLevel && this.isAdminOrOwner(info.permissionLevel)) && (
                     <Formik
                         onSubmit={this.handleChange}
-                        initialValues={{title: info?.title, picture: info?.picture}}
+                        initialValues={{title: info?.title, picture: info?.picture || ""}}
                         validationSchema={validationSchema}
                         render={({
                                      errors,

@@ -26,7 +26,7 @@ const validationSchema = Yup.object().shape({
     bio: Yup.string()
         .max(100, 'Too Long! Need to be 4-16 digits.'),
     picture: Yup.string()
-        .max(256, 'Too Long! Need to be 5-256 characters.'),
+        .max(256, 'Too Long! Need to be less than 256 characters.'),
 });
 
 class ProfileEdit extends React.Component<IOwnProps, IState> {
@@ -51,14 +51,6 @@ class ProfileEdit extends React.Component<IOwnProps, IState> {
     render() {
         const {loading, error} = this.state;
         const {currentUser} = this.props;
-        const pictureStyle = {
-            maxWidth: '200px',
-            height : '200px',
-        };
-        const wrapperPicture = {
-            display: 'flex',
-            justifyContent : 'center',
-        };
 
         return (
             <div>
@@ -80,7 +72,9 @@ class ProfileEdit extends React.Component<IOwnProps, IState> {
                         const valid = !errors.fullName && !errors.bio && !errors.picture;
                         return (
                             <Form>
-                                <div style={wrapperPicture}><img style={pictureStyle} src={values.picture} /></div>
+                                <div className={styles.wrapperPicture}>
+                                    <img className={styles.pictureStyle} src={values.picture} />
+                                </div>
                                 {error && (
                                     <ErrorMessage text={error} />
                                 )}
