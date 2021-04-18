@@ -38,8 +38,8 @@ class ProfileEdit extends React.Component<IOwnProps, IState> {
         try {
             this.setState({error: undefined});
             this.setState({loading: true});
-            const {fullName, bio} = values;
-            await this.props.editProfile({fullName, bio});
+            const {fullName, bio, picture} = values;
+            await this.props.editProfile({fullName, bio, picture});
         } catch (e) {
             this.setState({error: e.message});
         } finally {
@@ -50,6 +50,14 @@ class ProfileEdit extends React.Component<IOwnProps, IState> {
     render() {
         const {loading, error} = this.state;
         const {currentUser} = this.props;
+        const pictureStyle = {
+            maxWidth: '200px',
+            height : '200px',
+        };
+        const wrapperPicture = {
+            display: 'flex',
+            justifyContent : 'center',
+        };
 
         return (
             <div>
@@ -58,6 +66,7 @@ class ProfileEdit extends React.Component<IOwnProps, IState> {
                     initialValues={{
                         fullName: currentUser.fullName,
                         bio: currentUser.bio || '',
+                        picture: currentUser.picture || '',
                     }}
                     validationSchema={validationSchema}
                     render={({
@@ -70,9 +79,11 @@ class ProfileEdit extends React.Component<IOwnProps, IState> {
                         const valid = !errors.fullName && !errors.bio;
                         return (
                             <Form>
+                                <div style={wrapperPicture}><img style={pictureStyle} src={values.picture} /></div>
                                 {error && (
                                     <ErrorMessage text={error} />
                                 )}
+                                
                                 <Input
                                     label="Full Name"
                                     value={values.fullName}
@@ -86,6 +97,15 @@ class ProfileEdit extends React.Component<IOwnProps, IState> {
                                     label="Bio"
                                     value={values.bio}
                                     name="bio"
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    error={errors.bio}
+                                    touched={touched.bio}
+                                />
+                                <Input
+                                    label="Profile picture"
+                                    value={values.picture}
+                                    name="picture"
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                     error={errors.bio}

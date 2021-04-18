@@ -38,7 +38,7 @@ class ChatListElement extends React.Component<IOwnProps> {
             case ChatTypeEnum.GROUP:
                 return "fas fa-users";
             default:
-                return "";
+                return elementData.picture;
         }
     }
 
@@ -46,21 +46,29 @@ class ChatListElement extends React.Component<IOwnProps> {
         const {elementData, onClick, selected} = this.props;
         const classes = classNames(styles.wrapper, selected && styles.selected);
         const iconName = this.iconOfChat(elementData);
-
+        const pictureStyle = {
+            maxWidth: '60px',
+            height : '60px',
+            borderRadius:'50%',
+            margin:'5px 20px 5px 0px',
+        };
+        const wrapperStyle = {
+            display: 'flex',
+            justifyContent:'start',
+            padding:'20px 20px',
+        };
         return (
-            <div className={classes} onClick={onClick}>
-                <div className={styles.header}>
-                    {iconName && (
-                        <Icon
-                            iconName={iconName}
-                            className={styles.icon}
-                        />
-                    )}
+            <div className={classes} onClick={onClick} style={wrapperStyle}>
+                <span>{iconName && (<img src={elementData.picture} style={pictureStyle} />)}</span>
+                <div>
+                    <div className={styles.header}>
                     {elementData.title}
                 </div>
                 <div className={styles.message}>
                     {this.lastMessageMapper(elementData.lastMessage?.text)}
                 </div>
+                </div>
+
                 {!this.isRead(elementData) && (
                     <div className={styles.unread} />
                 )}

@@ -61,6 +61,10 @@ public class UserEntity {
     @Column(name = "bio", length = 512)
     private String bio;
 
+    @ToString.Exclude
+    @Column(name = "picture", length = 512)
+    private String picture;
+
     @Enumerated(value = EnumType.STRING)
     @Column(name = "role")
     private Role role;

@@ -17,6 +17,7 @@ public class CurrentUserInfoDto {
                 .username(userEntity.getUsername())
                 .fullName(userEntity.getFullName())
                 .bio(userEntity.getBio())
+                .picture(userEntity.getPicture())
                 .build();
     }
 
@@ -24,4 +25,5 @@ public class CurrentUserInfoDto {
     private String username;
     private String fullName;
     private String bio;
+    private String picture;
 }

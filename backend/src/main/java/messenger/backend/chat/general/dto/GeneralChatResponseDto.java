@@ -12,6 +12,7 @@ import messenger.backend.message.dto.LastMessageResponseDto;
 import messenger.backend.user.UserEntity;
 import messenger.backend.userChat.UserChat;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -35,6 +36,7 @@ public class GeneralChatResponseDto {
                 .id(chat.getId())
                 .type(ChatType.GROUP.getType())
                 .title(chat.getGroupName())
+                .picture(Optional.of("https://image.flaticon.com/icons/png/128/1077/1077114.png"))
                 .lastMessage(lastMessage)
                 .build();
     }
@@ -47,10 +49,18 @@ public class GeneralChatResponseDto {
                 .map(UserChat::getUser)
                 .map(UserEntity::getFullName)
                 .orElseThrow(RuntimeException::new);
+        var companionPicture = chat.getUserChats()
+                .stream()
+                .filter(uc -> !uc.getUser().getId().equals(currentUserId))
+                .findFirst()
+                .map(UserChat::getUser)
+                .map(UserEntity::getPicture)
+                ;
         return GeneralChatResponseDto.builder()
                 .id(chat.getId())
                 .type(ChatType.PERSONAL.getType())
                 .title(companionName)
+                .picture(companionPicture)
                 .lastMessage(lastMessage)
                 .build();
     }
@@ -58,5 +68,6 @@ public class GeneralChatResponseDto {
     private UUID id;
     private String title;
     private String type;
+    private Optional<String> picture;
     private LastMessageResponseDto lastMessage;
 }

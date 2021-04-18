@@ -5,12 +5,14 @@ export interface IUserShortDto {
     username: string;
     fullName: string;
     bio: string;
+    picture: string;
     permissionLevel: RoleEnum;
 }
 
 export interface IProfileEdit {
     fullName: string;
     bio: string;
+    picture: string;
 }
 
 export interface IPasswordChange {
@@ -22,4 +24,6 @@ export interface IUserSearchDto {
     id: string;
     username: string;
     fullName: string;
+    picture: string;
+
 }

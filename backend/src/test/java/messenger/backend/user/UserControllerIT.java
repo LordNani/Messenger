@@ -45,7 +45,7 @@ class UserControllerIT {
     @Test
     void shouldUpdateProfile() throws JsonProcessingException {
         String json = objectMapper.writeValueAsString(
-                new UpdateProfileRequestDto("name", "bio")
+                new UpdateProfileRequestDto("name", "bio", "picture")
         );
 
         RestAssured

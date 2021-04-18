@@ -74,6 +74,7 @@ public class FakerService {
                 .username("user")
                 .fullName("userFullName")
                 .password("$2y$12$ixe4Lh4uQVncJDzPJWckfeyTXPMkuVZm55miqLdnn/TjH0FoF8HOq") //user (BCryptPasswordEncoder(12))
+                .picture("https://secure.gravatar.com/avatar/36422be80fc5feee38e65c772a8e004e?s=100&d=mm&r=g") //user (BCryptPasswordEncoder(12))
                 .role(Role.USER)
                 .build()
         );
