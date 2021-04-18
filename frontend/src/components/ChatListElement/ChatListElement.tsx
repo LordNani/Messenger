@@ -48,7 +48,9 @@ class ChatListElement extends React.Component<IOwnProps> {
         const iconName = this.iconOfChat(elementData);
         const pictureStyle = {
             maxWidth: '60px',
-            maxHeight : '60px',
+            minWidth: '60px',
+            height : '60px',
+            minHeight : '60px',
             borderRadius:'50%',
             margin:'5px 20px 5px 0px',
         };

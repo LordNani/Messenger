@@ -62,7 +62,7 @@ public class UserEntity {
     private String bio;
 
     @ToString.Exclude
-    @Column(name = "picture", length = 512)
+    @Column(name = "picture", length = 256)
     private String picture;
 
     @Enumerated(value = EnumType.STRING)

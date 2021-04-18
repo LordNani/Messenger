@@ -36,26 +36,22 @@ public class GeneralChatResponseDto {
                 .id(chat.getId())
                 .type(ChatType.GROUP.getType())
                 .title(chat.getGroupName())
-                .picture(Optional.ofNullable(chat.getPicture()))
+                .picture(chat.getPicture())
                 .lastMessage(lastMessage)
                 .build();
     }
 
     public static GeneralChatResponseDto fromPrivateEntity(PrivateChatEntity chat, LastMessageResponseDto lastMessage, UUID currentUserId) {
-        var companionName = chat.getUserChats()
+        var companion = chat.getUserChats()
                 .stream()
                 .filter(uc -> !uc.getUser().getId().equals(currentUserId))
                 .findFirst()
                 .map(UserChat::getUser)
-                .map(UserEntity::getFullName)
                 .orElseThrow(RuntimeException::new);
-        var companionPicture = chat.getUserChats()
-                .stream()
-                .filter(uc -> !uc.getUser().getId().equals(currentUserId))
-                .findFirst()
-                .map(UserChat::getUser)
-                .map(UserEntity::getPicture)
-                ;
+        var companionName = companion.getFullName();
+
+        var companionPicture = companion.getPicture();
+
         return GeneralChatResponseDto.builder()
                 .id(chat.getId())
                 .type(ChatType.PERSONAL.getType())
@@ -68,6 +64,6 @@ public class GeneralChatResponseDto {
     private UUID id;
     private String title;
     private String type;
-    private Optional<String> picture;
+    private String picture;
     private LastMessageResponseDto lastMessage;
 }

@@ -250,7 +250,6 @@ public class GroupChatService {
 
         groupChatEntity.setGroupName(requestDto.getNewChatName());
         groupChatEntity.setPicture(requestDto.getPicture());
-        System.out.println("Changed picture to " + requestDto.getPicture());
         groupChatRepository.saveAndFlush(groupChatEntity);
 
         List<UUID> uuidList = groupChatEntity.getUserChats().stream()
