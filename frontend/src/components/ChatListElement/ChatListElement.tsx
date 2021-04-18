@@ -48,7 +48,7 @@ class ChatListElement extends React.Component<IOwnProps> {
         const iconName = this.iconOfChat(elementData);
         const pictureStyle = {
             maxWidth: '60px',
-            height : '60px',
+            maxHeight : '60px',
             borderRadius:'50%',
             margin:'5px 20px 5px 0px',
         };
@@ -57,17 +57,22 @@ class ChatListElement extends React.Component<IOwnProps> {
             justifyContent:'start',
             padding:'20px 20px',
         };
+        const defaultUserPicture = 
+            'https://www.pngkey.com/png/full/282-2820067_taste-testing-at-baskin-robbins-empty-profile-picture.png';
         return (
             <div className={classes} onClick={onClick} style={wrapperStyle}>
-                <span>{iconName && (<img src={elementData.picture} style={pictureStyle} />)}</span>
-                {iconName && (
+                <span>
+                    <img src={elementData.picture || defaultUserPicture} style={pictureStyle} />
+                </span>
+
+                <div>
+                <div className={styles.header}>
+                    {iconName && (
                         <Icon
                             iconName={iconName}
                             className={styles.icon}
                         />
                     )}
-                <div>
-                    <div className={styles.header}>
                     {elementData.title}
                 </div>
                 <div className={styles.message}>

@@ -151,12 +151,17 @@ class GroupChatDetails extends React.Component<IOwnProps, IState> {
         const wrapperPicture = {
             display: 'flex',
             justifyContent : 'center',
+            margin: '10px',
         };
+        const defaultUserPicture = 
+            'https://www.pngkey.com/png/full/282-2820067_taste-testing-at-baskin-robbins-empty-profile-picture.png';
         return (
             <LoaderWrapper loading={!info}>
                 {info && (
                     <div>
-                        <div style={wrapperPicture}><img style={pictureStyle} src={info?.picture} /></div>
+                        <div style={wrapperPicture}>
+                            <img style={pictureStyle} src={info?.picture ||  defaultUserPicture} />
+                        </div>
                         <div className={styles.title}>{info.title}</div>
                         <div className={styles.permission}>{info.permissionLevel}</div>
                     </div>
