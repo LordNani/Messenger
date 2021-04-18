@@ -2,6 +2,8 @@ insert into users (id, username, password, full_name, bio, role)
 values ('9f6a075e-a4c5-44da-b7c5-5f22bb64b352', 'user', '$2y$12$ixe4Lh4uQVncJDzPJWckfeyTXPMkuVZm55miqLdnn/TjH0FoF8HOq',
         'Full Name', 'My info', 'USER'),
        ('dacee9b4-6789-4f03-9520-dc97b0b9470b', 'user2', '$2y$12$ixe4Lh4uQVncJDzPJWckfeyTXPMkuVZm55miqLdnn/TjH0FoF8HOq',
+        'Full Name 2', 'My info 2', 'USER'),
+       ('fafae9b4-6789-4f03-9520-dc97b0b9470b', 'user2fa', '$2y$12$ixe4Lh4uQVncJDzPJWckfeyTXPMkuVZm55miqLdnn/TjH0FoF8HOq',
         'Full Name 2', 'My info 2', 'USER');
 
 insert into refresh_token (id, user_id, created_at)
