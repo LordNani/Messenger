@@ -17,3 +17,4 @@ An application for instant messaging in private and group chats.
 3. Copy `.env.example` to `.env` and update if necessary
 4. Run `npm run start`
 
+Done!
