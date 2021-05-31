@@ -6,14 +6,21 @@ import LoginForm from "../../components/LoginForm/LoginForm";
 import RegistrationForm from "../../components/RegistrationForm/RegistrationForm";
 import {ILoginRequest, IRegisterRequest} from "../../api/auth/authModels";
 import {toastr} from 'react-redux-toastr';
+import {ICallback1} from "../../helpers/types.helper";
+import {loginRoutine} from "./routines";
+import {connect} from "react-redux";
+import {IAppState} from "../../reducers";
 
-class Auth extends React.Component<RouteComponentProps> {
+interface IPropsFromState {
+    loginLoading: boolean;
+    loginError: string | null;
+}
 
-    login = async (loginDto: ILoginRequest) => {
-        await authService.login(loginDto);
-        this.props.history.push("/home");
-    }
+interface IActions {
+    login: ICallback1<ILoginRequest>;
+}
 
+class Auth extends React.Component<RouteComponentProps & IPropsFromState & IActions> {
     register = async (registerDto: IRegisterRequest) => {
         await authService.register(registerDto);
         this.props.history.push("/auth/login");
@@ -21,6 +28,8 @@ class Auth extends React.Component<RouteComponentProps> {
     }
 
     render() {
+        const {login, loginError, loginLoading} = this.props;
+
         if (authService.isLoggedIn()) {
             return <Redirect to="/home" />;
         }
@@ -30,7 +39,13 @@ class Auth extends React.Component<RouteComponentProps> {
                 <h1 className={styles.header}>Welcome to Ch@t</h1>
                 <div className={styles.authForm}>
                     <Switch>
-                        <Route exact path="/auth/login" render={() => <LoginForm login={this.login} />} />
+                        <Route exact path="/auth/login" render={() => (
+                            <LoginForm
+                                login={login}
+                                loginLoading={loginLoading}
+                                loginError={loginError}
+                            />
+                        )} />
                         <Route exact path="/auth/register" render={() =>
                             <RegistrationForm register={this.register}/>} />
                         <Route path="/auth" render={() => <Redirect to="/auth/login" />} />
@@ -41,4 +56,13 @@ class Auth extends React.Component<RouteComponentProps> {
     }
 }
 
-export default withRouter(Auth);
+const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
+    loginLoading: state.authPage.requests.login.loading,
+    loginError: state.authPage.requests.login.error,
+});
+
+const mapDispatchToProps: IActions = {
+    login: loginRoutine,
+};
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Auth));

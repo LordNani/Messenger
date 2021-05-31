@@ -1,11 +1,26 @@
-import { createStore } from 'redux';
+import createSagaMiddleware from 'redux-saga';
+import { applyMiddleware, compose, createStore } from 'redux';
 import rootReducer from './reducers/index';
+import rootSaga from './sagas/index';
 
-/* eslint-disable no-underscore-dangle */
+declare global {
+    interface Window { // eslint-disable-line
+        // eslint-disable-next-line no-undef
+        __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: typeof compose;
+    }
+}
+
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+const sagaMiddleware = createSagaMiddleware();
+
 export const store = createStore(
     rootReducer,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+    composeEnhancers(
+        applyMiddleware(
+            sagaMiddleware
+        )
+    )
 );
-/* eslint-enable */
+
+sagaMiddleware.run(rootSaga);
