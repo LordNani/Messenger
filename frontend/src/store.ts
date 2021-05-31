@@ -2,6 +2,8 @@ import createSagaMiddleware from 'redux-saga';
 import { applyMiddleware, compose, createStore } from 'redux';
 import rootReducer from './reducers/index';
 import rootSaga from './sagas/index';
+import {routerMiddleware} from "connected-react-router";
+import { history } from 'helpers/history.helper';
 
 declare global {
     interface Window { // eslint-disable-line
@@ -15,10 +17,11 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const sagaMiddleware = createSagaMiddleware();
 
 export const store = createStore(
-    rootReducer,
+    rootReducer(history),
     composeEnhancers(
         applyMiddleware(
-            sagaMiddleware
+            sagaMiddleware,
+            routerMiddleware(history)
         )
     )
 );

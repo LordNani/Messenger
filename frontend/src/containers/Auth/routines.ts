@@ -5,3 +5,4 @@ const createLocalRoutine = <T extends unknown>(actionName: string) =>
     createRoutine<T>(`AUTH_PAGE:${actionName}`);
 
 export const loginRoutine = createLocalRoutine<ILoginRequest>('LOGIN');
+export const registerRoutine = createLocalRoutine<ILoginRequest>('REGISTER');
