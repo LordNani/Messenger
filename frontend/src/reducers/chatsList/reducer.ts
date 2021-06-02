@@ -1,18 +1,14 @@
 import {ChatsListActions} from "./actions";
 import {IChatDetails} from "../../api/chat/general/generalChatModels";
 import {
-    ADD_CHAT_TO_LIST,
     APPEND_CHAT_DETAILS_CACHED,
     APPEND_LOADING_MESSAGE,
     APPEND_READY_MESSAGE,
     REMOVE_CHAT_FROM_LIST,
-    REMOVE_CHATS_LIST,
     SET_CHAT_MESSAGES,
-    SET_CHATS_LIST,
     SET_FIRST_CHAT_IN_LIST,
     SET_MESSAGE_LOADED,
     SET_SEEN_CHAT,
-    SET_SEEN_LIST,
     SET_SELECTED,
     UPDATE_CHAT_IN_LIST,
     UPDATE_SENDER_USERNAME
@@ -49,19 +45,6 @@ export const authReducer = (
     action: ChatsListActions
 ): IChatsListState => {
     switch (action.type) {
-        case SET_CHATS_LIST:
-            return {
-                ...state,
-                chatsList: action.payload,
-            };
-        case SET_SEEN_LIST:
-            return {
-                ...state,
-                chatsList: state.chatsList?.map(chat => ({
-                    ...chat,
-                    seenAt: action.payload.find(s => s.chatId === chat.id)?.seenAt
-                }))
-            };
         case SET_SEEN_CHAT:
             return {
                 ...state,
@@ -72,13 +55,6 @@ export const authReducer = (
                     }
                     : chat
                 )
-            };
-        case ADD_CHAT_TO_LIST:
-            return {
-                ...state,
-                chatsList: state.chatsList?.find(c => c.id === action.payload.id)
-                    ? state.chatsList
-                    : [action.payload, ...(state.chatsList || [])],
             };
         case SET_FIRST_CHAT_IN_LIST:
             return {
@@ -113,13 +89,6 @@ export const authReducer = (
             return {
                 ...state,
                 chatsList: state.chatsList?.filter(c => c.id !== action.payload),
-            };
-        case REMOVE_CHATS_LIST:
-            return {
-                ...state,
-                chatsList: undefined,
-                selectedId: undefined,
-                chatsDetailsCached: [],
             };
         case SET_SELECTED:
             return {

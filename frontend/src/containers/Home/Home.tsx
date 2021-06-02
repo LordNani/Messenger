@@ -16,28 +16,23 @@ import generalChatService from "../../api/chat/general/generalChatService";
 import {IChatCache} from "../../reducers/chatsList/reducer";
 import messageService from "../../api/message/messageService";
 import {v4 as uuid} from "uuid";
-import personalChatService from "../../api/chat/personal/personalChatService";
-import groupChatService from "../../api/chat/group/groupChatService";
 import {toastr} from 'react-redux-toastr';
 import SockJS from "sockjs-client";
 import tokenService from "../../api/token/tokenService";
 import {CompatClient, Stomp} from "@stomp/stompjs";
 import {env} from "../../env";
-import {IAction, ICallback1} from "../../helpers/types.helper";
-import {removeCurrentUserRoutine, setCurrentUserRoutine} from "../Auth/routines";
+import {ICallback1} from "../../helpers/types.helper";
+import {setCurrentUserRoutine} from "../Auth/routines";
+import {addChatToListIfAbsentRoutine} from "../ChatsList/routines";
 
 interface IPropsFromDispatch {
     actions: {
-        removeCurrentUser: IAction;
         setCurrentUser: ICallback1<ICurrentUser>;
-        setChatsList: typeof chatsListActions.setChatsList;
-        setSeenList: typeof chatsListActions.setSeenList;
         setSeenChat: typeof chatsListActions.setSeenChat;
-        addChatToList: typeof chatsListActions.addChatToList;
+        addChatToList: ICallback1<IChatDetails>;
         updateChatInList: typeof chatsListActions.updateChatInList;
         setFirstChatInList: typeof chatsListActions.setFirstChatInList;
         removeChatFromList: typeof chatsListActions.removeChatFromList;
-        removeChatsList: typeof chatsListActions.removeChatsList;
         setSelected: typeof chatsListActions.setSelected;
         removeSelected: typeof chatsListActions.removeSelected;
         appendDetailsCached: typeof chatsListActions.appendDetailsCached;
@@ -297,16 +292,12 @@ const mapDispatchToProps = (dispatch: any) => ({
     actions:
         bindActionCreators<any, any>(
             {
-                removeCurrentUser: removeCurrentUserRoutine.fulfill,
                 setCurrentUser: setCurrentUserRoutine.fulfill,
-                setChatsList: chatsListActions.setChatsList,
-                setSeenList: chatsListActions.setSeenList,
+                addChatToList: addChatToListIfAbsentRoutine.fulfill,
                 setSeenChat: chatsListActions.setSeenChat,
-                addChatToList: chatsListActions.addChatToList,
                 removeChatFromList: chatsListActions.removeChatFromList,
                 setFirstChatInList: chatsListActions.setFirstChatInList,
                 updateChatInList: chatsListActions.updateChatInList,
-                removeChatsList: chatsListActions.removeChatsList,
                 setSelected: chatsListActions.setSelected,
                 removeSelected: chatsListActions.removeSelected,
                 appendDetailsCached: chatsListActions.appendDetailsCached,

@@ -32,6 +32,7 @@ const requests = combineReducers({
 const data = createReducer(initialStateData, {
     [removeChatsListRoutine.FULFILL]: state => {
         state.chatsList = undefined;
+        // TODO remove selected id and cached
     },
     [setChatsListRoutine.FULFILL]: (state, {payload}: PayloadAction<IChatDetails[]>) => {
         state.chatsList = payload;
