@@ -8,11 +8,21 @@ import Icon from "../../components/Icon/Icon";
 import Modal from "../../components/Modal/Modal";
 import CreatePersonalChat from "../../components/CreatePersonalChat/CreatePersonalChat";
 import CreateGroupChat from "../../components/CreateGroupChat/CreateGroupChat";
-import {ICallback1} from "../../helpers/types.helper";
+import {IAction, ICallback1} from "../../helpers/types.helper";
+import {IAppState} from "../../reducers";
+import {loadChatsListRoutine} from "./routines";
+import {connect} from "react-redux";
+
+interface IPropsFromState {
+    chatsList?: IChatDetails[];
+    chatsListLoading: boolean;
+}
+
+interface IActions {
+    loadChatsList: IAction;
+}
 
 interface IOwnProps {
-    loadChatsList: () => Promise<void>;
-    chatsList?: IChatDetails[];
     selectChat: (el: IChatDetails) => void;
     selectedChatId?: string;
     createPersonalChat: ICallback1<string>;
@@ -24,18 +34,20 @@ interface IState {
     modal?: boolean;
 }
 
-class ChatsList extends React.Component<IOwnProps, IState> {
+class ChatsList extends React.Component<IOwnProps & IPropsFromState & IActions, IState> {
 
     state = {
         filter: ''
     } as IState;
 
     async componentDidMount() {
-        await this.props.loadChatsList();
+        this.props.loadChatsList();
     }
 
     render() {
-        const {chatsList, selectChat, selectedChatId, createPersonalChat, createGroupChat} = this.props;
+        const {
+            chatsList, chatsListLoading, selectChat, selectedChatId, createPersonalChat, createGroupChat
+        } = this.props;
         const {filter, modal} = this.state;
         const filteredChatsList = chatsList
             ?.filter(chat => chat.title.toLowerCase().includes(filter.toLowerCase()));
@@ -55,7 +67,7 @@ class ChatsList extends React.Component<IOwnProps, IState> {
                         />
                     </Modal>
                 )}
-                <LoaderWrapper loading={!chatsList}>
+                <LoaderWrapper loading={chatsListLoading}>
                     <div className={styles.searchWrapper}>
                         <Input
                             value={filter}
@@ -91,4 +103,13 @@ class ChatsList extends React.Component<IOwnProps, IState> {
     }
 }
 
-export default ChatsList;
+const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
+    chatsList: state.chatsListNew.data.chatsList,
+    chatsListLoading: state.chatsListNew.requests.loadChatsList.loading
+});
+
+const mapDispatchToProps: IActions = {
+    loadChatsList: loadChatsListRoutine
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ChatsList);

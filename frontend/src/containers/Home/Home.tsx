@@ -202,23 +202,6 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         this.props.actions.updateSenderUsername(iChangeUsername);
     }
 
-    loadChatsList = async () => {
-        this.props.actions.removeChatsList();
-        const list = await generalChatService.getChatsList();
-        list.sort((a, b) => {
-            if (!a.lastMessage) {
-                return -1;
-            }
-            if (!b.lastMessage) {
-                return 1;
-            }
-            return b.lastMessage.createdAt - a.lastMessage.createdAt;
-        });
-        this.props.actions.setChatsList(list);
-        const seenAtList = await generalChatService.getSeenAt();
-        this.props.actions.setSeenList(seenAtList);
-    }
-
     selectChat = (chat: IChatDetails) => {
         this.props.actions.setSelected(chat.id);
     }
@@ -285,7 +268,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
             return <Redirect to="/auth" />;
         }
 
-        const {chatsList, currentUser, selectedChatId, chatDetailsCached} = this.props;
+        const {currentUser, selectedChatId, chatDetailsCached} = this.props;
         const {loading} = this.state;
 
         return (
@@ -293,8 +276,6 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                 <Header />
                 <div className={styles.content}>
                     <ChatsList
-                        chatsList={chatsList}
-                        loadChatsList={this.loadChatsList}
                         selectChat={this.selectChat}
                         selectedChatId={selectedChatId}
                         createGroupChat={this.createGroupChat}
