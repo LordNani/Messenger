@@ -4,16 +4,24 @@ import ChatListElement from "../ChatListElement/ChatListElement";
 import {IChatDetails} from "../../api/chat/general/generalChatModels";
 import LoaderWrapper from "../LoaderWrapper/LoaderWrapper";
 import Input from "../FormComponents/Input/Input";
+import Icon from "../Icon/Icon";
+import Modal from "../Modal/Modal";
+import CreatePersonalChat from "../CreatePersonalChat/CreatePersonalChat";
+import CreateGroupChat from "../CreateGroupChat/CreateGroupChat";
+import {ICallback1} from "../../helpers/types.helper";
 
 interface IOwnProps {
     loadChatsList: () => Promise<void>;
     chatsList?: IChatDetails[];
     selectChat: (el: IChatDetails) => void;
     selectedChatId?: string;
+    createPersonalChat: ICallback1<string>;
+    createGroupChat: ICallback1<string>;
 }
 
 interface IState {
     filter: string;
+    modal?: boolean;
 }
 
 class ChatsList extends React.Component<IOwnProps, IState> {
@@ -27,13 +35,26 @@ class ChatsList extends React.Component<IOwnProps, IState> {
     }
 
     render() {
-        const {chatsList, selectChat, selectedChatId} = this.props;
-        const {filter} = this.state;
+        const {chatsList, selectChat, selectedChatId, createPersonalChat, createGroupChat} = this.props;
+        const {filter, modal} = this.state;
         const filteredChatsList = chatsList
             ?.filter(chat => chat.title.toLowerCase().includes(filter.toLowerCase()));
 
         return (
             <div className={styles.wrapper}>
+                {modal && (
+                    <Modal close={() => this.setState({modal: false})}>
+                        <div className={styles.modalUsername}>
+                            Create new chat...
+                        </div>
+                        <CreatePersonalChat
+                            createPersonalChat={createPersonalChat}
+                        />
+                        <CreateGroupChat
+                            createGroupChat={createGroupChat}
+                        />
+                    </Modal>
+                )}
                 <LoaderWrapper loading={!chatsList}>
                     <div className={styles.searchWrapper}>
                         <Input
@@ -59,6 +80,12 @@ class ChatsList extends React.Component<IOwnProps, IState> {
                         </div>
                     ) }
                 </LoaderWrapper>
+                <div className={styles.addWrapper}>
+                    <Icon
+                        iconName="fas fa-plus"
+                        onClick={() => this.setState({modal: true})}
+                    />
+                </div>
             </div>
         );
     }

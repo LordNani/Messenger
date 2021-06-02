@@ -16,12 +16,8 @@ import generalChatService from "../../api/chat/general/generalChatService";
 import {IChatCache} from "../../reducers/chatsList/reducer";
 import messageService from "../../api/message/messageService";
 import {v4 as uuid} from "uuid";
-import Icon from "../../components/Icon/Icon";
-import Modal from "../../components/Modal/Modal";
-import CreatePersonalChat from "../../components/CreatePersonalChat/CreatePersonalChat";
 import personalChatService from "../../api/chat/personal/personalChatService";
 import groupChatService from "../../api/chat/group/groupChatService";
-import CreateGroupChat from "../../components/CreateGroupChat/CreateGroupChat";
 import {toastr} from 'react-redux-toastr';
 import SockJS from "sockjs-client";
 import tokenService from "../../api/token/tokenService";
@@ -62,7 +58,6 @@ interface IPropsFromState {
 
 interface IState {
     loading: boolean;
-    creating: boolean;
 }
 
 export interface IChangeMessagesUsername {
@@ -74,7 +69,6 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
 
     state = {
         loading: false,
-        creating: false,
     } as IState;
 
     private socket: WebSocket = new SockJS(`${env.backendProtocol}://${env.backendHost}:${env.backendPort}/ws`);
@@ -278,13 +272,11 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
 
     createPersonalChat = async (targetId: string) => {
         const chat = await personalChatService.create(targetId);
-        this.setState({creating: false});
         this.props.actions.addChatToList(chat);
     }
 
     createGroupChat = async (title: string) => {
         const chat = await groupChatService.create(title);
-        this.setState({creating: false});
         this.props.actions.addChatToList(chat);
     }
 
@@ -294,23 +286,10 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         }
 
         const {chatsList, currentUser, selectedChatId, chatDetailsCached} = this.props;
-        const {loading, creating} = this.state;
+        const {loading} = this.state;
 
         return (
             <LoaderWrapper loading={!currentUser || loading}>
-                {creating && (
-                    <Modal close={() => this.setState({creating: false})}>
-                        <div className={styles.modalUsername}>
-                            Create new chat...
-                        </div>
-                        <CreatePersonalChat
-                            createPersonalChat={this.createPersonalChat}
-                        />
-                        <CreateGroupChat
-                            createGroupChat={this.createGroupChat}
-                        />
-                    </Modal>
-                )}
                 <Header />
                 <div className={styles.content}>
                     <ChatsList
@@ -318,6 +297,8 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                         loadChatsList={this.loadChatsList}
                         selectChat={this.selectChat}
                         selectedChatId={selectedChatId}
+                        createGroupChat={this.createGroupChat}
+                        createPersonalChat={this.createPersonalChat}
                     />
                     <Chat
                         chatsDetailsCached={chatDetailsCached}
@@ -329,12 +310,6 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                         deleteChatFromList={this.deleteChatFromList}
                         updateChatInList={this.updateChatInList}
                         readChat={this.readChat}
-                    />
-                </div>
-                <div className={styles.addWrapper}>
-                    <Icon
-                        iconName="fas fa-plus"
-                        onClick={() => this.setState({creating: true})}
                     />
                 </div>
             </LoaderWrapper>

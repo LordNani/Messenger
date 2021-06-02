@@ -3,9 +3,10 @@ import styles from "./CreatePersonalChat.module.sass";
 import Button from "../FormComponents/Button/Button";
 import UserFinder from "../UserFinder/UserFinder";
 import ErrorMessage from "../FormComponents/ErrorMessage/ErrorMessage";
+import {ICallback1} from "../../helpers/types.helper";
 
 interface IOwnProps {
-    createPersonalChat: (targetId: string) => Promise<void>;
+    createPersonalChat: ICallback1<string>;
 }
 
 interface IState {

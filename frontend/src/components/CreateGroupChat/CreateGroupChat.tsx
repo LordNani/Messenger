@@ -5,9 +5,10 @@ import ErrorMessage from "../FormComponents/ErrorMessage/ErrorMessage";
 import * as Yup from "yup";
 import {Form, Formik} from "formik";
 import Input from "../FormComponents/Input/Input";
+import {ICallback1} from "../../helpers/types.helper";
 
 interface IOwnProps {
-    createGroupChat: (title: string) => Promise<void>;
+    createGroupChat: ICallback1<string>;
 }
 
 interface IState {
