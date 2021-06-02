@@ -6,9 +6,10 @@ import * as Yup from "yup";
 import {Form, Formik} from "formik";
 import Input from "../FormComponents/Input/Input";
 import {IPasswordChange} from "../../api/user/userModels";
+import {ICallback1} from "../../helpers/types.helper";
 
 interface IOwnProps {
-    changePassword: (request: IPasswordChange) => Promise<void>;
+    changePassword: ICallback1<IPasswordChange>;
 }
 
 interface IState {

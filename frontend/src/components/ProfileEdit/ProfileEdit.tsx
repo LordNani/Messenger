@@ -7,9 +7,10 @@ import {Form, Formik} from "formik";
 import Input from "../FormComponents/Input/Input";
 import {IProfileEdit} from "../../api/user/userModels";
 import {ICurrentUser} from "../../api/auth/authModels";
+import {ICallback1} from "../../helpers/types.helper";
 
 interface IOwnProps {
-    editProfile: (request: IProfileEdit) => Promise<void>;
+    editProfile: ICallback1<IProfileEdit>;
     currentUser: ICurrentUser;
 }
 
@@ -78,7 +79,7 @@ class ProfileEdit extends React.Component<IOwnProps, IState> {
                                 {error && (
                                     <ErrorMessage text={error} />
                                 )}
-                                
+
                                 <Input
                                     label="Full Name"
                                     value={values.fullName}

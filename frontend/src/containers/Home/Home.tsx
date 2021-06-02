@@ -66,7 +66,6 @@ interface IPropsFromState {
 interface IState {
     loading: boolean;
     creating: boolean;
-    profile: boolean;
 }
 
 export interface IChangeMessagesUsername {
@@ -79,7 +78,6 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
     state = {
         loading: false,
         creating: false,
-        profile: false,
     } as IState;
 
     private socket: WebSocket = new SockJS(`${env.backendProtocol}://${env.backendHost}:${env.backendPort}/ws`);
@@ -100,9 +98,8 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
     }
 
     private configureSocket = () => {
-        this.stompClient.debug = str => {
-            // todo change to empty function
-            // console.log('----- DEBUG SOCKET LOG:\n' + str);
+        this.stompClient.debug = () => {
+            // empty
         };
         this.stompClient.reconnectDelay = 5000;
         this.stompClient.connectionTimeout = 5000;
@@ -325,24 +322,10 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         }
 
         const {chatsList, currentUser, selectedChatId, chatDetailsCached} = this.props;
-        const {loading, creating, profile} = this.state;
+        const {loading, creating} = this.state;
 
         return (
             <LoaderWrapper loading={!currentUser || loading}>
-                {profile && currentUser && (
-                    <Modal close={() => this.setState({profile: false})}>
-                        <div className={styles.modalUsername}>
-                            {currentUser?.username}
-                        </div>
-                        <ProfileEdit
-                            currentUser={currentUser}
-                            editProfile={this.handleEditProfile}
-                        />
-                        <PasswordChange
-                            changePassword={this.handleChangePassword}
-                        />
-                    </Modal>
-                )}
                 {creating && (
                     <Modal close={() => this.setState({creating: false})}>
                         <div className={styles.modalUsername}>
@@ -358,8 +341,9 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                 )}
                 <Header
                     logout={this.logout}
-                    openModal={() => this.setState({profile: true})}
                     currentUser={currentUser}
+                    editProfile={this.handleEditProfile}
+                    changePassword={this.handleChangePassword}
                 />
                 <div className={styles.content}>
                     <ChatsList
