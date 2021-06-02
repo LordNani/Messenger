@@ -299,11 +299,6 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         this.props.actions.addChatToList(chat);
     }
 
-    handleChangePassword = async (request: IPasswordChange) => {
-        await userService.changePassword(request);
-        toastr.success('Success', 'Password successfully updated');
-    }
-
     render() {
         if (!authService.isLoggedIn()) {
             return <Redirect to="/auth" />;
@@ -329,7 +324,6 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                 )}
                 <Header
                     logout={this.logout}
-                    changePassword={this.handleChangePassword}
                 />
                 <div className={styles.content}>
                     <ChatsList

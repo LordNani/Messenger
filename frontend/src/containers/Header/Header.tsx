@@ -7,22 +7,24 @@ import PasswordChange from "../../components/PasswordChange/PasswordChange";
 import {ICallback1} from "../../helpers/types.helper";
 import {IPasswordChange, IProfileEdit} from "../../api/user/userModels";
 import {IAppState} from "../../reducers";
-import {editProfileRoutine} from "./routines";
+import {changePasswordRoutine, editProfileRoutine} from "./routines";
 import {connect} from "react-redux";
 
 interface IPropsFromState {
     editProfileLoading: boolean;
     editProfileError: string | null;
+    changePasswordLoading: boolean;
+    changePasswordError: string | null;
     currentUser?: ICurrentUser;
 }
 
 interface IActions {
     editProfile: ICallback1<IProfileEdit>;
+    changePassword: ICallback1<IPasswordChange>;
 }
 
 interface IOwnProps {
     logout: () => Promise<void>;
-    changePassword: ICallback1<IPasswordChange>;
 }
 
 interface IState {
@@ -33,7 +35,10 @@ class Header extends React.Component<IPropsFromState & IActions & IOwnProps, ISt
     state = {} as IState;
 
     render() {
-        const {logout, currentUser, editProfile, changePassword, editProfileError, editProfileLoading} = this.props;
+        const {
+            logout, currentUser, editProfile, changePassword, editProfileError, editProfileLoading,
+            changePasswordLoading, changePasswordError
+        } = this.props;
         const {profileShown} = this.state;
 
         return (
@@ -51,6 +56,8 @@ class Header extends React.Component<IPropsFromState & IActions & IOwnProps, ISt
                         />
                         <PasswordChange
                             changePassword={changePassword}
+                            changePasswordLoading={changePasswordLoading}
+                            changePasswordError={changePasswordError}
                         />
                     </Modal>
                 )}
@@ -74,11 +81,14 @@ class Header extends React.Component<IPropsFromState & IActions & IOwnProps, ISt
 const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
     editProfileError: state.header.requests.editProfile.error,
     editProfileLoading: state.header.requests.editProfile.loading,
+    changePasswordError: state.header.requests.changePassword.error,
+    changePasswordLoading: state.header.requests.changePassword.loading,
     currentUser: state.auth.currentUser
 });
 
 const mapDispatchToProps: IActions = {
-    editProfile: editProfileRoutine
+    editProfile: editProfileRoutine,
+    changePassword: changePasswordRoutine
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header);
