@@ -59,10 +59,10 @@ class Auth extends React.Component<IPropsFromState & IActions> {
 }
 
 const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
-    loginLoading: state.authPage.requests.login.loading,
-    loginError: state.authPage.requests.login.error,
-    registerLoading: state.authPage.requests.register.loading,
-    registerError: state.authPage.requests.register.error,
+    loginLoading: state.auth.requests.login.loading,
+    loginError: state.auth.requests.login.error,
+    registerLoading: state.auth.requests.register.loading,
+    registerError: state.auth.requests.register.error,
 });
 
 const mapDispatchToProps: IActions = {

@@ -2,7 +2,6 @@ import React from "react";
 import {Redirect, RouteComponentProps, withRouter} from "react-router-dom";
 import {bindActionCreators} from "redux";
 import {IAppState} from "../../reducers";
-import {authActions} from "../../reducers/auth/actions";
 import {connect} from "react-redux";
 import LoaderWrapper from "../../components/LoaderWrapper/LoaderWrapper";
 import {ICurrentUser} from "../../api/auth/authModels";
@@ -27,16 +26,14 @@ import {toastr} from 'react-redux-toastr';
 import SockJS from "sockjs-client";
 import tokenService from "../../api/token/tokenService";
 import {CompatClient, Stomp} from "@stomp/stompjs";
-import ProfileEdit from "../../components/ProfileEdit/ProfileEdit";
-import {IPasswordChange, IProfileEdit} from "../../api/user/userModels";
-import userService from "../../api/user/userService";
-import PasswordChange from "../../components/PasswordChange/PasswordChange";
 import {env} from "../../env";
+import {IAction, ICallback1} from "../../helpers/types.helper";
+import {removeCurrentUserRoutine, setCurrentUserRoutine} from "../Auth/routines";
 
 interface IPropsFromDispatch {
     actions: {
-        removeCurrentUser: typeof authActions.removeCurrentUser;
-        setCurrentUser: typeof authActions.setCurrentUser;
+        removeCurrentUser: IAction;
+        setCurrentUser: ICallback1<ICurrentUser>;
         setChatsList: typeof chatsListActions.setChatsList;
         setSeenList: typeof chatsListActions.setSeenList;
         setSeenChat: typeof chatsListActions.setSeenChat;
@@ -356,7 +353,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
 }
 
 const mapStateToProps = (state: IAppState) => ({
-    currentUser: state.auth.currentUser,
+    currentUser: state.auth.data.currentUser,
     chatsList: state.chatsList.chatsList,
     selectedChatId: state.chatsList.selectedId,
     chatDetailsCached: state.chatsList.chatsDetailsCached,
@@ -364,30 +361,10 @@ const mapStateToProps = (state: IAppState) => ({
 
 const mapDispatchToProps = (dispatch: any) => ({
     actions:
-        bindActionCreators<any,
+        bindActionCreators<any, any>(
             {
-                removeCurrentUser: typeof authActions.removeCurrentUser,
-                setCurrentUser: typeof authActions.setCurrentUser,
-                setChatsList: typeof chatsListActions.setChatsList,
-                setSeenList: typeof chatsListActions.setSeenList,
-                setSeenChat: typeof chatsListActions.setSeenChat,
-                addChatToList: typeof chatsListActions.addChatToList,
-                updateChatInList: typeof chatsListActions.updateChatInList,
-                setFirstChatInList: typeof chatsListActions.setFirstChatInList,
-                removeChatFromList: typeof chatsListActions.removeChatFromList,
-                removeChatsList: typeof chatsListActions.removeChatsList,
-                setSelected: typeof chatsListActions.setSelected,
-                removeSelected: typeof chatsListActions.removeSelected,
-                appendDetailsCached: typeof chatsListActions.appendDetailsCached,
-                setChatMessages: typeof chatsListActions.setChatMessages,
-                appendLoadingMessage: typeof chatsListActions.appendLoadingMessage,
-                setMessageLoaded: typeof chatsListActions.setMessageLoaded,
-                appendReadyMessage: typeof chatsListActions.appendReadyMessage,
-                updateSenderUsername: typeof chatsListActions.updateSenderUsername,
-            }>(
-            {
-                removeCurrentUser: authActions.removeCurrentUser,
-                setCurrentUser: authActions.setCurrentUser,
+                removeCurrentUser: removeCurrentUserRoutine.fulfill,
+                setCurrentUser: setCurrentUserRoutine.fulfill,
                 setChatsList: chatsListActions.setChatsList,
                 setSeenList: chatsListActions.setSeenList,
                 setSeenChat: chatsListActions.setSeenChat,

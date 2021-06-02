@@ -83,7 +83,7 @@ const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
     editProfileLoading: state.header.requests.editProfile.loading,
     changePasswordError: state.header.requests.changePassword.error,
     changePasswordLoading: state.header.requests.changePassword.loading,
-    currentUser: state.auth.currentUser
+    currentUser: state.auth.data.currentUser
 });
 
 const mapDispatchToProps: IActions = {
