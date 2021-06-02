@@ -5,12 +5,14 @@ import { connectRouter } from 'connected-react-router';
 import chatsListReducer, {IChatsListState} from "./chatsList/reducer";
 import authPageReducer, {IAuthState} from "../containers/Auth/reducers";
 import headerReducer, {IHeaderState} from "../containers/Header/reducers";
+import chatsListNewReducer, {IChatsListNewState} from "../containers/ChatsList/reducers";
 
 export interface IAppState {
     toastr: ToastrState;
     chatsList: IChatsListState;
     auth: IAuthState;
     header: IHeaderState;
+    chatsListNew: IChatsListNewState;
 }
 
 export interface IAppAction<T extends string, P> extends Action<T> {
@@ -22,7 +24,8 @@ const rootReducers = (history: any) => combineReducers({
     toastr,
     chatsList: chatsListReducer,
     auth: authPageReducer,
-    header: headerReducer
+    header: headerReducer,
+    chatsListNew: chatsListNewReducer
 });
 
 export default rootReducers;

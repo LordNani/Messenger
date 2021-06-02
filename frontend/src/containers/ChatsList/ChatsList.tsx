@@ -1,13 +1,13 @@
 import React from "react";
 import styles from "./ChatsList.module.sass";
-import ChatListElement from "../ChatListElement/ChatListElement";
+import ChatListElement from "../../components/ChatListElement/ChatListElement";
 import {IChatDetails} from "../../api/chat/general/generalChatModels";
-import LoaderWrapper from "../LoaderWrapper/LoaderWrapper";
-import Input from "../FormComponents/Input/Input";
-import Icon from "../Icon/Icon";
-import Modal from "../Modal/Modal";
-import CreatePersonalChat from "../CreatePersonalChat/CreatePersonalChat";
-import CreateGroupChat from "../CreateGroupChat/CreateGroupChat";
+import LoaderWrapper from "../../components/LoaderWrapper/LoaderWrapper";
+import Input from "../../components/FormComponents/Input/Input";
+import Icon from "../../components/Icon/Icon";
+import Modal from "../../components/Modal/Modal";
+import CreatePersonalChat from "../../components/CreatePersonalChat/CreatePersonalChat";
+import CreateGroupChat from "../../components/CreateGroupChat/CreateGroupChat";
 import {ICallback1} from "../../helpers/types.helper";
 
 interface IOwnProps {

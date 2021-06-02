@@ -1,10 +1,12 @@
 import { all } from 'redux-saga/effects';
 import authPageSaga from "../containers/Auth/sagas";
 import headerSaga from "../containers/Header/sagas";
+import chatsListNewSaga from "../containers/ChatsList/sagas";
 
 export default function* rootSaga() {
     yield all([
         authPageSaga(),
-        headerSaga()
+        headerSaga(),
+        chatsListNewSaga()
     ]);
 }

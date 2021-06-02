@@ -7,7 +7,7 @@ import LoaderWrapper from "../../components/LoaderWrapper/LoaderWrapper";
 import {ICurrentUser} from "../../api/auth/authModels";
 import authService from "../../api/auth/authService";
 import Header from "../Header/Header";
-import ChatsList from "../../components/ChatsList/ChatsList";
+import ChatsList from "../ChatsList/ChatsList";
 import styles from "./Home.module.sass";
 import Chat from "../../components/Chat/Chat";
 import {chatsListActions} from "../../reducers/chatsList/actions";
