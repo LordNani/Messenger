@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 import { all, call, put, takeEvery } from 'redux-saga/effects';
-import {loginRoutine, registerRoutine} from "./routines";
+import {loginRoutine, logoutRoutine, registerRoutine, removeCurrentUserRoutine} from "./routines";
 import authService from "../../api/auth/authService";
 import {ILoginRequest, IRegisterRequest} from "../../api/auth/authModels";
 import {PayloadAction} from "@reduxjs/toolkit";
@@ -28,9 +28,22 @@ function* registerSaga({ payload }: PayloadAction<IRegisterRequest>) {
     }
 }
 
+function* logoutSaga() {
+    try {
+        yield call(authService.logout);
+        yield put(logoutRoutine.success());
+        yield put(removeCurrentUserRoutine.fulfill());
+        history.push('/auth');
+    } catch (e) {
+        yield put(logoutRoutine.failure(e?.message));
+        toastr.success('Error', 'Unexpected error');
+    }
+}
+
 export default function* authPageSaga() {
     yield all([
         yield takeEvery(loginRoutine.TRIGGER, loginSaga),
-        yield takeEvery(registerRoutine.TRIGGER, registerSaga)
+        yield takeEvery(registerRoutine.TRIGGER, registerSaga),
+        yield takeEvery(logoutRoutine.TRIGGER, logoutSaga)
     ]);
 }

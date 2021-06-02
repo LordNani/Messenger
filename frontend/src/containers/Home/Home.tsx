@@ -208,14 +208,6 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         this.props.actions.updateSenderUsername(iChangeUsername);
     }
 
-    logout = async () => {
-        this.setState({loading: true});
-        await authService.logout();
-        this.props.actions.removeCurrentUser();
-        this.setState({loading: false});
-        this.props.history.push("/auth");
-    }
-
     loadChatsList = async () => {
         this.props.actions.removeChatsList();
         const list = await generalChatService.getChatsList();
@@ -319,9 +311,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                         />
                     </Modal>
                 )}
-                <Header
-                    logout={this.logout}
-                />
+                <Header />
                 <div className={styles.content}>
                     <ChatsList
                         chatsList={chatsList}

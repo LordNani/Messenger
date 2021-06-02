@@ -1,6 +1,12 @@
 import { combineReducers } from 'redux';
 import {reducerCreator} from "../../helpers/reducer.helper";
-import {loginRoutine, registerRoutine, removeCurrentUserRoutine, setCurrentUserRoutine} from "./routines";
+import {
+    loginRoutine,
+    logoutRoutine,
+    registerRoutine,
+    removeCurrentUserRoutine,
+    setCurrentUserRoutine
+} from "./routines";
 import {createReducer, PayloadAction} from "@reduxjs/toolkit";
 import {ICurrentUser} from "../../api/auth/authModels";
 import {editProfileRoutine} from "../Header/routines";
@@ -19,6 +25,7 @@ const initialStateData: IAuthPageStateData = {};
 const requests = combineReducers({
     login: reducerCreator([loginRoutine.TRIGGER]),
     register: reducerCreator([registerRoutine.TRIGGER]),
+    logout: reducerCreator([logoutRoutine.TRIGGER]),
 });
 
 const data = createReducer(initialStateData, {

@@ -4,40 +4,40 @@ import {ICurrentUser} from "../../api/auth/authModels";
 import Modal from "../../components/Modal/Modal";
 import ProfileEdit from "../../components/ProfileEdit/ProfileEdit";
 import PasswordChange from "../../components/PasswordChange/PasswordChange";
-import {ICallback1} from "../../helpers/types.helper";
+import {IAction, ICallback1} from "../../helpers/types.helper";
 import {IPasswordChange, IProfileEdit} from "../../api/user/userModels";
 import {IAppState} from "../../reducers";
 import {changePasswordRoutine, editProfileRoutine} from "./routines";
 import {connect} from "react-redux";
+import {logoutRoutine} from "../Auth/routines";
+import Button from "../../components/FormComponents/Button/Button";
 
 interface IPropsFromState {
     editProfileLoading: boolean;
     editProfileError: string | null;
     changePasswordLoading: boolean;
     changePasswordError: string | null;
+    logoutLoading: boolean;
     currentUser?: ICurrentUser;
 }
 
 interface IActions {
     editProfile: ICallback1<IProfileEdit>;
     changePassword: ICallback1<IPasswordChange>;
-}
-
-interface IOwnProps {
-    logout: () => Promise<void>;
+    logout: IAction;
 }
 
 interface IState {
     profileShown?: boolean;
 }
 
-class Header extends React.Component<IPropsFromState & IActions & IOwnProps, IState> {
+class Header extends React.Component<IPropsFromState & IActions, IState> {
     state = {} as IState;
 
     render() {
         const {
             logout, currentUser, editProfile, changePassword, editProfileError, editProfileLoading,
-            changePasswordLoading, changePasswordError
+            changePasswordLoading, changePasswordError, logoutLoading
         } = this.props;
         const {profileShown} = this.state;
 
@@ -70,7 +70,11 @@ class Header extends React.Component<IPropsFromState & IActions & IOwnProps, ISt
                         >
                             {currentUser?.fullName}
                         </span>
-                        <span className={styles.link} onClick={logout}>Logout</span>
+                        <Button
+                            onClick={logout}
+                            loading={logoutLoading}
+                            text="Logout"
+                        />
                     </div>
                 </div>
             </>
@@ -83,12 +87,14 @@ const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
     editProfileLoading: state.header.requests.editProfile.loading,
     changePasswordError: state.header.requests.changePassword.error,
     changePasswordLoading: state.header.requests.changePassword.loading,
+    logoutLoading: state.auth.requests.logout.loading,
     currentUser: state.auth.data.currentUser
 });
 
 const mapDispatchToProps: IActions = {
     editProfile: editProfileRoutine,
-    changePassword: changePasswordRoutine
+    changePassword: changePasswordRoutine,
+    logout: logoutRoutine
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header);
