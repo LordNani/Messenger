@@ -7,7 +7,7 @@ import {connect} from "react-redux";
 import LoaderWrapper from "../../components/LoaderWrapper/LoaderWrapper";
 import {ICurrentUser} from "../../api/auth/authModels";
 import authService from "../../api/auth/authService";
-import Header from "../../components/Header/Header";
+import Header from "../Header/Header";
 import ChatsList from "../../components/ChatsList/ChatsList";
 import styles from "./Home.module.sass";
 import Chat from "../../components/Chat/Chat";
@@ -304,18 +304,6 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         toastr.success('Success', 'Password successfully updated');
     }
 
-    handleEditProfile = async (request: IProfileEdit) => {
-        await userService.editProfile(request);
-        toastr.success('Success', 'Profile successfully updated');
-        const currentUser = this.props.currentUser;
-        if (currentUser) {
-            this.props.actions.setCurrentUser({
-                ...currentUser,
-                ...request,
-            });
-        }
-    }
-
     render() {
         if (!authService.isLoggedIn()) {
             return <Redirect to="/auth" />;
@@ -341,8 +329,6 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                 )}
                 <Header
                     logout={this.logout}
-                    currentUser={currentUser}
-                    editProfile={this.handleEditProfile}
                     changePassword={this.handleChangePassword}
                 />
                 <div className={styles.content}>

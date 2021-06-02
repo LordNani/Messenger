@@ -12,11 +12,8 @@ import {ICallback1} from "../../helpers/types.helper";
 interface IOwnProps {
     editProfile: ICallback1<IProfileEdit>;
     currentUser: ICurrentUser;
-}
-
-interface IState {
-    loading: boolean;
-    error?: string;
+    editProfileLoading: boolean;
+    editProfileError: string | null;
 }
 
 const validationSchema = Yup.object().shape({
@@ -30,33 +27,14 @@ const validationSchema = Yup.object().shape({
         .max(256, 'Too Long! Need to be less than 256 characters.'),
 });
 
-class ProfileEdit extends React.Component<IOwnProps, IState> {
-
-    state = {
-        loading: false,
-    } as IState;
-
-    handleEdit = async (values: any) => {
-        try {
-            this.setState({error: undefined});
-            this.setState({loading: true});
-            const {fullName, bio, picture} = values;
-            await this.props.editProfile({fullName, bio, picture});
-        } catch (e) {
-            this.setState({error: e.message});
-        } finally {
-            this.setState({loading: false});
-        }
-    }
-
+class ProfileEdit extends React.Component<IOwnProps> {
     render() {
-        const {loading, error} = this.state;
-        const {currentUser} = this.props;
+        const {currentUser, editProfileLoading, editProfileError, editProfile} = this.props;
 
         return (
             <div>
                 <Formik
-                    onSubmit={this.handleEdit}
+                    onSubmit={editProfile}
                     initialValues={{
                         fullName: currentUser.fullName,
                         bio: currentUser.bio || '',
@@ -76,8 +54,8 @@ class ProfileEdit extends React.Component<IOwnProps, IState> {
                                 <div className={styles.wrapperPicture}>
                                     <img className={styles.pictureStyle} src={values.picture} />
                                 </div>
-                                {error && (
-                                    <ErrorMessage text={error} />
+                                {editProfileError && (
+                                    <ErrorMessage text={editProfileError} />
                                 )}
 
                                 <Input
@@ -112,7 +90,7 @@ class ProfileEdit extends React.Component<IOwnProps, IState> {
                                         text="Update"
                                         disabled={!valid}
                                         submit
-                                        loading={loading}
+                                        loading={editProfileLoading}
                                     />
                                 </div>
                             </Form>
