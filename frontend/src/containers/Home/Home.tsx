@@ -253,16 +253,6 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         this.props.actions.updateChatInList(chat);
     }
 
-    createPersonalChat = async (targetId: string) => {
-        const chat = await personalChatService.create(targetId);
-        this.props.actions.addChatToList(chat);
-    }
-
-    createGroupChat = async (title: string) => {
-        const chat = await groupChatService.create(title);
-        this.props.actions.addChatToList(chat);
-    }
-
     render() {
         if (!authService.isLoggedIn()) {
             return <Redirect to="/auth" />;
@@ -278,8 +268,6 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                     <ChatsList
                         selectChat={this.selectChat}
                         selectedChatId={selectedChatId}
-                        createGroupChat={this.createGroupChat}
-                        createPersonalChat={this.createPersonalChat}
                     />
                     <Chat
                         chatsDetailsCached={chatDetailsCached}

@@ -10,28 +10,38 @@ import CreatePersonalChat from "../../components/CreatePersonalChat/CreatePerson
 import CreateGroupChat from "../../components/CreateGroupChat/CreateGroupChat";
 import {IAction, ICallback1} from "../../helpers/types.helper";
 import {IAppState} from "../../reducers";
-import {loadChatsListRoutine} from "./routines";
+import {
+    createGroupChatRoutine,
+    createPersonalChatRoutine,
+    loadChatsListRoutine,
+    setCreateChatModalShownRoutine
+} from "./routines";
 import {connect} from "react-redux";
 
 interface IPropsFromState {
     chatsList?: IChatDetails[];
     chatsListLoading: boolean;
+    createPersonalChatLoading: boolean;
+    createPersonalChatError: string | null;
+    createGroupChatLoading: boolean;
+    createGroupChatError: string | null;
+    createModalShown?: boolean;
 }
 
 interface IActions {
     loadChatsList: IAction;
+    createPersonalChat: ICallback1<string>;
+    createGroupChat: ICallback1<string>;
+    setCreateModalShown: ICallback1<boolean>;
 }
 
 interface IOwnProps {
     selectChat: (el: IChatDetails) => void;
     selectedChatId?: string;
-    createPersonalChat: ICallback1<string>;
-    createGroupChat: ICallback1<string>;
 }
 
 interface IState {
     filter: string;
-    modal?: boolean;
 }
 
 class ChatsList extends React.Component<IOwnProps & IPropsFromState & IActions, IState> {
@@ -46,24 +56,31 @@ class ChatsList extends React.Component<IOwnProps & IPropsFromState & IActions, 
 
     render() {
         const {
-            chatsList, chatsListLoading, selectChat, selectedChatId, createPersonalChat, createGroupChat
+            chatsList, chatsListLoading, selectChat, selectedChatId, createPersonalChat, createGroupChat,
+            createPersonalChatError, createPersonalChatLoading, createGroupChatError, createGroupChatLoading,
+            createModalShown, setCreateModalShown
         } = this.props;
-        const {filter, modal} = this.state;
+
+        const {filter} = this.state;
         const filteredChatsList = chatsList
             ?.filter(chat => chat.title.toLowerCase().includes(filter.toLowerCase()));
 
         return (
             <div className={styles.wrapper}>
-                {modal && (
-                    <Modal close={() => this.setState({modal: false})}>
+                {createModalShown && (
+                    <Modal close={() => setCreateModalShown(false)}>
                         <div className={styles.modalUsername}>
                             Create new chat...
                         </div>
                         <CreatePersonalChat
                             createPersonalChat={createPersonalChat}
+                            createPersonalChatError={createPersonalChatError}
+                            createPersonalChatLoading={createPersonalChatLoading}
                         />
                         <CreateGroupChat
                             createGroupChat={createGroupChat}
+                            createGroupChatLoading={createGroupChatLoading}
+                            createGroupChatError={createGroupChatError}
                         />
                     </Modal>
                 )}
@@ -95,7 +112,7 @@ class ChatsList extends React.Component<IOwnProps & IPropsFromState & IActions, 
                 <div className={styles.addWrapper}>
                     <Icon
                         iconName="fas fa-plus"
-                        onClick={() => this.setState({modal: true})}
+                        onClick={() => setCreateModalShown(true)}
                     />
                 </div>
             </div>
@@ -105,11 +122,19 @@ class ChatsList extends React.Component<IOwnProps & IPropsFromState & IActions, 
 
 const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
     chatsList: state.chatsListNew.data.chatsList,
-    chatsListLoading: state.chatsListNew.requests.loadChatsList.loading
+    chatsListLoading: state.chatsListNew.requests.loadChatsList.loading,
+    createPersonalChatLoading: state.chatsListNew.requests.createPersonalChat.loading,
+    createPersonalChatError: state.chatsListNew.requests.createPersonalChat.error,
+    createGroupChatLoading: state.chatsListNew.requests.createGroupChat.loading,
+    createGroupChatError: state.chatsListNew.requests.createGroupChat.error,
+    createModalShown: state.chatsListNew.data.createModalShown
 });
 
 const mapDispatchToProps: IActions = {
-    loadChatsList: loadChatsListRoutine
+    loadChatsList: loadChatsListRoutine,
+    createGroupChat: createGroupChatRoutine,
+    createPersonalChat: createPersonalChatRoutine,
+    setCreateModalShown: setCreateChatModalShownRoutine.fulfill
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChatsList);
