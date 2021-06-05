@@ -12,9 +12,9 @@ import PersonalChatDetails from "../../components/PersonalChatDetails/PersonalCh
 import GroupChatDetails from "../../components/GroupChatDetails/GroupChatDetails";
 import {IAppState} from "../../reducers";
 import {connect} from "react-redux";
-import {ICallback1} from "../../helpers/types.helper";
+import {IAction, ICallback1} from "../../helpers/types.helper";
 import {loadFullChatRoutine} from "./routines";
-import {updateChatRoutine} from "../ChatsList/routines";
+import {deleteChatInListRoutine, removeSelectedChatIdRoutine, updateChatInListRoutine} from "../ChatsList/routines";
 
 interface IPropsFromState {
     currentUser?: ICurrentUser;
@@ -25,11 +25,12 @@ interface IPropsFromState {
 interface IActions {
     loadFullChat: ICallback1<string>;
     updateChatInList: ICallback1<IChatDetails>;
+    removeSelectedId: IAction;
+    deleteChatInList: ICallback1<string>;
 }
 
 interface IOwnProps {
     sendMessage: (text: string) => Promise<void>;
-    deleteChatFromList: (chatId: string) => void;
 }
 
 interface IState {
@@ -56,9 +57,14 @@ class Chat extends React.Component<IPropsFromState & IActions & IOwnProps, IStat
         }
     }
 
+    deleteHandler = (chatId: string) => {
+        this.props.removeSelectedId();
+        this.props.deleteChatInList(chatId);
+    }
+
     deleteChatFromList = async (chatId: string) => {
         this.setState({modalShown: false});
-        this.props.deleteChatFromList(chatId);
+        this.deleteHandler(chatId);
     }
 
     render() {
@@ -115,7 +121,9 @@ const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
 
 const mapDispatchToProps: IActions = {
     loadFullChat: loadFullChatRoutine,
-    updateChatInList: updateChatRoutine.fulfill
+    updateChatInList: updateChatInListRoutine.fulfill,
+    removeSelectedId: removeSelectedChatIdRoutine.fulfill,
+    deleteChatInList: deleteChatInListRoutine.fulfill
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Chat);

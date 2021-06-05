@@ -9,7 +9,7 @@ import {
 import {createReducer, PayloadAction} from "@reduxjs/toolkit";
 import {IChatCache} from "../../reducers/chatsList/reducer";
 import {IChatDetails} from "../../api/chat/general/generalChatModels";
-import {ISetSeenChatRoutinePayload, setSeenChatRoutine, updateChatRoutine} from "../ChatsList/routines";
+import {ISetSeenChatRoutinePayload, setSeenChatRoutine, updateChatInListRoutine} from "../ChatsList/routines";
 
 export interface IChatState {
     requests: any;
@@ -44,7 +44,7 @@ const data = createReducer(initialStateData, {
             chat.details.seenAt = payload.seen;
         }
     },
-    [updateChatRoutine.FULFILL]: (state, {payload}: PayloadAction<IChatDetails>) => {
+    [updateChatInListRoutine.FULFILL]: (state, {payload}: PayloadAction<IChatDetails>) => {
         state.chatsDetailsCached = state.chatsDetailsCached?.map(c => c.details.id === payload.id
             ? {
                 ...c,

@@ -2,11 +2,11 @@ import {combineReducers} from 'redux';
 import {reducerCreator} from "../../helpers/reducer.helper";
 import {
     addChatToListIfAbsentRoutine, createGroupChatRoutine,
-    createPersonalChatRoutine, ISetSeenChatRoutinePayload,
+    createPersonalChatRoutine, deleteChatInListRoutine, ISetSeenChatRoutinePayload,
     loadChatsListRoutine,
     removeChatsListRoutine, removeSelectedChatIdRoutine, selectChatIdRoutine,
     setAllSeenAtRoutine,
-    setChatsListRoutine, setCreateChatModalShownRoutine, setSeenChatRoutine, updateChatRoutine
+    setChatsListRoutine, setCreateChatModalShownRoutine, setSeenChatRoutine, updateChatInListRoutine
 } from "./routines";
 import {IChatDetails, ILastSeen} from "../../api/chat/general/generalChatModels";
 import {createReducer, PayloadAction} from "@reduxjs/toolkit";
@@ -66,12 +66,15 @@ const data = createReducer(initialStateData, {
             chat.seenAt = payload.seen;
         }
     },
-    [updateChatRoutine.FULFILL]: (state, {payload}: PayloadAction<IChatDetails>) => {
+    [updateChatInListRoutine.FULFILL]: (state, {payload}: PayloadAction<IChatDetails>) => {
         state.chatsList = state.chatsList?.map(c => c.id === payload.id
             ? {...payload, seenAt: c.seenAt}
             : c
         );
     },
+    [deleteChatInListRoutine.FULFILL]: (state, {payload}: PayloadAction<string>) => {
+        state.chatsList = state.chatsList?.filter(c => c.id !== payload);
+    }
 });
 
 const chatsListNewReducer = combineReducers({

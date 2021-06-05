@@ -15,7 +15,8 @@ export const setCreateChatModalShownRoutine = createLocalRoutine<boolean>('SET_C
 export const selectChatIdRoutine = createLocalRoutine<string>('SELECT_CHAT_ID');
 export const removeSelectedChatIdRoutine = createLocalRoutine('REMOVE_SELECTED_CHAT_ID');
 export const setSeenChatRoutine = createLocalRoutine<ISetSeenChatRoutinePayload>('SET_SEEN_CHAT');
-export const updateChatRoutine = createLocalRoutine<IChatDetails>('UPDATE_CHAT');
+export const updateChatInListRoutine = createLocalRoutine<IChatDetails>('UPDATE_CHAT_IN_LIST');
+export const deleteChatInListRoutine = createLocalRoutine<string>('DELETE_CHAT_IN_LIST');
 
 export interface ISetSeenChatRoutinePayload {
     chatId: string;
