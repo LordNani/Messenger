@@ -2,6 +2,7 @@ import { combineReducers } from 'redux';
 import {reducerCreator} from "../../helpers/reducer.helper";
 import {loadFullChatRoutine} from "./routines";
 import {createReducer} from "@reduxjs/toolkit";
+import {IChatCache} from "../../reducers/chatsList/reducer";
 
 export interface IChatState {
     requests: any;
@@ -9,9 +10,12 @@ export interface IChatState {
 }
 
 export interface IChatStateData {
+    chatsDetailsCached: IChatCache[];
 }
 
-const initialStateData: IChatStateData = {};
+const initialStateData: IChatStateData = {
+    chatsDetailsCached: []
+};
 
 const requests = combineReducers({
     loadFullChat: reducerCreator([loadFullChatRoutine.TRIGGER]),

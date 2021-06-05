@@ -248,7 +248,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
             return <Redirect to="/auth" />;
         }
 
-        const {currentUser, selectedChatId, chatDetailsCached} = this.props;
+        const {currentUser, selectedChatId} = this.props;
         const {loading} = this.state;
 
         return (
@@ -257,11 +257,8 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                 <div className={styles.content}>
                     <ChatsList />
                     <Chat
-                        chatsDetailsCached={chatDetailsCached}
                         loadChatDetails={this.loadChatDetails}
                         loadChatMessages={this.loadChatMessages}
-                        selectedChatId={selectedChatId}
-                        currentUser={currentUser}
                         sendMessage={this.sendMessage}
                         deleteChatFromList={this.deleteChatFromList}
                         updateChatInList={this.updateChatInList}

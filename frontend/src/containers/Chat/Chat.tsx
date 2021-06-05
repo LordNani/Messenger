@@ -10,13 +10,21 @@ import Modal from "../../components/Modal/Modal";
 import {ChatTypeEnum, IChatDetails} from "../../api/chat/general/generalChatModels";
 import PersonalChatDetails from "../../components/PersonalChatDetails/PersonalChatDetails";
 import GroupChatDetails from "../../components/GroupChatDetails/GroupChatDetails";
+import {IAppState} from "../../reducers";
+import {connect} from "react-redux";
+
+interface IPropsFromState {
+    currentUser?: ICurrentUser;
+    chatsDetailsCached: IChatCache[];
+    selectedChatId?: string;
+}
+
+interface IActions {
+}
 
 interface IOwnProps {
-    chatsDetailsCached: IChatCache[];
     loadChatDetails: (id: string) => Promise<void>;
     loadChatMessages: (id: string) => Promise<void>;
-    selectedChatId?: string;
-    currentUser?: ICurrentUser;
     sendMessage: (text: string) => Promise<void>;
     deleteChatFromList: (chatId: string) => void;
     readChat: (chatId: string) => Promise<void>;
@@ -27,13 +35,17 @@ interface IState {
     modalShown: boolean;
 }
 
-class Chat extends React.Component<IOwnProps, IState> {
+class Chat extends React.Component<IPropsFromState & IActions & IOwnProps, IState> {
 
     state = {
         modalShown: false,
     } as IState;
 
-    async componentDidUpdate(prevProps: Readonly<IOwnProps>, prevState: Readonly<{}>, snapshot?: any) {
+    async componentDidUpdate(
+        prevProps: Readonly<IPropsFromState & IActions & IOwnProps>,
+        prevState: Readonly<{}>,
+        snapshot?: any
+    ) {
         const {selectedChatId, chatsDetailsCached} = this.props;
         if (
             selectedChatId &&
@@ -98,4 +110,12 @@ class Chat extends React.Component<IOwnProps, IState> {
     }
 }
 
-export default Chat;
+const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
+    currentUser: state.auth.data.currentUser,
+    chatsDetailsCached: state.chat.data.chatsDetailsCached,
+    selectedChatId: state.chatsListNew.data.selectedChatId
+});
+
+const mapDispatchToProps: IActions = {};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Chat);
