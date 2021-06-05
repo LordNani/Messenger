@@ -2,13 +2,24 @@
 // @ts-nocheck
 import {all, call, put, takeEvery, select} from 'redux-saga/effects';
 import {PayloadAction} from "@reduxjs/toolkit";
-import {appendDetailsCachedRoutine, loadFullChatRoutine, setChatMessagesRoutine} from "./routines";
+import {
+    appendDetailsCachedRoutine, appendLoadingMessageRoutine,
+    ISendMessageRoutinePayload,
+    loadFullChatRoutine, sendMessageRoutine,
+    setChatMessagesRoutine, setMessageLoadedRoutine
+} from "./routines";
 import {IAppState} from "../../reducers";
 import {IChatDetails} from "../../api/chat/general/generalChatModels";
 import messageService from "../../api/message/messageService";
 import generalChatService from "../../api/chat/general/generalChatService";
 import {toastr} from "react-redux-toastr";
-import {setSeenChatRoutine} from "../ChatsList/routines";
+import {
+    setFirstChatInListRoutine,
+    setSeenChatRoutine,
+    updateChatLastMessageRoutine
+} from "../ChatsList/routines";
+import {v4 as uuid} from "uuid";
+import {IMessage} from "../../api/message/messageModels";
 
 function* loadFullChatSaga({payload}: PayloadAction<string>) {
     try {
@@ -29,8 +40,33 @@ function* loadFullChatSaga({payload}: PayloadAction<string>) {
     }
 }
 
+function* sendMessageSaga({payload}: PayloadAction<ISendMessageRoutinePayload>) {
+    try {
+        const id = uuid();
+        yield put(appendLoadingMessageRoutine.fulfill({
+            chatId: payload.chatId,
+            message: {id, text: payload.text}
+        }));
+        const message: IMessage = yield call(messageService.sendMessage, payload.chatId, payload.text, id);
+        yield put(setMessageLoadedRoutine.fulfill({
+            chatId: payload.chatId,
+            loadingId: id,
+            message
+        }));
+        yield put(setFirstChatInListRoutine.fulfill(payload.chatId));
+        yield put(updateChatLastMessageRoutine.fulfill({
+            chatId: payload.chatId,
+            lastMessage: {text: payload.text, createdAt: message.createdAt}
+        }));
+        yield put(sendMessageRoutine.success());
+    } catch (e) {
+        yield put(sendMessageRoutine.failure(e?.message));
+    }
+}
+
 export default function* chatSaga() {
     yield all([
-        takeEvery(loadFullChatRoutine.TRIGGER, loadFullChatSaga)
+        takeEvery(loadFullChatRoutine.TRIGGER, loadFullChatSaga),
+        takeEvery(sendMessageRoutine.TRIGGER, sendMessageSaga)
     ]);
 }

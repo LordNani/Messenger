@@ -1,15 +1,20 @@
 import {combineReducers} from 'redux';
 import {reducerCreator} from "../../helpers/reducer.helper";
 import {
-    appendDetailsCachedRoutine,
-    ISetChatMessagesRoutinePayload,
+    appendDetailsCachedRoutine, appendLoadingMessageRoutine, IAppendLoadingMessageRoutinePayload,
+    ISetChatMessagesRoutinePayload, ISetMessageLoadedRoutinePayload,
     loadFullChatRoutine,
-    setChatMessagesRoutine
+    setChatMessagesRoutine, setMessageLoadedRoutine
 } from "./routines";
 import {createReducer, PayloadAction} from "@reduxjs/toolkit";
 import {IChatCache} from "../../reducers/chatsList/reducer";
 import {IChatDetails} from "../../api/chat/general/generalChatModels";
-import {ISetSeenChatRoutinePayload, setSeenChatRoutine, updateChatInListRoutine} from "../ChatsList/routines";
+import {
+    ISetSeenChatRoutinePayload, IUpdateChatLastMessageRoutinePayload, removeChatsListRoutine,
+    setSeenChatRoutine,
+    updateChatInListRoutine,
+    updateChatLastMessageRoutine
+} from "../ChatsList/routines";
 
 export interface IChatState {
     requests: any;
@@ -29,6 +34,9 @@ const requests = combineReducers({
 });
 
 const data = createReducer(initialStateData, {
+    [removeChatsListRoutine.FULFILL]: state => {
+        state.chatsDetailsCached = [];
+    },
     [appendDetailsCachedRoutine.FULFILL]: (state, {payload}: PayloadAction<IChatDetails>) => {
         state.chatsDetailsCached.push({details: payload});
     },
@@ -55,6 +63,35 @@ const data = createReducer(initialStateData, {
             }
             : c
         );
+    },
+    [updateChatLastMessageRoutine.FULFILL]: (state, {payload}: PayloadAction<IUpdateChatLastMessageRoutinePayload>) => {
+        state.chatsDetailsCached = state.chatsDetailsCached?.map(c => c.details.id === payload.chatId
+            ? {
+                ...c,
+                details: {
+                    ...c.details,
+                    seenAt: payload.lastMessage.createdAt,
+                    lastMessage: payload.lastMessage
+                }
+            }
+            : c
+        );
+    },
+    [appendLoadingMessageRoutine.FULFILL]: (state, {payload}: PayloadAction<IAppendLoadingMessageRoutinePayload>) => {
+        const chat = state.chatsDetailsCached.find(c => c.details.id === payload.chatId);
+        if (chat) {
+            chat.messages?.push({loading: payload.message});
+        }
+    },
+    [setMessageLoadedRoutine.FULFILL]: (state, {payload}: PayloadAction<ISetMessageLoadedRoutinePayload>) => {
+        const chat = state.chatsDetailsCached.find(c => c.details.id === payload.chatId);
+        if (chat) {
+            const message = chat.messages?.find(m => m.loading?.id === payload.loadingId);
+            if (message) {
+                message.info = payload.message;
+                message.loading = undefined;
+            }
+        }
     },
 });
 

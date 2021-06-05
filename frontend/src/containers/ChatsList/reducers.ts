@@ -1,15 +1,25 @@
 import {combineReducers} from 'redux';
 import {reducerCreator} from "../../helpers/reducer.helper";
 import {
-    addChatToListIfAbsentRoutine, createGroupChatRoutine,
-    createPersonalChatRoutine, deleteChatInListRoutine, ISetSeenChatRoutinePayload,
+    addChatToListIfAbsentRoutine,
+    createGroupChatRoutine,
+    createPersonalChatRoutine,
+    deleteChatInListRoutine,
+    ISetSeenChatRoutinePayload, IUpdateChatLastMessageRoutinePayload,
     loadChatsListRoutine,
-    removeChatsListRoutine, removeSelectedChatIdRoutine, selectChatIdRoutine,
+    removeChatsListRoutine,
+    removeSelectedChatIdRoutine,
+    selectChatIdRoutine,
     setAllSeenAtRoutine,
-    setChatsListRoutine, setCreateChatModalShownRoutine, setSeenChatRoutine, updateChatInListRoutine
+    setChatsListRoutine,
+    setCreateChatModalShownRoutine,
+    setFirstChatInListRoutine,
+    setSeenChatRoutine,
+    updateChatInListRoutine, updateChatLastMessageRoutine
 } from "./routines";
 import {IChatDetails, ILastSeen} from "../../api/chat/general/generalChatModels";
 import {createReducer, PayloadAction} from "@reduxjs/toolkit";
+import {ILastMessage} from "../../api/message/messageModels";
 
 export interface IChatsListNewState {
     requests: any;
@@ -33,7 +43,7 @@ const requests = combineReducers({
 const data = createReducer(initialStateData, {
     [removeChatsListRoutine.FULFILL]: state => {
         state.chatsList = undefined;
-        // TODO remove selected id and cached
+        state.selectedChatId = undefined;
     },
     [setChatsListRoutine.FULFILL]: (state, {payload}: PayloadAction<IChatDetails[]>) => {
         state.chatsList = payload;
@@ -72,8 +82,20 @@ const data = createReducer(initialStateData, {
             : c
         );
     },
+    [updateChatLastMessageRoutine.FULFILL]: (state, {payload}: PayloadAction<IUpdateChatLastMessageRoutinePayload>) => {
+        state.chatsList = state.chatsList?.map(c => c.id === payload.chatId
+            ? {...c, seenAt: payload.lastMessage.createdAt, lastMessage: payload.lastMessage}
+            : c
+        );
+    },
     [deleteChatInListRoutine.FULFILL]: (state, {payload}: PayloadAction<string>) => {
         state.chatsList = state.chatsList?.filter(c => c.id !== payload);
+    },
+    [setFirstChatInListRoutine.FULFILL]: (state, {payload}: PayloadAction<string>) => {
+        state.chatsList = [
+            ...([state.chatsList?.find(c => c.id === payload)] || []),
+            ...(state.chatsList?.filter(c => c.id !== payload) || [])
+        ] as IChatDetails[];
     }
 });
 

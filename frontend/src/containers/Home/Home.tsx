@@ -194,27 +194,6 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         this.props.actions.updateSenderUsername(iChangeUsername);
     }
 
-    sendMessage = async (text: string) => {
-        const {selectedChatId} = this.props;
-        const chat = this.props.chatsList?.find(c => c.id === selectedChatId);
-
-        if (selectedChatId) {
-            const id = uuid();
-            this.props.actions.appendLoadingMessage(selectedChatId, {text, id});
-            const message = await messageService.sendMessage(selectedChatId, text, id);
-            this.props.actions.setMessageLoaded(selectedChatId, id, message);
-            const seenAt = await generalChatService.readChat(selectedChatId);
-            if (chat) {
-                this.props.actions.setFirstChatInList(chat.id);
-                this.props.actions.updateChatInList({
-                    ...chat,
-                    seenAt,
-                    lastMessage: {text, createdAt: message.createdAt},
-                });
-            }
-        }
-    }
-
     render() {
         if (!authService.isLoggedIn()) {
             return <Redirect to="/auth" />;
@@ -228,9 +207,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                 <Header />
                 <div className={styles.content}>
                     <ChatsList />
-                    <Chat
-                        sendMessage={this.sendMessage}
-                    />
+                    <Chat />
                 </div>
             </LoaderWrapper>
         );

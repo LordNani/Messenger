@@ -13,7 +13,7 @@ import GroupChatDetails from "../../components/GroupChatDetails/GroupChatDetails
 import {IAppState} from "../../reducers";
 import {connect} from "react-redux";
 import {IAction, ICallback1} from "../../helpers/types.helper";
-import {loadFullChatRoutine} from "./routines";
+import {ISendMessageRoutinePayload, loadFullChatRoutine, sendMessageRoutine} from "./routines";
 import {deleteChatInListRoutine, removeSelectedChatIdRoutine, updateChatInListRoutine} from "../ChatsList/routines";
 
 interface IPropsFromState {
@@ -27,24 +27,21 @@ interface IActions {
     updateChatInList: ICallback1<IChatDetails>;
     removeSelectedId: IAction;
     deleteChatInList: ICallback1<string>;
-}
-
-interface IOwnProps {
-    sendMessage: (text: string) => Promise<void>;
+    sendMessage: ICallback1<ISendMessageRoutinePayload>;
 }
 
 interface IState {
     modalShown: boolean;
 }
 
-class Chat extends React.Component<IPropsFromState & IActions & IOwnProps, IState> {
+class Chat extends React.Component<IPropsFromState & IActions, IState> {
 
     state = {
         modalShown: false,
     } as IState;
 
     async componentDidUpdate(
-        prevProps: Readonly<IPropsFromState & IActions & IOwnProps>,
+        prevProps: Readonly<IPropsFromState & IActions>,
         prevState: Readonly<{}>,
         snapshot?: any
     ) {
@@ -107,7 +104,9 @@ class Chat extends React.Component<IPropsFromState & IActions & IOwnProps, IStat
                     chatInfo={chatInfo}
                     currentUser={currentUser}
                 />
-                <ChatSender sendMessage={sendMessage}/>
+                <ChatSender
+                    sendMessage={text => selectedChatId && sendMessage({chatId: selectedChatId, text})}
+                />
             </div>
         );
     }
@@ -123,7 +122,8 @@ const mapDispatchToProps: IActions = {
     loadFullChat: loadFullChatRoutine,
     updateChatInList: updateChatInListRoutine.fulfill,
     removeSelectedId: removeSelectedChatIdRoutine.fulfill,
-    deleteChatInList: deleteChatInListRoutine.fulfill
+    deleteChatInList: deleteChatInListRoutine.fulfill,
+    sendMessage: sendMessageRoutine
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Chat);
