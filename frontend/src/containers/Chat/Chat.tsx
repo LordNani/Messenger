@@ -12,6 +12,8 @@ import PersonalChatDetails from "../../components/PersonalChatDetails/PersonalCh
 import GroupChatDetails from "../../components/GroupChatDetails/GroupChatDetails";
 import {IAppState} from "../../reducers";
 import {connect} from "react-redux";
+import {ICallback1} from "../../helpers/types.helper";
+import {loadFullChatRoutine} from "./routines";
 
 interface IPropsFromState {
     currentUser?: ICurrentUser;
@@ -20,14 +22,12 @@ interface IPropsFromState {
 }
 
 interface IActions {
+    loadFullChat: ICallback1<string>;
 }
 
 interface IOwnProps {
-    loadChatDetails: (id: string) => Promise<void>;
-    loadChatMessages: (id: string) => Promise<void>;
     sendMessage: (text: string) => Promise<void>;
     deleteChatFromList: (chatId: string) => void;
-    readChat: (chatId: string) => Promise<void>;
     updateChatInList: (chat: IChatDetails) => void;
 }
 
@@ -46,16 +46,12 @@ class Chat extends React.Component<IPropsFromState & IActions & IOwnProps, IStat
         prevState: Readonly<{}>,
         snapshot?: any
     ) {
-        const {selectedChatId, chatsDetailsCached} = this.props;
+        const {selectedChatId} = this.props;
         if (
             selectedChatId &&
             prevProps.selectedChatId !== selectedChatId
         ) {
-            if (!chatsDetailsCached.find(c => c.details.id === selectedChatId)) {
-                await this.props.loadChatDetails(selectedChatId);
-                await this.props.loadChatMessages(selectedChatId);
-            }
-            await this.props.readChat(selectedChatId);
+            this.props.loadFullChat(selectedChatId);
         }
     }
 
@@ -116,6 +112,8 @@ const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
     selectedChatId: state.chatsListNew.data.selectedChatId
 });
 
-const mapDispatchToProps: IActions = {};
+const mapDispatchToProps: IActions = {
+    loadFullChat: loadFullChatRoutine
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Chat);

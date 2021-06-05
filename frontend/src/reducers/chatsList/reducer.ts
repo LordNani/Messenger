@@ -1,11 +1,9 @@
 import {ChatsListActions} from "./actions";
 import {IChatDetails} from "../../api/chat/general/generalChatModels";
 import {
-    APPEND_CHAT_DETAILS_CACHED,
     APPEND_LOADING_MESSAGE,
     APPEND_READY_MESSAGE,
     REMOVE_CHAT_FROM_LIST,
-    SET_CHAT_MESSAGES,
     SET_FIRST_CHAT_IN_LIST,
     SET_MESSAGE_LOADED,
     SET_SEEN_CHAT,
@@ -94,23 +92,6 @@ export const authReducer = (
             return {
                 ...state,
                 selectedId: action.payload,
-            };
-        case APPEND_CHAT_DETAILS_CACHED:
-            return {
-                ...state,
-                chatsDetailsCached: [...state.chatsDetailsCached, {details: action.payload}],
-            };
-        case SET_CHAT_MESSAGES:
-            return {
-                ...state,
-                chatsDetailsCached: state.chatsDetailsCached.map(
-                    chat => chat.details.id === action.payload.chatId
-                        ? {
-                            ...chat,
-                            messages: action.payload.messages.map(m => ({info: m}))
-                        }
-                        : chat
-                ),
             };
         case APPEND_LOADING_MESSAGE:
             return {

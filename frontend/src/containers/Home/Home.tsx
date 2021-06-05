@@ -34,8 +34,6 @@ interface IPropsFromDispatch {
         setFirstChatInList: typeof chatsListActions.setFirstChatInList;
         removeChatFromList: typeof chatsListActions.removeChatFromList;
         removeSelected: typeof chatsListActions.removeSelected;
-        appendDetailsCached: typeof chatsListActions.appendDetailsCached;
-        setChatMessages: typeof chatsListActions.setChatMessages;
         appendLoadingMessage: typeof chatsListActions.appendLoadingMessage;
         setMessageLoaded: typeof chatsListActions.setMessageLoaded;
         appendReadyMessage: typeof chatsListActions.appendReadyMessage,
@@ -196,23 +194,6 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         this.props.actions.updateSenderUsername(iChangeUsername);
     }
 
-    readChat = async (chatId: string) => {
-        const seen = await generalChatService.readChat(chatId);
-        this.props.actions.setSeenChat(chatId, seen);
-    }
-
-    loadChatDetails = async (id: string) => {
-        const chat = this.props.chatsList?.find(c => c.id === id);
-        if (chat) {
-            this.props.actions.appendDetailsCached(chat);
-        }
-    }
-
-    loadChatMessages = async (chatId: string) => {
-        const messages = await messageService.getMessagesByChatId(chatId);
-        this.props.actions.setChatMessages(chatId, messages);
-    }
-
     sendMessage = async (text: string) => {
         const {selectedChatId} = this.props;
         const chat = this.props.chatsList?.find(c => c.id === selectedChatId);
@@ -248,7 +229,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
             return <Redirect to="/auth" />;
         }
 
-        const {currentUser, selectedChatId} = this.props;
+        const {currentUser} = this.props;
         const {loading} = this.state;
 
         return (
@@ -257,12 +238,9 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                 <div className={styles.content}>
                     <ChatsList />
                     <Chat
-                        loadChatDetails={this.loadChatDetails}
-                        loadChatMessages={this.loadChatMessages}
                         sendMessage={this.sendMessage}
                         deleteChatFromList={this.deleteChatFromList}
                         updateChatInList={this.updateChatInList}
-                        readChat={this.readChat}
                     />
                 </div>
             </LoaderWrapper>
@@ -288,8 +266,6 @@ const mapDispatchToProps = (dispatch: any) => ({
                 setFirstChatInList: chatsListActions.setFirstChatInList,
                 updateChatInList: chatsListActions.updateChatInList,
                 removeSelected: chatsListActions.removeSelected,
-                appendDetailsCached: chatsListActions.appendDetailsCached,
-                setChatMessages: chatsListActions.setChatMessages,
                 appendLoadingMessage: chatsListActions.appendLoadingMessage,
                 setMessageLoaded: chatsListActions.setMessageLoaded,
                 appendReadyMessage: chatsListActions.appendReadyMessage,

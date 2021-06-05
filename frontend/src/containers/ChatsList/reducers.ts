@@ -10,6 +10,7 @@ import {
 } from "./routines";
 import {IChatDetails, ILastSeen} from "../../api/chat/general/generalChatModels";
 import {createReducer, PayloadAction} from "@reduxjs/toolkit";
+import {ISetSeenChatRoutinePayload, setSeenChatRoutine} from "../Chat/routines";
 
 export interface IChatsListNewState {
     requests: any;
@@ -59,7 +60,13 @@ const data = createReducer(initialStateData, {
     },
     [removeSelectedChatIdRoutine.FULFILL]: state => {
         state.selectedChatId = undefined;
-    }
+    },
+    [setSeenChatRoutine.FULFILL]: (state, {payload}: PayloadAction<ISetSeenChatRoutinePayload>) => {
+        const chat = state.chatsList?.find(c => c.id === payload.chatId);
+        if (chat) {
+            chat.seenAt = payload.seen;
+        }
+    },
 });
 
 const chatsListNewReducer = combineReducers({
