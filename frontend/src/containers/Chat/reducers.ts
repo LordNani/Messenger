@@ -1,4 +1,4 @@
-import { combineReducers } from 'redux';
+import {combineReducers} from 'redux';
 import {reducerCreator} from "../../helpers/reducer.helper";
 import {
     appendDetailsCachedRoutine,
@@ -9,7 +9,7 @@ import {
 import {createReducer, PayloadAction} from "@reduxjs/toolkit";
 import {IChatCache} from "../../reducers/chatsList/reducer";
 import {IChatDetails} from "../../api/chat/general/generalChatModels";
-import {ISetSeenChatRoutinePayload, setSeenChatRoutine} from "../ChatsList/routines";
+import {ISetSeenChatRoutinePayload, setSeenChatRoutine, updateChatRoutine} from "../ChatsList/routines";
 
 export interface IChatState {
     requests: any;
@@ -43,6 +43,18 @@ const data = createReducer(initialStateData, {
         if (chat) {
             chat.details.seenAt = payload.seen;
         }
+    },
+    [updateChatRoutine.FULFILL]: (state, {payload}: PayloadAction<IChatDetails>) => {
+        state.chatsDetailsCached = state.chatsDetailsCached?.map(c => c.details.id === payload.id
+            ? {
+                ...c,
+                details: {
+                    ...payload,
+                    seenAt: c.details.seenAt
+                }
+            }
+            : c
+        );
     },
 });
 

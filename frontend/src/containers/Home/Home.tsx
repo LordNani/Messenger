@@ -220,10 +220,6 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         this.props.actions.removeChatFromList(chatId);
     }
 
-    updateChatInList = (chat: IChatDetails) => {
-        this.props.actions.updateChatInList(chat);
-    }
-
     render() {
         if (!authService.isLoggedIn()) {
             return <Redirect to="/auth" />;
@@ -240,7 +236,6 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                     <Chat
                         sendMessage={this.sendMessage}
                         deleteChatFromList={this.deleteChatFromList}
-                        updateChatInList={this.updateChatInList}
                     />
                 </div>
             </LoaderWrapper>

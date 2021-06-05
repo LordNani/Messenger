@@ -1,4 +1,5 @@
 import {createRoutine} from "redux-saga-routines";
+import {IChatDetails} from "../../api/chat/general/generalChatModels";
 
 const createLocalRoutine = <T extends unknown>(actionName: string) =>
     createRoutine<T>(`CHATS_LIST:${actionName}`);
@@ -14,6 +15,7 @@ export const setCreateChatModalShownRoutine = createLocalRoutine<boolean>('SET_C
 export const selectChatIdRoutine = createLocalRoutine<string>('SELECT_CHAT_ID');
 export const removeSelectedChatIdRoutine = createLocalRoutine('REMOVE_SELECTED_CHAT_ID');
 export const setSeenChatRoutine = createLocalRoutine<ISetSeenChatRoutinePayload>('SET_SEEN_CHAT');
+export const updateChatRoutine = createLocalRoutine<IChatDetails>('UPDATE_CHAT');
 
 export interface ISetSeenChatRoutinePayload {
     chatId: string;

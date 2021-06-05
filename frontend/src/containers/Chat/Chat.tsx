@@ -14,6 +14,7 @@ import {IAppState} from "../../reducers";
 import {connect} from "react-redux";
 import {ICallback1} from "../../helpers/types.helper";
 import {loadFullChatRoutine} from "./routines";
+import {updateChatRoutine} from "../ChatsList/routines";
 
 interface IPropsFromState {
     currentUser?: ICurrentUser;
@@ -23,12 +24,12 @@ interface IPropsFromState {
 
 interface IActions {
     loadFullChat: ICallback1<string>;
+    updateChatInList: ICallback1<IChatDetails>;
 }
 
 interface IOwnProps {
     sendMessage: (text: string) => Promise<void>;
     deleteChatFromList: (chatId: string) => void;
-    updateChatInList: (chat: IChatDetails) => void;
 }
 
 interface IState {
@@ -113,7 +114,8 @@ const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
 });
 
 const mapDispatchToProps: IActions = {
-    loadFullChat: loadFullChatRoutine
+    loadFullChat: loadFullChatRoutine,
+    updateChatInList: updateChatRoutine.fulfill
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Chat);
