@@ -58,6 +58,8 @@ function* sendMessageSaga({payload}: PayloadAction<ISendMessageRoutinePayload>) 
             chatId: payload.chatId,
             lastMessage: {text: payload.text, createdAt: message.createdAt}
         }));
+        const seen = yield call(generalChatService.readChat, payload.chatId);
+        yield put(setSeenChatRoutine.fulfill({chatId: payload, seen}));
         yield put(sendMessageRoutine.success());
     } catch (e) {
         yield put(sendMessageRoutine.failure(e?.message));
