@@ -2,13 +2,14 @@ import { combineReducers } from 'redux';
 import {reducerCreator} from "../../helpers/reducer.helper";
 import {
     appendDetailsCachedRoutine,
-    ISetChatMessagesRoutinePayload, ISetSeenChatRoutinePayload,
+    ISetChatMessagesRoutinePayload,
     loadFullChatRoutine,
-    setChatMessagesRoutine, setSeenChatRoutine
+    setChatMessagesRoutine
 } from "./routines";
 import {createReducer, PayloadAction} from "@reduxjs/toolkit";
 import {IChatCache} from "../../reducers/chatsList/reducer";
 import {IChatDetails} from "../../api/chat/general/generalChatModels";
+import {ISetSeenChatRoutinePayload, setSeenChatRoutine} from "../ChatsList/routines";
 
 export interface IChatState {
     requests: any;

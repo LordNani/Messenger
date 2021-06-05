@@ -2,12 +2,13 @@
 // @ts-nocheck
 import {all, call, put, takeEvery, select} from 'redux-saga/effects';
 import {PayloadAction} from "@reduxjs/toolkit";
-import {appendDetailsCachedRoutine, loadFullChatRoutine, setChatMessagesRoutine, setSeenChatRoutine} from "./routines";
+import {appendDetailsCachedRoutine, loadFullChatRoutine, setChatMessagesRoutine} from "./routines";
 import {IAppState} from "../../reducers";
 import {IChatDetails} from "../../api/chat/general/generalChatModels";
 import messageService from "../../api/message/messageService";
 import generalChatService from "../../api/chat/general/generalChatService";
 import {toastr} from "react-redux-toastr";
+import {setSeenChatRoutine} from "../ChatsList/routines";
 
 function* loadFullChatSaga({payload}: PayloadAction<string>) {
     try {

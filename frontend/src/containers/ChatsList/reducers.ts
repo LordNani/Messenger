@@ -2,15 +2,14 @@ import { combineReducers } from 'redux';
 import {reducerCreator} from "../../helpers/reducer.helper";
 import {
     addChatToListIfAbsentRoutine, createGroupChatRoutine,
-    createPersonalChatRoutine,
+    createPersonalChatRoutine, ISetSeenChatRoutinePayload,
     loadChatsListRoutine,
     removeChatsListRoutine, removeSelectedChatIdRoutine, selectChatIdRoutine,
     setAllSeenAtRoutine,
-    setChatsListRoutine, setCreateChatModalShownRoutine
+    setChatsListRoutine, setCreateChatModalShownRoutine, setSeenChatRoutine
 } from "./routines";
 import {IChatDetails, ILastSeen} from "../../api/chat/general/generalChatModels";
 import {createReducer, PayloadAction} from "@reduxjs/toolkit";
-import {ISetSeenChatRoutinePayload, setSeenChatRoutine} from "../Chat/routines";
 
 export interface IChatsListNewState {
     requests: any;
