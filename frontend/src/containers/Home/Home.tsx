@@ -33,7 +33,6 @@ interface IPropsFromDispatch {
         updateChatInList: typeof chatsListActions.updateChatInList;
         setFirstChatInList: typeof chatsListActions.setFirstChatInList;
         removeChatFromList: typeof chatsListActions.removeChatFromList;
-        setSelected: typeof chatsListActions.setSelected;
         removeSelected: typeof chatsListActions.removeSelected;
         appendDetailsCached: typeof chatsListActions.appendDetailsCached;
         setChatMessages: typeof chatsListActions.setChatMessages;
@@ -197,10 +196,6 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         this.props.actions.updateSenderUsername(iChangeUsername);
     }
 
-    selectChat = (chat: IChatDetails) => {
-        this.props.actions.setSelected(chat.id);
-    }
-
     readChat = async (chatId: string) => {
         const seen = await generalChatService.readChat(chatId);
         this.props.actions.setSeenChat(chatId, seen);
@@ -260,10 +255,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
             <LoaderWrapper loading={!currentUser || loading}>
                 <Header />
                 <div className={styles.content}>
-                    <ChatsList
-                        selectChat={this.selectChat}
-                        selectedChatId={selectedChatId}
-                    />
+                    <ChatsList />
                     <Chat
                         chatsDetailsCached={chatDetailsCached}
                         loadChatDetails={this.loadChatDetails}
@@ -298,7 +290,6 @@ const mapDispatchToProps = (dispatch: any) => ({
                 removeChatFromList: chatsListActions.removeChatFromList,
                 setFirstChatInList: chatsListActions.setFirstChatInList,
                 updateChatInList: chatsListActions.updateChatInList,
-                setSelected: chatsListActions.setSelected,
                 removeSelected: chatsListActions.removeSelected,
                 appendDetailsCached: chatsListActions.appendDetailsCached,
                 setChatMessages: chatsListActions.setChatMessages,

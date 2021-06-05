@@ -13,7 +13,7 @@ import {IAppState} from "../../reducers";
 import {
     createGroupChatRoutine,
     createPersonalChatRoutine,
-    loadChatsListRoutine,
+    loadChatsListRoutine, selectChatIdRoutine,
     setCreateChatModalShownRoutine
 } from "./routines";
 import {connect} from "react-redux";
@@ -26,6 +26,7 @@ interface IPropsFromState {
     createGroupChatLoading: boolean;
     createGroupChatError: string | null;
     createModalShown?: boolean;
+    selectedChatId?: string;
 }
 
 interface IActions {
@@ -33,18 +34,14 @@ interface IActions {
     createPersonalChat: ICallback1<string>;
     createGroupChat: ICallback1<string>;
     setCreateModalShown: ICallback1<boolean>;
-}
-
-interface IOwnProps {
-    selectChat: (el: IChatDetails) => void;
-    selectedChatId?: string;
+    selectChatId: ICallback1<string>;
 }
 
 interface IState {
     filter: string;
 }
 
-class ChatsList extends React.Component<IOwnProps & IPropsFromState & IActions, IState> {
+class ChatsList extends React.Component<IPropsFromState & IActions, IState> {
 
     state = {
         filter: ''
@@ -56,7 +53,7 @@ class ChatsList extends React.Component<IOwnProps & IPropsFromState & IActions, 
 
     render() {
         const {
-            chatsList, chatsListLoading, selectChat, selectedChatId, createPersonalChat, createGroupChat,
+            chatsList, chatsListLoading, selectChatId, selectedChatId, createPersonalChat, createGroupChat,
             createPersonalChatError, createPersonalChatLoading, createGroupChatError, createGroupChatLoading,
             createModalShown, setCreateModalShown
         } = this.props;
@@ -98,7 +95,7 @@ class ChatsList extends React.Component<IOwnProps & IPropsFromState & IActions, 
                             <ChatListElement
                                 key={chat.id}
                                 elementData={chat}
-                                onClick={() => selectChat(chat)}
+                                onClick={() => selectChatId(chat.id)}
                                 selected={selectedChatId === chat.id}
                             />
                         ))
@@ -127,14 +124,16 @@ const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
     createPersonalChatError: state.chatsListNew.requests.createPersonalChat.error,
     createGroupChatLoading: state.chatsListNew.requests.createGroupChat.loading,
     createGroupChatError: state.chatsListNew.requests.createGroupChat.error,
-    createModalShown: state.chatsListNew.data.createModalShown
+    createModalShown: state.chatsListNew.data.createModalShown,
+    selectedChatId: state.chatsListNew.data.selectedChatId,
 });
 
 const mapDispatchToProps: IActions = {
     loadChatsList: loadChatsListRoutine,
     createGroupChat: createGroupChatRoutine,
     createPersonalChat: createPersonalChatRoutine,
-    setCreateModalShown: setCreateChatModalShownRoutine.fulfill
+    setCreateModalShown: setCreateChatModalShownRoutine.fulfill,
+    selectChatId: selectChatIdRoutine.fulfill
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChatsList);

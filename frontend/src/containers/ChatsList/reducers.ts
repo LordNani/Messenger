@@ -4,7 +4,7 @@ import {
     addChatToListIfAbsentRoutine, createGroupChatRoutine,
     createPersonalChatRoutine,
     loadChatsListRoutine,
-    removeChatsListRoutine,
+    removeChatsListRoutine, removeSelectedChatIdRoutine, selectChatIdRoutine,
     setAllSeenAtRoutine,
     setChatsListRoutine, setCreateChatModalShownRoutine
 } from "./routines";
@@ -19,6 +19,7 @@ export interface IChatsListNewState {
 export interface IChatsListStateData {
     chatsList?: IChatDetails[];
     createModalShown?: boolean;
+    selectedChatId?: string;
 }
 
 const initialStateData: IChatsListStateData = {};
@@ -52,6 +53,12 @@ const data = createReducer(initialStateData, {
     },
     [setCreateChatModalShownRoutine.FULFILL]: (state, {payload}: PayloadAction<boolean>) => {
         state.createModalShown = payload;
+    },
+    [selectChatIdRoutine.FULFILL]: (state, {payload}: PayloadAction<string>) => {
+        state.selectedChatId = payload;
+    },
+    [removeSelectedChatIdRoutine.FULFILL]: state => {
+        state.selectedChatId = undefined;
     }
 });
 

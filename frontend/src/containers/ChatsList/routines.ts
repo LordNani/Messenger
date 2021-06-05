@@ -11,3 +11,5 @@ export const addChatToListIfAbsentRoutine = createLocalRoutine('ADD_CHAT_TO_LIST
 export const createPersonalChatRoutine = createLocalRoutine<string>('CREATE_PERSONAL_CHAT');
 export const createGroupChatRoutine = createLocalRoutine<string>('CREATE_GROUP_CHAT');
 export const setCreateChatModalShownRoutine = createLocalRoutine<boolean>('SET_CREATE_MODAL_SHOWN');
+export const selectChatIdRoutine = createLocalRoutine<string>('SELECT_CHAT_ID');
+export const removeSelectedChatIdRoutine = createLocalRoutine('REMOVE_SELECTED_CHAT_ID');
