@@ -2,14 +2,14 @@ import React from "react";
 import styles from "./Chat.module.sass";
 import {IChatCache} from "../../reducers/chatsList/reducer";
 import classnames from "classnames";
-import ChatHeader from "../ChatHeader/ChatHeader";
-import MessagesListWrapper from "../MessagesListWrapper/MessagesListWrapper";
+import ChatHeader from "../../components/ChatHeader/ChatHeader";
+import MessagesListWrapper from "../../components/MessagesListWrapper/MessagesListWrapper";
 import {ICurrentUser} from "../../api/auth/authModels";
-import ChatSender from "../ChatSender/ChatSender";
-import Modal from "../Modal/Modal";
+import ChatSender from "../../components/ChatSender/ChatSender";
+import Modal from "../../components/Modal/Modal";
 import {ChatTypeEnum, IChatDetails} from "../../api/chat/general/generalChatModels";
-import PersonalChatDetails from "../PersonalChatDetails/PersonalChatDetails";
-import GroupChatDetails from "../GroupChatDetails/GroupChatDetails";
+import PersonalChatDetails from "../../components/PersonalChatDetails/PersonalChatDetails";
+import GroupChatDetails from "../../components/GroupChatDetails/GroupChatDetails";
 
 interface IOwnProps {
     chatsDetailsCached: IChatCache[];

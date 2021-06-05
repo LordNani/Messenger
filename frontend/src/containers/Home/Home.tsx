@@ -9,7 +9,7 @@ import authService from "../../api/auth/authService";
 import Header from "../Header/Header";
 import ChatsList from "../ChatsList/ChatsList";
 import styles from "./Home.module.sass";
-import Chat from "../../components/Chat/Chat";
+import Chat from "../Chat/Chat";
 import {chatsListActions} from "../../reducers/chatsList/actions";
 import {IChatDetails, ILastSeen} from "../../api/chat/general/generalChatModels";
 import generalChatService from "../../api/chat/general/generalChatService";
