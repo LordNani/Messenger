@@ -7,6 +7,7 @@ import authPageReducer, {IAuthState} from "../containers/Auth/reducers";
 import headerReducer, {IHeaderState} from "../containers/Header/reducers";
 import chatsListNewReducer, {IChatsListNewState} from "../containers/ChatsList/reducers";
 import chatReducer, {IChatState} from "../containers/Chat/reducers";
+import personalChatReducer, {IPersonalChatState} from "../containers/PersonalChatDetails/reducers";
 
 export interface IAppState {
     toastr: ToastrState;
@@ -15,6 +16,7 @@ export interface IAppState {
     header: IHeaderState;
     chatsListNew: IChatsListNewState;
     chat: IChatState;
+    personalChat: IPersonalChatState;
 }
 
 export interface IAppAction<T extends string, P> extends Action<T> {
@@ -29,6 +31,7 @@ const rootReducers = (history: any) => combineReducers({
     header: headerReducer,
     chatsListNew: chatsListNewReducer,
     chat: chatReducer,
+    personalChat: personalChatReducer,
 });
 
 export default rootReducers;

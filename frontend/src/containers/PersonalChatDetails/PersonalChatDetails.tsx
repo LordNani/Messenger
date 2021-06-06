@@ -3,9 +3,15 @@ import styles from "./PersonalChatDetails.module.sass";
 import {IChatDetails} from "../../api/chat/general/generalChatModels";
 import {IPersonalChatInfo} from "../../api/chat/personal/personalChatModels";
 import personalChatService from "../../api/chat/personal/personalChatService";
-import LoaderWrapper from "../LoaderWrapper/LoaderWrapper";
-import UserCard from "../UserCard/UserCard";
-import Button from "../FormComponents/Button/Button";
+import LoaderWrapper from "../../components/LoaderWrapper/LoaderWrapper";
+import UserCard from "../../components/UserCard/UserCard";
+import Button from "../../components/FormComponents/Button/Button";
+import {IAppState} from "../../reducers";
+import {connect} from "react-redux";
+
+interface IPropsFromState {}
+
+interface IActions {}
 
 interface IOwnProps {
     chatDetails: IChatDetails;
@@ -17,7 +23,7 @@ interface IState {
     deleting: boolean;
 }
 
-class PersonalChatDetails extends React.Component<IOwnProps, IState> {
+class PersonalChatDetails extends React.Component<IPropsFromState & IActions & IOwnProps, IState> {
 
     state = {
         deleting: false,
@@ -53,4 +59,8 @@ class PersonalChatDetails extends React.Component<IOwnProps, IState> {
     }
 }
 
-export default PersonalChatDetails;
+const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({});
+
+const mapDispatchToProps: IActions = {};
+
+export default connect(mapStateToProps, mapDispatchToProps)(PersonalChatDetails);
