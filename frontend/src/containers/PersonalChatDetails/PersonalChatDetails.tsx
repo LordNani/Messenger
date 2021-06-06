@@ -1,6 +1,5 @@
 import React from "react";
 import styles from "./PersonalChatDetails.module.sass";
-import {IChatDetails} from "../../api/chat/general/generalChatModels";
 import {IPersonalChatInfo} from "../../api/chat/personal/personalChatModels";
 import personalChatService from "../../api/chat/personal/personalChatService";
 import LoaderWrapper from "../../components/LoaderWrapper/LoaderWrapper";
@@ -59,7 +58,7 @@ class PersonalChatDetails extends React.Component<IPropsFromState & IActions, IS
 
     render() {
         const {deleting} = this.state;
-        const {info, selectedId, selectId} = this.props;
+        const {info, selectedId, selectId, loadInfoLoading} = this.props;
 
         if (!selectedId) {
             return null;
@@ -67,7 +66,7 @@ class PersonalChatDetails extends React.Component<IPropsFromState & IActions, IS
 
         return (
             <Modal close={() => selectId(undefined)}>
-                <LoaderWrapper loading={!info}>
+                <LoaderWrapper loading={loadInfoLoading}>
                     {info && (
                         <UserCard user={info?.companion}/>
                     )}

@@ -1,6 +1,6 @@
 import {combineReducers} from 'redux';
 import {reducerCreator} from "../../helpers/reducer.helper";
-import {loadPersonalChatInfoRoutine, selectPersonalChatIdRoutine} from "./routines";
+import {loadPersonalChatInfoRoutine, selectPersonalChatIdRoutine, setPersonalChatInfoRoutine} from "./routines";
 import {createReducer, PayloadAction} from "@reduxjs/toolkit";
 import {IPersonalChatInfo} from "../../api/chat/personal/personalChatModels";
 
@@ -23,6 +23,9 @@ const requests = combineReducers({
 const data = createReducer(initialStateData, {
     [selectPersonalChatIdRoutine.FULFILL]: (state, {payload}: PayloadAction<string | undefined>) => {
         state.selectedId = payload;
+    },
+    [setPersonalChatInfoRoutine.FULFILL]: (state, {payload}: PayloadAction<IPersonalChatInfo>) => {
+        state.info = payload;
     },
 });
 
