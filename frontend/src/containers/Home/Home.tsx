@@ -24,6 +24,7 @@ import {env} from "../../env";
 import {ICallback1} from "../../helpers/types.helper";
 import {setCurrentUserRoutine} from "../Auth/routines";
 import {addChatToListIfAbsentRoutine} from "../ChatsList/routines";
+import PersonalChatDetails from "../PersonalChatDetails/PersonalChatDetails";
 
 interface IPropsFromDispatch {
     actions: {
@@ -209,6 +210,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
                     <ChatsList />
                     <Chat />
                 </div>
+                <PersonalChatDetails />
             </LoaderWrapper>
         );
     }

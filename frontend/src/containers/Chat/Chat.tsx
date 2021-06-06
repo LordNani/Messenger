@@ -8,13 +8,13 @@ import {ICurrentUser} from "../../api/auth/authModels";
 import ChatSender from "../../components/ChatSender/ChatSender";
 import Modal from "../../components/Modal/Modal";
 import {ChatTypeEnum, IChatDetails} from "../../api/chat/general/generalChatModels";
-import PersonalChatDetails from "../PersonalChatDetails/PersonalChatDetails";
 import GroupChatDetails from "../../components/GroupChatDetails/GroupChatDetails";
 import {IAppState} from "../../reducers";
 import {connect} from "react-redux";
 import {IAction, ICallback1} from "../../helpers/types.helper";
 import {ISendMessageRoutinePayload, loadFullChatRoutine, sendMessageRoutine} from "./routines";
 import {deleteChatInListRoutine, removeSelectedChatIdRoutine, updateChatInListRoutine} from "../ChatsList/routines";
+import {selectPersonalChatIdRoutine} from "../PersonalChatDetails/routines";
 
 interface IPropsFromState {
     currentUser?: ICurrentUser;
@@ -28,6 +28,7 @@ interface IActions {
     removeSelectedId: IAction;
     deleteChatInList: ICallback1<string>;
     sendMessage: ICallback1<ISendMessageRoutinePayload>;
+    selectPersonalChatId: ICallback1<string>;
 }
 
 interface IState {
@@ -65,7 +66,10 @@ class Chat extends React.Component<IPropsFromState & IActions, IState> {
     }
 
     render() {
-        const {chatsDetailsCached, selectedChatId, currentUser, sendMessage, updateChatInList} = this.props;
+        const {
+            chatsDetailsCached, selectedChatId, currentUser, sendMessage, updateChatInList,
+            selectPersonalChatId
+        } = this.props;
         const {modalShown} = this.state;
         const chatInfo = chatsDetailsCached.find(c => c.details.id === selectedChatId);
 
@@ -81,12 +85,6 @@ class Chat extends React.Component<IPropsFromState & IActions, IState> {
             <div className={styles.wrapper}>
                 {modalShown && (
                     <Modal close={() => this.setState({modalShown: false})}>
-                        {chatInfo?.details?.type === ChatTypeEnum.PERSONAL && (
-                            <PersonalChatDetails
-                                chatDetails={chatInfo.details}
-                                deleteChatFromList={this.deleteChatFromList}
-                            />
-                        )}
                         {chatInfo?.details?.type === ChatTypeEnum.GROUP && (
                             <GroupChatDetails
                                 chatDetails={chatInfo.details}
@@ -98,7 +96,13 @@ class Chat extends React.Component<IPropsFromState & IActions, IState> {
                 )}
                 <ChatHeader
                     chatDetails={chatInfo?.details}
-                    openModal={() => this.setState({modalShown: true})}
+                    openModal={() => {
+                        if (chatInfo?.details.type === ChatTypeEnum.PERSONAL) {
+                            selectPersonalChatId(chatInfo.details.id);
+                        } else {
+                            this.setState({modalShown: true});
+                        }
+                    }}
                 />
                 <MessagesListWrapper
                     chatInfo={chatInfo}
@@ -123,7 +127,8 @@ const mapDispatchToProps: IActions = {
     updateChatInList: updateChatInListRoutine.fulfill,
     removeSelectedId: removeSelectedChatIdRoutine.fulfill,
     deleteChatInList: deleteChatInListRoutine.fulfill,
-    sendMessage: sendMessageRoutine
+    sendMessage: sendMessageRoutine,
+    selectPersonalChatId: selectPersonalChatIdRoutine.fulfill,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Chat);
