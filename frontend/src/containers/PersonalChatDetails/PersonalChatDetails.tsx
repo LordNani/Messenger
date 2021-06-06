@@ -1,36 +1,29 @@
 import React from "react";
 import styles from "./PersonalChatDetails.module.sass";
 import {IPersonalChatInfo} from "../../api/chat/personal/personalChatModels";
-import personalChatService from "../../api/chat/personal/personalChatService";
 import LoaderWrapper from "../../components/LoaderWrapper/LoaderWrapper";
 import UserCard from "../../components/UserCard/UserCard";
 import Button from "../../components/FormComponents/Button/Button";
 import {IAppState} from "../../reducers";
 import {connect} from "react-redux";
 import {ICallback1} from "../../helpers/types.helper";
-import {loadPersonalChatInfoRoutine, selectPersonalChatIdRoutine} from "./routines";
+import {deletePersonalChatRoutine, loadPersonalChatInfoRoutine, selectPersonalChatIdRoutine} from "./routines";
 import Modal from "../../components/Modal/Modal";
 
 interface IPropsFromState {
     loadInfoLoading: boolean;
+    deleteChatLoading: boolean;
     selectedId?: string;
     info?: IPersonalChatInfo;
 }
 
 interface IActions {
     loadInfo: ICallback1<string>;
+    deleteChat: ICallback1<string>;
     selectId: ICallback1<string | undefined>;
 }
 
-interface IState {
-    deleting: boolean;
-}
-
-class PersonalChatDetails extends React.Component<IPropsFromState & IActions, IState> {
-
-    state = {
-        deleting: false,
-    } as IState;
+class PersonalChatDetails extends React.Component<IPropsFromState & IActions> {
 
     componentDidUpdate(
         prevProps: Readonly<IPropsFromState & IActions>,
@@ -46,19 +39,8 @@ class PersonalChatDetails extends React.Component<IPropsFromState & IActions, IS
         }
     }
 
-    handleDelete = async () => {
-        const id = this.props.selectedId;
-        if (id) {
-            this.setState({deleting: true});
-            await personalChatService.deleteById(id);
-            this.setState({deleting: false});
-            // this.props.deleteChatFromList(id);
-        }
-    }
-
     render() {
-        const {deleting} = this.state;
-        const {info, selectedId, selectId, loadInfoLoading} = this.props;
+        const {info, selectedId, selectId, loadInfoLoading, deleteChatLoading, deleteChat} = this.props;
 
         if (!selectedId) {
             return null;
@@ -71,7 +53,11 @@ class PersonalChatDetails extends React.Component<IPropsFromState & IActions, IS
                         <UserCard user={info?.companion}/>
                     )}
                     <div className={styles.buttonWrapper}>
-                        <Button text="Delete conversation" onClick={this.handleDelete} loading={deleting}/>
+                        <Button
+                            text="Delete conversation"
+                            onClick={() => deleteChat(selectedId)}
+                            loading={deleteChatLoading}
+                        />
                     </div>
                 </LoaderWrapper>
             </Modal>
@@ -81,6 +67,7 @@ class PersonalChatDetails extends React.Component<IPropsFromState & IActions, IS
 
 const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
     loadInfoLoading: state.personalChat.requests.loadInfo.loading,
+    deleteChatLoading: state.personalChat.requests.deleteChat.loading,
     selectedId: state.personalChat.data.selectedId,
     info: state.personalChat.data.info,
 });
@@ -88,6 +75,7 @@ const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
 const mapDispatchToProps: IActions = {
     loadInfo: loadPersonalChatInfoRoutine,
     selectId: selectPersonalChatIdRoutine.fulfill,
+    deleteChat: deletePersonalChatRoutine,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(PersonalChatDetails);

@@ -2,9 +2,15 @@
 // @ts-nocheck
 import {all, takeEvery, put, call} from 'redux-saga/effects';
 import {PayloadAction} from "@reduxjs/toolkit";
-import {loadPersonalChatInfoRoutine, setPersonalChatInfoRoutine} from "./routines";
+import {
+    deletePersonalChatRoutine,
+    loadPersonalChatInfoRoutine,
+    selectPersonalChatIdRoutine,
+    setPersonalChatInfoRoutine
+} from "./routines";
 import {toastr} from "react-redux-toastr";
 import personalChatService from "../../api/chat/personal/personalChatService";
+import {deleteChatInListRoutine} from "../ChatsList/routines";
 
 function* loadPersonalChatInfoSaga({payload}: PayloadAction<string>) {
     try {
@@ -17,8 +23,21 @@ function* loadPersonalChatInfoSaga({payload}: PayloadAction<string>) {
     }
 }
 
+function* deletePersonalChatSaga({payload}: PayloadAction<string>) {
+    try {
+        yield call(personalChatService.deleteById, payload);
+        yield put(deleteChatInListRoutine.fulfill(payload));
+        yield put(selectPersonalChatIdRoutine.fulfill(undefined));
+        yield put(deletePersonalChatRoutine.success());
+    } catch (e) {
+        yield put(deletePersonalChatRoutine.failure(e?.message));
+        toastr.error("Unexpected error", "Couldn't delete personal chat");
+    }
+}
+
 export default function* personalChatSaga() {
     yield all([
         yield takeEvery(loadPersonalChatInfoRoutine.TRIGGER, loadPersonalChatInfoSaga),
+        yield takeEvery(deletePersonalChatRoutine.TRIGGER, deletePersonalChatSaga),
     ]);
 }

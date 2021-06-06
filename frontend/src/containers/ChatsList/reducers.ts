@@ -90,6 +90,9 @@ const data = createReducer(initialStateData, {
     },
     [deleteChatInListRoutine.FULFILL]: (state, {payload}: PayloadAction<string>) => {
         state.chatsList = state.chatsList?.filter(c => c.id !== payload);
+        if (state.selectedChatId === payload) {
+            state.selectedChatId = undefined;
+        }
     },
     [setFirstChatInListRoutine.FULFILL]: (state, {payload}: PayloadAction<string>) => {
         state.chatsList = [

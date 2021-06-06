@@ -1,6 +1,11 @@
 import {combineReducers} from 'redux';
 import {reducerCreator} from "../../helpers/reducer.helper";
-import {loadPersonalChatInfoRoutine, selectPersonalChatIdRoutine, setPersonalChatInfoRoutine} from "./routines";
+import {
+    deletePersonalChatRoutine,
+    loadPersonalChatInfoRoutine,
+    selectPersonalChatIdRoutine,
+    setPersonalChatInfoRoutine
+} from "./routines";
 import {createReducer, PayloadAction} from "@reduxjs/toolkit";
 import {IPersonalChatInfo} from "../../api/chat/personal/personalChatModels";
 
@@ -18,6 +23,7 @@ const initialStateData: IPersonalChatStateData = {};
 
 const requests = combineReducers({
     loadInfo: reducerCreator([loadPersonalChatInfoRoutine.TRIGGER]),
+    deleteChat: reducerCreator([deletePersonalChatRoutine.TRIGGER]),
 });
 
 const data = createReducer(initialStateData, {

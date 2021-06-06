@@ -8,4 +8,5 @@ const createLocalRoutine = <T extends unknown>(actionName: string) =>
 export const loadPersonalChatInfoRoutine = createLocalRoutine<string>('LOAD_PERSONAL_CHAT_INFO');
 export const setPersonalChatInfoRoutine = createLocalRoutine<IPersonalChatInfo>('SET_PERSONAL_CHAT_INFO');
 export const selectPersonalChatIdRoutine = createLocalRoutine<string | undefined>('SELECT_PERSONAL_CHAT_ID');
+export const deletePersonalChatRoutine = createLocalRoutine<string>('DELETE_PERSONAL_CHAT');
 
