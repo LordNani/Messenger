@@ -15,17 +15,26 @@ import * as Yup from "yup";
 import {IAppState} from "../../reducers";
 import {connect} from "react-redux";
 import {ICallback1} from "../../helpers/types.helper";
-import {loadGroupChatInfoRoutine, selectGroupChatIdRoutine} from "./routines";
+import {
+    deleteGroupChatRoutine,
+    leaveGroupChatRoutine,
+    loadGroupChatInfoRoutine,
+    selectGroupChatIdRoutine
+} from "./routines";
 import Modal from "../../components/Modal/Modal";
 
 interface IPropsFromState {
     selectedId?: string;
     info?: IGroupChatInfo;
     loadInfoLoading: boolean;
+    deleteChatLoading: boolean;
+    leaveChatLoading: boolean;
 }
 
 interface IActions {
     loadInfo: ICallback1<string>;
+    deleteChat: ICallback1<string>;
+    leaveChat: ICallback1<string>;
     setSelectedId: ICallback1<string | undefined>;
 }
 
@@ -33,8 +42,6 @@ interface IOwnProps {
 }
 
 interface IState {
-    deleting: boolean;
-    leaving: boolean;
     adding: boolean;
     changing: boolean;
     toAddUserId?: string;
@@ -54,8 +61,6 @@ const validationSchema = Yup.object().shape({
 class GroupChatDetails extends React.Component<IOwnProps & IPropsFromState & IActions, IState> {
 
     state = {
-        deleting: false,
-        leaving: false,
         adding: false,
         changing: false,
     } as IState;
@@ -72,22 +77,6 @@ class GroupChatDetails extends React.Component<IOwnProps & IPropsFromState & IAc
         ) {
             this.props.loadInfo(selectedId);
         }
-    }
-
-    handleDelete = async () => {
-        // const id = this.props.chatDetails.id;
-        // this.setState({deleting: true});
-        // await groupChatService.deleteById(id);
-        // this.setState({deleting: false});
-        // this.props.deleteChatFromList(id);
-    }
-
-    handleLeave = async () => {
-        // const id = this.props.chatDetails.id;
-        // this.setState({leaving: true});
-        // await groupChatService.leaveChatById(id);
-        // this.setState({leaving: false});
-        // this.props.deleteChatFromList(id);
     }
 
     handleChange = async (values: any) => {
@@ -167,10 +156,11 @@ class GroupChatDetails extends React.Component<IOwnProps & IPropsFromState & IAc
     }
 
     render() {
-        const {deleting, adding, changing, error, toAddUserId, leaving} = this.state;
+        const {adding, changing, error, toAddUserId} = this.state;
 
         const {
-            setSelectedId, selectedId, loadInfoLoading, info
+            setSelectedId, selectedId, loadInfoLoading, info, deleteChatLoading, leaveChatLoading,
+            deleteChat, leaveChat
         } = this.props;
 
         if (!selectedId) {
@@ -273,17 +263,17 @@ class GroupChatDetails extends React.Component<IOwnProps & IPropsFromState & IAc
                         <div className={styles.buttonWrapper}>
                             <Button
                                 text="Delete group chat"
-                                onClick={this.handleDelete}
-                                loading={deleting}
+                                onClick={() => deleteChat(info.id)}
+                                loading={deleteChatLoading}
                             />
                         </div>
                     )}
-                    {info?.permissionLevel !== RoleEnum.OWNER && (
+                    {info && info?.permissionLevel !== RoleEnum.OWNER && (
                         <div className={styles.buttonWrapper}>
                             <Button
                                 text="Leave group chat"
-                                onClick={this.handleLeave}
-                                loading={leaving}
+                                onClick={() => leaveChat(info.id)}
+                                loading={leaveChatLoading}
                             />
                         </div>
                     )}
@@ -297,11 +287,15 @@ const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
     selectedId: state.groupChat.data.selectedId,
     info: state.groupChat.data.info,
     loadInfoLoading: state.groupChat.requests.loadInfo.loading,
+    deleteChatLoading: state.groupChat.requests.deleteChat.loading,
+    leaveChatLoading: state.groupChat.requests.leaveChat.loading,
 });
 
 const mapDispatchToProps: IActions = {
     loadInfo: loadGroupChatInfoRoutine,
     setSelectedId: selectGroupChatIdRoutine.fulfill,
+    deleteChat: deleteGroupChatRoutine,
+    leaveChat: leaveGroupChatRoutine,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupChatDetails);
