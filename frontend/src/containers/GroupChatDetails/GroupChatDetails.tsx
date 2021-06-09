@@ -20,10 +20,10 @@ import {
     deleteGroupChatRoutine,
     deleteMemberToGroupChatRoutine,
     IMemberToGroupChatRoutinePayload,
-    IToggleMemberRoleGroupChatRoutinePayload,
+    IToggleMemberRoleGroupChatRoutinePayload, IUpdateGroupChatRoutinePayload,
     leaveGroupChatRoutine,
     loadGroupChatInfoRoutine,
-    selectGroupChatIdRoutine, toggleMemberRoleGroupChatRoutine
+    selectGroupChatIdRoutine, toggleMemberRoleGroupChatRoutine, updateGroupChatRoutine
 } from "./routines";
 import Modal from "../../components/Modal/Modal";
 
@@ -34,6 +34,7 @@ interface IPropsFromState {
     deleteChatLoading: boolean;
     leaveChatLoading: boolean;
     addMemberLoading: boolean;
+    updateChatLoading: boolean;
 }
 
 interface IActions {
@@ -44,15 +45,11 @@ interface IActions {
     deleteMember: ICallback1<IMemberToGroupChatRoutinePayload>;
     toggleMemberRole: ICallback1<IToggleMemberRoleGroupChatRoutinePayload>;
     setSelectedId: ICallback1<string | undefined>;
-}
-
-interface IOwnProps {
+    updateChat: ICallback1<IUpdateGroupChatRoutinePayload>;
 }
 
 interface IState {
-    changing: boolean;
     toAddUserId?: string;
-    error?: string;
 }
 
 const validationSchema = Yup.object().shape({
@@ -65,14 +62,12 @@ const validationSchema = Yup.object().shape({
 
 });
 
-class GroupChatDetails extends React.Component<IOwnProps & IPropsFromState & IActions, IState> {
+class GroupChatDetails extends React.Component<IPropsFromState & IActions, IState> {
 
-    state = {
-        changing: false,
-    } as IState;
+    state = {} as IState;
 
     componentDidUpdate(
-        prevProps: Readonly<IOwnProps & IPropsFromState & IActions>,
+        prevProps: Readonly<IPropsFromState & IActions>,
         prevState: Readonly<{}>,
         snapshot?: any
     ) {
@@ -86,23 +81,12 @@ class GroupChatDetails extends React.Component<IOwnProps & IPropsFromState & IAc
     }
 
     handleChange = async (values: any) => {
-        // const {updateChatInList, chatDetails} = this.props;
-        // const {info} = this.state;
-        // if(!info) {
-        //     return;
-        // }
-        //
-        // this.setState({error: undefined});
-        // try {
-        //     this.setState({changing: true});
-        //     await groupChatService.changeInfo(info.id, values.title, values.picture);
-        //     updateChatInList({...chatDetails, title: values.title, picture: values.picture});
-        //     await this.loadData();
-        // } catch (e) {
-        //     this.setState({error: e.message});
-        // } finally {
-        //     this.setState({changing: false});
-        // }
+        const {selectedId, updateChat} = this.props;
+        updateChat({
+            id: selectedId as string,
+            title: values.title,
+            picture: values.picture
+        });
     }
 
     isAdminOrOwner = (permissionLevel: RoleEnum) => {
@@ -110,11 +94,12 @@ class GroupChatDetails extends React.Component<IOwnProps & IPropsFromState & IAc
     }
 
     render() {
-        const {changing, error, toAddUserId} = this.state;
+        const {toAddUserId} = this.state;
 
         const {
             setSelectedId, selectedId, loadInfoLoading, info, deleteChatLoading, leaveChatLoading,
-            deleteChat, leaveChat, addMemberLoading, addMember, deleteMember, toggleMemberRole
+            deleteChat, leaveChat, addMemberLoading, addMember, deleteMember, toggleMemberRole,
+            updateChatLoading
         } = this.props;
 
         if (!selectedId) {
@@ -134,9 +119,6 @@ class GroupChatDetails extends React.Component<IOwnProps & IPropsFromState & IAc
                             <div className={styles.title}>{info.title}</div>
                             <div className={styles.permission}>{info.permissionLevel}</div>
                         </div>
-                    )}
-                    {error && (
-                        <ErrorMessage text={error} />
                     )}
                     {(info?.permissionLevel && this.isAdminOrOwner(info.permissionLevel)) && (
                         <Formik
@@ -176,7 +158,7 @@ class GroupChatDetails extends React.Component<IOwnProps & IPropsFromState & IAc
                                                 text="Change chat info"
                                                 disabled={!valid}
                                                 submit
-                                                loading={changing}
+                                                loading={updateChatLoading}
                                             />
                                         </div>
                                     </Form>
@@ -246,6 +228,7 @@ const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
     deleteChatLoading: state.groupChat.requests.deleteChat.loading,
     leaveChatLoading: state.groupChat.requests.leaveChat.loading,
     addMemberLoading: state.groupChat.requests.addMember.loading,
+    updateChatLoading: state.groupChat.requests.updateChat.loading,
 });
 
 const mapDispatchToProps: IActions = {
@@ -256,6 +239,7 @@ const mapDispatchToProps: IActions = {
     addMember: addMemberToGroupChatRoutine,
     deleteMember: deleteMemberToGroupChatRoutine,
     toggleMemberRole: toggleMemberRoleGroupChatRoutine,
+    updateChat: updateGroupChatRoutine
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupChatDetails);

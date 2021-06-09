@@ -7,14 +7,14 @@ import {
     deleteGroupChatRoutine,
     deleteMemberToGroupChatRoutine,
     IMemberToGroupChatRoutinePayload,
-    IToggleMemberRoleGroupChatRoutinePayload,
+    IToggleMemberRoleGroupChatRoutinePayload, IUpdateGroupChatRoutinePayload,
     leaveGroupChatRoutine,
     loadGroupChatInfoRoutine,
     selectGroupChatIdRoutine,
-    setGroupChatInfoRoutine, toggleMemberRoleGroupChatRoutine,
+    setGroupChatInfoRoutine, toggleMemberRoleGroupChatRoutine, updateGroupChatRoutine,
 } from "./routines";
 import {toastr} from "react-redux-toastr";
-import {deleteChatInListRoutine} from "../ChatsList/routines";
+import {deleteChatInListRoutine, updateChatInListRoutine} from "../ChatsList/routines";
 import groupChatService from "../../api/chat/group/groupChatService";
 import {RoleEnum} from "../../api/chat/group/groupChatModels";
 import {IAppState} from "../../reducers";
@@ -70,8 +70,7 @@ function* deleteMemberGroupChatSaga({payload}: PayloadAction<IMemberToGroupChatR
     try {
         yield call(groupChatService.deleteMember, payload.chatId, payload.userId);
         yield put(deleteMemberToGroupChatRoutine.success());
-        const selectedId = yield select((state: IAppState) => state.groupChat.data.selectedId);
-        yield put(loadGroupChatInfoRoutine.trigger(selectedId));
+        yield reloadCurrentGroupChat();
     } catch (e) {
         yield put(deleteMemberToGroupChatRoutine.failure(e?.message));
         toastr.error("Unexpected error", e?.message);
@@ -87,12 +86,33 @@ function* toggleMemberRoleGroupChatSaga({payload}: PayloadAction<IToggleMemberRo
             yield call(groupChatService.upgradeMember, payload.chatId, payload.userId);
         }
         yield put(toggleMemberRoleGroupChatRoutine.success());
-        const selectedId = yield select((state: IAppState) => state.groupChat.data.selectedId);
-        yield put(loadGroupChatInfoRoutine.trigger(selectedId));
+        yield reloadCurrentGroupChat();
     } catch (e) {
         yield put(toggleMemberRoleGroupChatRoutine.failure(e?.message));
         toastr.error("Unexpected error", e?.message);
     }
+}
+
+function* updateGroupChatSaga({payload}: PayloadAction<IUpdateGroupChatRoutinePayload>) {
+    try {
+        const {id, title, picture} = payload;
+        yield call(groupChatService.changeInfo, id, title, picture);
+        const chatsList = yield select((state: IAppState) => state.chatsListNew.data.chatsList);
+        const currChat = chatsList?.find(c => c.id === id);
+        if (currChat) {
+            yield put(updateChatInListRoutine.fulfill({...currChat, title, picture}));
+        }
+        yield put(updateGroupChatRoutine.success());
+        yield reloadCurrentGroupChat();
+    } catch (e) {
+        yield put(updateGroupChatRoutine.failure(e?.message));
+        toastr.error("Unexpected error", e?.message);
+    }
+}
+
+function* reloadCurrentGroupChat() {
+    const selectedId = yield select((state: IAppState) => state.groupChat.data.selectedId);
+    yield put(loadGroupChatInfoRoutine.trigger(selectedId));
 }
 
 export default function* groupChatSaga() {
@@ -103,5 +123,6 @@ export default function* groupChatSaga() {
         yield takeEvery(addMemberToGroupChatRoutine.TRIGGER, addMemberGroupChatSaga),
         yield takeEvery(deleteMemberToGroupChatRoutine.TRIGGER, deleteMemberGroupChatSaga),
         yield takeEvery(toggleMemberRoleGroupChatRoutine.TRIGGER, toggleMemberRoleGroupChatSaga),
+        yield takeEvery(updateGroupChatRoutine.TRIGGER, updateGroupChatSaga),
     ]);
 }
