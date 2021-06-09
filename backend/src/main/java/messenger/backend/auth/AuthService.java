@@ -10,6 +10,7 @@ import messenger.backend.auth.exceptions.InvalidUsernameOrPasswordException;
 import messenger.backend.auth.exceptions.UsernameExistsException;
 import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.auth.security.SecurityUser;
+import messenger.backend.refreshToken.RefreshTokenRepository;
 import messenger.backend.refreshToken.RefreshTokenService;
 import messenger.backend.user.UserEntity;
 import messenger.backend.user.UserRepository;
@@ -31,6 +32,7 @@ public class AuthService {
     private final JwtTokenService jwtTokenService;
     private final UserRepository userRepository;
     private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
 
     public AuthResponseDto login(AuthRequestDto authRequestDto) {
@@ -73,15 +75,15 @@ public class AuthService {
     public AuthResponseDto refreshToken(RefreshTokenDto refreshTokenDto) {
         var refreshToken = refreshTokenDto.getRefreshToken();
         var refreshTokenEntity = refreshTokenService.getById(refreshToken);
+        refreshTokenRepository.deleteById(refreshToken);
 
         var userEntity = refreshTokenEntity.getUserEntity();
-
         return buildAuthResponse(userEntity);
     }
 
     public void logout(RefreshTokenDto refreshTokenDto) {
         var refreshToken = refreshTokenDto.getRefreshToken();
-        refreshTokenService.deleteById(refreshToken);
+        refreshTokenRepository.deleteById(refreshToken);
     }
 
     public CurrentUserInfoDto getCurrentUserInfo() {

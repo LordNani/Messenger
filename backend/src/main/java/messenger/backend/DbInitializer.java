@@ -21,7 +21,5 @@ public class DbInitializer {
         if (userRepository.count() == 0) {
             fakerService.generateRandomData();
         }
-
-
     }
 }
