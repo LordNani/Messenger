@@ -1,16 +1,16 @@
 import React from "react";
 import styles from "./GroupChatDetails.module.sass";
 import {IChatDetails} from "../../api/chat/general/generalChatModels";
-import LoaderWrapper from "../LoaderWrapper/LoaderWrapper";
-import Button from "../FormComponents/Button/Button";
+import LoaderWrapper from "../../components/LoaderWrapper/LoaderWrapper";
+import Button from "../../components/FormComponents/Button/Button";
 import {IGroupChatInfo, RoleEnum} from "../../api/chat/group/groupChatModels";
 import groupChatService from "../../api/chat/group/groupChatService";
-import UserManager from "../UserManager/UserManager";
-import UserFinder from "../UserFinder/UserFinder";
-import ErrorMessage from "../FormComponents/ErrorMessage/ErrorMessage";
+import UserManager from "../../components/UserManager/UserManager";
+import UserFinder from "../../components/UserFinder/UserFinder";
+import ErrorMessage from "../../components/FormComponents/ErrorMessage/ErrorMessage";
 import {IUserShortDto} from "../../api/user/userModels";
 import {Form, Formik} from "formik";
-import Input from "../FormComponents/Input/Input";
+import Input from "../../components/FormComponents/Input/Input";
 import * as Yup from "yup";
 
 interface IOwnProps {
@@ -36,7 +36,7 @@ const validationSchema = Yup.object().shape({
         .required('This field is required'),
     picture: Yup.string()
         .max(256, 'Too Long! Need to be less than 256 characters.')
-        
+
 });
 
 class GroupChatDetails extends React.Component<IOwnProps, IState> {
@@ -154,7 +154,7 @@ class GroupChatDetails extends React.Component<IOwnProps, IState> {
     render() {
         const {info, deleting, adding, changing, error, toAddUserId, leaving} = this.state;
 
-        const defaultUserPicture = 
+        const defaultUserPicture =
             'https://www.pngkey.com/png/full/282-2820067_taste-testing-at-baskin-robbins-empty-profile-picture.png';
         return (
             <LoaderWrapper loading={!info}>

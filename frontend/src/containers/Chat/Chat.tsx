@@ -8,7 +8,7 @@ import {ICurrentUser} from "../../api/auth/authModels";
 import ChatSender from "../../components/ChatSender/ChatSender";
 import Modal from "../../components/Modal/Modal";
 import {ChatTypeEnum, IChatDetails} from "../../api/chat/general/generalChatModels";
-import GroupChatDetails from "../../components/GroupChatDetails/GroupChatDetails";
+import GroupChatDetails from "../GroupChatDetails/GroupChatDetails";
 import {IAppState} from "../../reducers";
 import {connect} from "react-redux";
 import {IAction, ICallback1} from "../../helpers/types.helper";
