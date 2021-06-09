@@ -12,11 +12,24 @@ import {IUserShortDto} from "../../api/user/userModels";
 import {Form, Formik} from "formik";
 import Input from "../../components/FormComponents/Input/Input";
 import * as Yup from "yup";
+import {IAppState} from "../../reducers";
+import {connect} from "react-redux";
+import {ICallback1} from "../../helpers/types.helper";
+import {loadGroupChatInfoRoutine, selectGroupChatIdRoutine} from "./routines";
+import Modal from "../../components/Modal/Modal";
+
+interface IPropsFromState {
+    selectedId?: string;
+    info?: IGroupChatInfo;
+    loadInfoLoading: boolean;
+}
+
+interface IActions {
+    loadInfo: ICallback1<string>;
+    setSelectedId: ICallback1<string | undefined>;
+}
 
 interface IOwnProps {
-    chatDetails: IChatDetails;
-    deleteChatFromList: (chatId: string) => void;
-    updateChatInList: (chat: IChatDetails) => void;
 }
 
 interface IState {
@@ -39,7 +52,7 @@ const validationSchema = Yup.object().shape({
 
 });
 
-class GroupChatDetails extends React.Component<IOwnProps, IState> {
+class GroupChatDetails extends React.Component<IOwnProps & IPropsFromState & IActions, IState> {
 
     state = {
         deleting: false,
@@ -53,46 +66,46 @@ class GroupChatDetails extends React.Component<IOwnProps, IState> {
     }
 
     loadData = async () => {
-        const {chatDetails} = this.props;
-        this.setState({info: undefined});
-        const info: IGroupChatInfo = await groupChatService.getById(chatDetails.id);
-        this.setState({info});
+        // const {chatDetails} = this.props;
+        // this.setState({info: undefined});
+        // const info: IGroupChatInfo = await groupChatService.getById(chatDetails.id);
+        // this.setState({info});
     }
 
     handleDelete = async () => {
-        const id = this.props.chatDetails.id;
-        this.setState({deleting: true});
-        await groupChatService.deleteById(id);
-        this.setState({deleting: false});
-        this.props.deleteChatFromList(id);
+        // const id = this.props.chatDetails.id;
+        // this.setState({deleting: true});
+        // await groupChatService.deleteById(id);
+        // this.setState({deleting: false});
+        // this.props.deleteChatFromList(id);
     }
 
     handleLeave = async () => {
-        const id = this.props.chatDetails.id;
-        this.setState({leaving: true});
-        await groupChatService.leaveChatById(id);
-        this.setState({leaving: false});
-        this.props.deleteChatFromList(id);
+        // const id = this.props.chatDetails.id;
+        // this.setState({leaving: true});
+        // await groupChatService.leaveChatById(id);
+        // this.setState({leaving: false});
+        // this.props.deleteChatFromList(id);
     }
 
     handleChange = async (values: any) => {
-        const {updateChatInList, chatDetails} = this.props;
-        const {info} = this.state;
-        if(!info) {
-            return;
-        }
-
-        this.setState({error: undefined});
-        try {
-            this.setState({changing: true});
-            await groupChatService.changeInfo(info.id, values.title, values.picture);
-            updateChatInList({...chatDetails, title: values.title, picture: values.picture});
-            await this.loadData();
-        } catch (e) {
-            this.setState({error: e.message});
-        } finally {
-            this.setState({changing: false});
-        }
+        // const {updateChatInList, chatDetails} = this.props;
+        // const {info} = this.state;
+        // if(!info) {
+        //     return;
+        // }
+        //
+        // this.setState({error: undefined});
+        // try {
+        //     this.setState({changing: true});
+        //     await groupChatService.changeInfo(info.id, values.title, values.picture);
+        //     updateChatInList({...chatDetails, title: values.title, picture: values.picture});
+        //     await this.loadData();
+        // } catch (e) {
+        //     this.setState({error: e.message});
+        // } finally {
+        //     this.setState({changing: false});
+        // }
     }
 
     handleAddMember = async () => {
@@ -154,117 +167,137 @@ class GroupChatDetails extends React.Component<IOwnProps, IState> {
     render() {
         const {info, deleting, adding, changing, error, toAddUserId, leaving} = this.state;
 
+        const {setSelectedId, selectedId} = this.props;
+
+        if (!selectedId) {
+            return null;
+        }
+
         const defaultUserPicture =
             'https://www.pngkey.com/png/full/282-2820067_taste-testing-at-baskin-robbins-empty-profile-picture.png';
         return (
-            <LoaderWrapper loading={!info}>
-                {info && (
-                    <div>
-                        <div className={styles.wrapperPicture}>
-                            <img className={styles.pictureStyle} src={info?.picture ||  defaultUserPicture} />
+            <Modal close={() => setSelectedId(undefined)}>
+                <LoaderWrapper loading={!info}>
+                    {info && (
+                        <div>
+                            <div className={styles.wrapperPicture}>
+                                <img className={styles.pictureStyle} src={info?.picture ||  defaultUserPicture} />
+                            </div>
+                            <div className={styles.title}>{info.title}</div>
+                            <div className={styles.permission}>{info.permissionLevel}</div>
                         </div>
-                        <div className={styles.title}>{info.title}</div>
-                        <div className={styles.permission}>{info.permissionLevel}</div>
-                    </div>
-                )}
-                {error && (
-                    <ErrorMessage text={error} />
-                )}
-                {(info?.permissionLevel && this.isAdminOrOwner(info.permissionLevel)) && (
-                    <Formik
-                        onSubmit={this.handleChange}
-                        initialValues={{title: info?.title, picture: info?.picture || ""}}
-                        validationSchema={validationSchema}
-                        render={({
-                                     errors,
-                                     touched,
-                                     handleChange,
-                                     handleBlur,
-                                     values
-                                 }) => {
-                            const valid = !errors.title && !errors.picture;
-                            return (
-                                <Form>
-                                    <Input
-                                        label="Title"
-                                        value={values.title}
-                                        name="title"
-                                        onChange={handleChange}
-                                        onBlur={handleBlur}
-                                        error={errors.title}
-                                        touched={touched.title}
-                                    />
-                                    <Input
-                                        label="Photo"
-                                        value={values.picture}
-                                        name="picture"
-                                        onChange={handleChange}
-                                        onBlur={handleBlur}
-                                        error={errors.picture}
-                                        touched={touched.picture}
-                                    />
-                                    <div className={styles.buttonWrapper}>
-                                        <Button
-                                            text="Change chat info"
-                                            disabled={!valid}
-                                            submit
-                                            loading={changing}
+                    )}
+                    {error && (
+                        <ErrorMessage text={error} />
+                    )}
+                    {(info?.permissionLevel && this.isAdminOrOwner(info.permissionLevel)) && (
+                        <Formik
+                            onSubmit={this.handleChange}
+                            initialValues={{title: info?.title, picture: info?.picture || ""}}
+                            validationSchema={validationSchema}
+                            render={({
+                                         errors,
+                                         touched,
+                                         handleChange,
+                                         handleBlur,
+                                         values
+                                     }) => {
+                                const valid = !errors.title && !errors.picture;
+                                return (
+                                    <Form>
+                                        <Input
+                                            label="Title"
+                                            value={values.title}
+                                            name="title"
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            error={errors.title}
+                                            touched={touched.title}
                                         />
-                                    </div>
-                                </Form>
-                            );
-                        }
-                        }
-                    />
-                )}
-                {(info?.permissionLevel && this.isAdminOrOwner(info.permissionLevel)) && (
-                    <div className={styles.finderWrapper}>
-                        <UserFinder setUserId={id => this.setState({toAddUserId: id})} />
+                                        <Input
+                                            label="Photo"
+                                            value={values.picture}
+                                            name="picture"
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            error={errors.picture}
+                                            touched={touched.picture}
+                                        />
+                                        <div className={styles.buttonWrapper}>
+                                            <Button
+                                                text="Change chat info"
+                                                disabled={!valid}
+                                                submit
+                                                loading={changing}
+                                            />
+                                        </div>
+                                    </Form>
+                                );
+                            }
+                            }
+                        />
+                    )}
+                    {(info?.permissionLevel && this.isAdminOrOwner(info.permissionLevel)) && (
+                        <div className={styles.finderWrapper}>
+                            <UserFinder setUserId={id => this.setState({toAddUserId: id})} />
+                            <div className={styles.buttonWrapper}>
+                                <Button
+                                    text="Add member"
+                                    onClick={this.handleAddMember}
+                                    loading={adding}
+                                    disabled={!toAddUserId}
+                                />
+                            </div>
+                        </div>
+                    )}
+                    {info?.members.map(user => (
+                        <UserManager
+                            key={user.id}
+                            user={user}
+                            deletable={
+                                (info?.permissionLevel !== RoleEnum.MEMBER && user.permissionLevel === RoleEnum.MEMBER)
+                                ||
+                                (info?.permissionLevel === RoleEnum.OWNER && user.permissionLevel === RoleEnum.ADMIN)
+                            }
+                            onDelete={() => this.handleDeleteMember(user.id)}
+                            upgradable={info.permissionLevel === RoleEnum.OWNER}
+                            upgraded={user.permissionLevel === RoleEnum.ADMIN}
+                            onToggleUpgrade={() => this.handleToggleRole(user)}
+                        />
+                    ))}
+                    {info?.permissionLevel === RoleEnum.OWNER && (
                         <div className={styles.buttonWrapper}>
                             <Button
-                                text="Add member"
-                                onClick={this.handleAddMember}
-                                loading={adding}
-                                disabled={!toAddUserId}
+                                text="Delete group chat"
+                                onClick={this.handleDelete}
+                                loading={deleting}
                             />
                         </div>
-                    </div>
-                )}
-                {info?.members.map(user => (
-                    <UserManager
-                        key={user.id}
-                        user={user}
-                        deletable={
-                            (info?.permissionLevel !== RoleEnum.MEMBER && user.permissionLevel === RoleEnum.MEMBER) ||
-                            (info?.permissionLevel === RoleEnum.OWNER && user.permissionLevel === RoleEnum.ADMIN)
-                        }
-                        onDelete={() => this.handleDeleteMember(user.id)}
-                        upgradable={info.permissionLevel === RoleEnum.OWNER}
-                        upgraded={user.permissionLevel === RoleEnum.ADMIN}
-                        onToggleUpgrade={() => this.handleToggleRole(user)}
-                    />
-                ))}
-                {info?.permissionLevel === RoleEnum.OWNER && (
-                    <div className={styles.buttonWrapper}>
-                        <Button
-                            text="Delete group chat"
-                            onClick={this.handleDelete}
-                            loading={deleting}
-                        />
-                    </div>
-                )}
-                {info?.permissionLevel !== RoleEnum.OWNER && (
-                    <div className={styles.buttonWrapper}>
-                        <Button
-                            text="Leave group chat"
-                            onClick={this.handleLeave}
-                            loading={leaving}
-                        />
-                    </div>
-                )}
-            </LoaderWrapper>
+                    )}
+                    {info?.permissionLevel !== RoleEnum.OWNER && (
+                        <div className={styles.buttonWrapper}>
+                            <Button
+                                text="Leave group chat"
+                                onClick={this.handleLeave}
+                                loading={leaving}
+                            />
+                        </div>
+                    )}
+                </LoaderWrapper>
+            </Modal>
         );
     }
 }
 
-export default GroupChatDetails;
+const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
+    selectedId: state.groupChat.data.selectedId,
+    info: state.groupChat.data.info,
+    loadInfoLoading: state.groupChat.requests.loadInfo.loading,
+});
+
+const mapDispatchToProps: IActions = {
+    loadInfo: loadGroupChatInfoRoutine,
+    setSelectedId: selectGroupChatIdRoutine.fulfill,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(GroupChatDetails);
