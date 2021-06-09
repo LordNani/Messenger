@@ -33,7 +33,6 @@ interface IOwnProps {
 }
 
 interface IState {
-    info?: IGroupChatInfo;
     deleting: boolean;
     leaving: boolean;
     adding: boolean;
@@ -61,15 +60,18 @@ class GroupChatDetails extends React.Component<IOwnProps & IPropsFromState & IAc
         changing: false,
     } as IState;
 
-    async componentDidMount() {
-        await this.loadData();
-    }
-
-    loadData = async () => {
-        // const {chatDetails} = this.props;
-        // this.setState({info: undefined});
-        // const info: IGroupChatInfo = await groupChatService.getById(chatDetails.id);
-        // this.setState({info});
+    componentDidUpdate(
+        prevProps: Readonly<IOwnProps & IPropsFromState & IActions>,
+        prevState: Readonly<{}>,
+        snapshot?: any
+    ) {
+        const {selectedId} = this.props;
+        if (
+            selectedId &&
+            prevProps.selectedId !== selectedId
+        ) {
+            this.props.loadInfo(selectedId);
+        }
     }
 
     handleDelete = async () => {
@@ -109,55 +111,55 @@ class GroupChatDetails extends React.Component<IOwnProps & IPropsFromState & IAc
     }
 
     handleAddMember = async () => {
-        const {info, toAddUserId} = this.state;
-        if(!info || ! toAddUserId) {
-            return;
-        }
-
-        this.setState({error: undefined});
-        try {
-            this.setState({adding: true});
-            await groupChatService.addMember(info.id, toAddUserId);
-            await this.loadData();
-        } catch (e) {
-            this.setState({error: e.message});
-        } finally {
-            this.setState({adding: false});
-        }
+        // const {info, toAddUserId} = this.state;
+        // if(!info || ! toAddUserId) {
+        //     return;
+        // }
+        //
+        // this.setState({error: undefined});
+        // try {
+        //     this.setState({adding: true});
+        //     await groupChatService.addMember(info.id, toAddUserId);
+        //     await this.loadData();
+        // } catch (e) {
+        //     this.setState({error: e.message});
+        // } finally {
+        //     this.setState({adding: false});
+        // }
     }
 
     handleDeleteMember = async (userId: string) => {
-        const {info} = this.state;
-        if(!info) {
-            return;
-        }
-
-        this.setState({error: undefined});
-        try {
-            await groupChatService.deleteMember(info.id, userId);
-            await this.loadData();
-        } catch (e) {
-            this.setState({error: e.message});
-        }
+        // const {info} = this.state;
+        // if(!info) {
+        //     return;
+        // }
+        //
+        // this.setState({error: undefined});
+        // try {
+        //     await groupChatService.deleteMember(info.id, userId);
+        //     await this.loadData();
+        // } catch (e) {
+        //     this.setState({error: e.message});
+        // }
     }
 
     handleToggleRole = async (user: IUserShortDto) => {
-        const {info} = this.state;
-        if(!info) {
-            return;
-        }
-
-        this.setState({error: undefined});
-        try {
-            if (user.permissionLevel === RoleEnum.ADMIN) {
-                await groupChatService.downgradeMember(info.id, user.id);
-            } else {
-                await groupChatService.upgradeMember(info.id, user.id);
-            }
-            await this.loadData();
-        } catch (e) {
-            this.setState({error: e.message});
-        }
+        // const {info} = this.state;
+        // if(!info) {
+        //     return;
+        // }
+        //
+        // this.setState({error: undefined});
+        // try {
+        //     if (user.permissionLevel === RoleEnum.ADMIN) {
+        //         await groupChatService.downgradeMember(info.id, user.id);
+        //     } else {
+        //         await groupChatService.upgradeMember(info.id, user.id);
+        //     }
+        //     await this.loadData();
+        // } catch (e) {
+        //     this.setState({error: e.message});
+        // }
     }
 
     isAdminOrOwner = (permissionLevel: RoleEnum) => {
@@ -165,9 +167,11 @@ class GroupChatDetails extends React.Component<IOwnProps & IPropsFromState & IAc
     }
 
     render() {
-        const {info, deleting, adding, changing, error, toAddUserId, leaving} = this.state;
+        const {deleting, adding, changing, error, toAddUserId, leaving} = this.state;
 
-        const {setSelectedId, selectedId} = this.props;
+        const {
+            setSelectedId, selectedId, loadInfoLoading, info
+        } = this.props;
 
         if (!selectedId) {
             return null;
@@ -177,7 +181,7 @@ class GroupChatDetails extends React.Component<IOwnProps & IPropsFromState & IAc
             'https://www.pngkey.com/png/full/282-2820067_taste-testing-at-baskin-robbins-empty-profile-picture.png';
         return (
             <Modal close={() => setSelectedId(undefined)}>
-                <LoaderWrapper loading={!info}>
+                <LoaderWrapper loading={loadInfoLoading}>
                     {info && (
                         <div>
                             <div className={styles.wrapperPicture}>
