@@ -106,43 +106,21 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         }
     }
 
+    private stompSubscribe = (prefix: string, listener: ICallback1<any>) => {
+        this.stompClient.subscribe(
+            prefix + this.props.currentUser?.id,
+            listener,
+            {'Authorization': tokenService.getAccessToken() as string}
+        );
+    }
+
     private afterSocketConnect = async (frame: any) => {
-        console.log('Connected (my log): ' + frame);
-        let accessToken = tokenService.getAccessToken();
-        if (accessToken === null) {
-            accessToken = '';
-        }
-        this.stompClient.subscribe(
-            '/topic/messages/' + this.props.currentUser?.id,
-            this.messageListener,
-            {'Authorization': accessToken}
-        );
-        this.stompClient.subscribe(
-            '/topic/chats/read/' + this.props.currentUser?.id,
-            this.readChatListener,
-            {'Authorization': accessToken}
-        );
-        this.stompClient.subscribe(
-            '/topic/chats/create/' + this.props.currentUser?.id,
-            this.createChatListener,
-            {'Authorization': accessToken}
-        );
-        this.stompClient.subscribe(
-            '/topic/chats/delete/' + this.props.currentUser?.id,
-            this.deleteChatListener,
-            {'Authorization': accessToken}
-        );
-        this.stompClient.subscribe(
-            '/topic/chats/update/' + this.props.currentUser?.id,
-            this.updateChatListener,
-            {'Authorization': accessToken}
-            );
-        this.stompClient.subscribe(
-            '/topic/messages/update/username/' + this.props.currentUser?.id,
-            this.updateMessagesUsernameListener,
-            {'Authorization': accessToken}
-        );
-        console.log('END OF Connected');
+        this.stompSubscribe('/topic/messages/', this.messageListener);
+        this.stompSubscribe('/topic/chats/read/', this.readChatListener);
+        this.stompSubscribe('/topic/chats/create/',this.createChatListener);
+        this.stompSubscribe('/topic/chats/delete/', this.deleteChatListener);
+        this.stompSubscribe('/topic/chats/update/', this.updateChatListener);
+        this.stompSubscribe('/topic/messages/update/username/', this.updateMessagesUsernameListener);
     }
 
     private messageListener = async (dataFromServer: any) => {
@@ -150,10 +128,10 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
         this.props.actions.appendReadyMessage(iMessage.chatId, iMessage, loadingId);
         const {selectedChatId} = this.props;
         let seenAt;
-        if(selectedChatId !== iMessage.chatId && iMessage.senderId !== this.props.currentUser?.id) {
+        if (selectedChatId !== iMessage.chatId && iMessage.senderId !== this.props.currentUser?.id) {
             toastr.success('New message', 'You have received a new message');
         }
-        if(selectedChatId === iMessage.chatId) {
+        if (selectedChatId === iMessage.chatId) {
             seenAt = await generalChatService.readChat(iMessage.chatId);
         }
         const chat = this.props.chatsList?.find(c => c.id === iMessage.chatId);
@@ -198,7 +176,7 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
 
     render() {
         if (!authService.isLoggedIn()) {
-            return <Redirect to="/auth" />;
+            return <Redirect to="/auth"/>;
         }
 
         const {currentUser} = this.props;
@@ -206,13 +184,13 @@ class Home extends React.Component<RouteComponentProps & IPropsFromDispatch & IP
 
         return (
             <LoaderWrapper loading={!currentUser || loading}>
-                <Header />
+                <Header/>
                 <div className={styles.content}>
-                    <ChatsList />
-                    <Chat />
+                    <ChatsList/>
+                    <Chat/>
                 </div>
-                <PersonalChatDetails />
-                <GroupChatDetails />
+                <PersonalChatDetails/>
+                <GroupChatDetails/>
             </LoaderWrapper>
         );
     }
