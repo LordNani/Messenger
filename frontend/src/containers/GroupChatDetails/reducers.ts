@@ -30,7 +30,7 @@ const requests = combineReducers({
     updateChat: reducerCreator([updateGroupChatRoutine.TRIGGER]),
     addMember: reducerCreator([addMemberToGroupChatRoutine.TRIGGER]),
     deleteMember: reducerCreator([deleteMemberToGroupChatRoutine.TRIGGER]),
-    toggleMember: reducerCreator([toggleMemberRoleGroupChatRoutine.TRIGGER]),
+    toggleMemberRole: reducerCreator([toggleMemberRoleGroupChatRoutine.TRIGGER]),
 });
 
 const data = createReducer(initialStateData, {

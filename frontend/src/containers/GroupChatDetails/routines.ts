@@ -22,12 +22,12 @@ export interface IUpdateGroupChatRoutinePayload {
 }
 
 export interface IMemberToGroupChatRoutinePayload {
-    id: string;
+    chatId: string;
     userId: string;
 }
 
 export interface IToggleMemberRoleGroupChatRoutinePayload {
-    id: string;
+    chatId: string;
     userId: string;
     currentRole: RoleEnum;
 }

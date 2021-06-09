@@ -16,10 +16,14 @@ import {IAppState} from "../../reducers";
 import {connect} from "react-redux";
 import {ICallback1} from "../../helpers/types.helper";
 import {
+    addMemberToGroupChatRoutine,
     deleteGroupChatRoutine,
+    deleteMemberToGroupChatRoutine,
+    IMemberToGroupChatRoutinePayload,
+    IToggleMemberRoleGroupChatRoutinePayload,
     leaveGroupChatRoutine,
     loadGroupChatInfoRoutine,
-    selectGroupChatIdRoutine
+    selectGroupChatIdRoutine, toggleMemberRoleGroupChatRoutine
 } from "./routines";
 import Modal from "../../components/Modal/Modal";
 
@@ -29,12 +33,16 @@ interface IPropsFromState {
     loadInfoLoading: boolean;
     deleteChatLoading: boolean;
     leaveChatLoading: boolean;
+    addMemberLoading: boolean;
 }
 
 interface IActions {
     loadInfo: ICallback1<string>;
     deleteChat: ICallback1<string>;
     leaveChat: ICallback1<string>;
+    addMember: ICallback1<IMemberToGroupChatRoutinePayload>;
+    deleteMember: ICallback1<IMemberToGroupChatRoutinePayload>;
+    toggleMemberRole: ICallback1<IToggleMemberRoleGroupChatRoutinePayload>;
     setSelectedId: ICallback1<string | undefined>;
 }
 
@@ -42,7 +50,6 @@ interface IOwnProps {
 }
 
 interface IState {
-    adding: boolean;
     changing: boolean;
     toAddUserId?: string;
     error?: string;
@@ -61,7 +68,6 @@ const validationSchema = Yup.object().shape({
 class GroupChatDetails extends React.Component<IOwnProps & IPropsFromState & IActions, IState> {
 
     state = {
-        adding: false,
         changing: false,
     } as IState;
 
@@ -99,68 +105,16 @@ class GroupChatDetails extends React.Component<IOwnProps & IPropsFromState & IAc
         // }
     }
 
-    handleAddMember = async () => {
-        // const {info, toAddUserId} = this.state;
-        // if(!info || ! toAddUserId) {
-        //     return;
-        // }
-        //
-        // this.setState({error: undefined});
-        // try {
-        //     this.setState({adding: true});
-        //     await groupChatService.addMember(info.id, toAddUserId);
-        //     await this.loadData();
-        // } catch (e) {
-        //     this.setState({error: e.message});
-        // } finally {
-        //     this.setState({adding: false});
-        // }
-    }
-
-    handleDeleteMember = async (userId: string) => {
-        // const {info} = this.state;
-        // if(!info) {
-        //     return;
-        // }
-        //
-        // this.setState({error: undefined});
-        // try {
-        //     await groupChatService.deleteMember(info.id, userId);
-        //     await this.loadData();
-        // } catch (e) {
-        //     this.setState({error: e.message});
-        // }
-    }
-
-    handleToggleRole = async (user: IUserShortDto) => {
-        // const {info} = this.state;
-        // if(!info) {
-        //     return;
-        // }
-        //
-        // this.setState({error: undefined});
-        // try {
-        //     if (user.permissionLevel === RoleEnum.ADMIN) {
-        //         await groupChatService.downgradeMember(info.id, user.id);
-        //     } else {
-        //         await groupChatService.upgradeMember(info.id, user.id);
-        //     }
-        //     await this.loadData();
-        // } catch (e) {
-        //     this.setState({error: e.message});
-        // }
-    }
-
     isAdminOrOwner = (permissionLevel: RoleEnum) => {
         return permissionLevel === RoleEnum.ADMIN || permissionLevel === RoleEnum.OWNER;
     }
 
     render() {
-        const {adding, changing, error, toAddUserId} = this.state;
+        const {changing, error, toAddUserId} = this.state;
 
         const {
             setSelectedId, selectedId, loadInfoLoading, info, deleteChatLoading, leaveChatLoading,
-            deleteChat, leaveChat
+            deleteChat, leaveChat, addMemberLoading, addMember, deleteMember, toggleMemberRole
         } = this.props;
 
         if (!selectedId) {
@@ -237,8 +191,8 @@ class GroupChatDetails extends React.Component<IOwnProps & IPropsFromState & IAc
                             <div className={styles.buttonWrapper}>
                                 <Button
                                     text="Add member"
-                                    onClick={this.handleAddMember}
-                                    loading={adding}
+                                    onClick={() => addMember({chatId: info.id, userId: toAddUserId as string})}
+                                    loading={addMemberLoading}
                                     disabled={!toAddUserId}
                                 />
                             </div>
@@ -253,10 +207,12 @@ class GroupChatDetails extends React.Component<IOwnProps & IPropsFromState & IAc
                                 ||
                                 (info?.permissionLevel === RoleEnum.OWNER && user.permissionLevel === RoleEnum.ADMIN)
                             }
-                            onDelete={() => this.handleDeleteMember(user.id)}
+                            onDelete={() => deleteMember({chatId: info.id, userId: user.id})}
                             upgradable={info.permissionLevel === RoleEnum.OWNER}
                             upgraded={user.permissionLevel === RoleEnum.ADMIN}
-                            onToggleUpgrade={() => this.handleToggleRole(user)}
+                            onToggleUpgrade={() => toggleMemberRole({
+                                userId: user.id, currentRole: user.permissionLevel, chatId: info.id
+                            })}
                         />
                     ))}
                     {info?.permissionLevel === RoleEnum.OWNER && (
@@ -289,6 +245,7 @@ const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
     loadInfoLoading: state.groupChat.requests.loadInfo.loading,
     deleteChatLoading: state.groupChat.requests.deleteChat.loading,
     leaveChatLoading: state.groupChat.requests.leaveChat.loading,
+    addMemberLoading: state.groupChat.requests.addMember.loading,
 });
 
 const mapDispatchToProps: IActions = {
@@ -296,6 +253,9 @@ const mapDispatchToProps: IActions = {
     setSelectedId: selectGroupChatIdRoutine.fulfill,
     deleteChat: deleteGroupChatRoutine,
     leaveChat: leaveGroupChatRoutine,
+    addMember: addMemberToGroupChatRoutine,
+    deleteMember: deleteMemberToGroupChatRoutine,
+    toggleMemberRole: toggleMemberRoleGroupChatRoutine,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupChatDetails);
