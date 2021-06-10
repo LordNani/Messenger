@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql({"/sql/clean.sql", "/sql/chat/initGeneralChatTests.sql"})
+@Sql(value = {"/sql/clean.sql", "/sql/chat/initGeneralChatTests.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class GeneralChatControllerIT {
 
     @Autowired
@@ -123,7 +123,7 @@ class GeneralChatControllerIT {
                 .when()
                 .post("/api/chat/general/read/22222222-e194-4d97-aae5-bfc03ce8767a")
                 .then()
-                .statusCode(HttpStatus.SC_NOT_FOUND)
+                .statusCode(HttpStatus.SC_FORBIDDEN)
                 .extract().asString();
 
         Response<Date> response = objectMapper.readValue(jsonResponse, new TypeReference<>(){});

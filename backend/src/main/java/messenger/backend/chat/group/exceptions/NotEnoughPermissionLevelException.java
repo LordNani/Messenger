@@ -5,6 +5,6 @@ import org.springframework.http.HttpStatus;
 
 public class NotEnoughPermissionLevelException extends WebException {
     public NotEnoughPermissionLevelException() {
-        super("User has insufficient permission level", HttpStatus.BAD_REQUEST);
+        super("User has insufficient permission level", HttpStatus.FORBIDDEN);
     }
 }

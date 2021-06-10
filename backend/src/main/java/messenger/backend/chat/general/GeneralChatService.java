@@ -2,13 +2,12 @@ package messenger.backend.chat.general;
 
 import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.jwt.JwtTokenService;
+import messenger.backend.chat.exceptions.ContextUserNotMemberOfChatException;
 import messenger.backend.chat.general.dto.GeneralChatResponseDto;
 import messenger.backend.chat.general.dto.LastSeenResponseDto;
-import messenger.backend.chat.group.exceptions.UserNotInChatException;
 import messenger.backend.message.MessageService;
 import messenger.backend.sockets.SocketSender;
 import messenger.backend.sockets.SubscribedOn;
-import messenger.backend.user.UserEntity;
 import messenger.backend.user.UserRepository;
 import messenger.backend.user.exceptions.UserNotFoundException;
 import messenger.backend.userChat.UserChatRepository;
@@ -56,7 +55,7 @@ public class GeneralChatService {
         var currentUserId = JwtTokenService.getCurrentUserId();
         var userChat = userChatRepository
                 .findByUserIdAndChatId(currentUserId, chatId)
-                .orElseThrow(UserNotInChatException::new);
+                .orElseThrow(ContextUserNotMemberOfChatException::new);
         userChat.setSeenAt(new Date());
         userChatRepository.save(userChat);
 
