@@ -28,6 +28,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -573,6 +574,33 @@ public class GroupChatControllerIT {
         assertThatResponseWithMessageAndNoData(jsonResponse);
 
         assertThat(groupChatRepository.findById(dto.getChatId()).orElseThrow().getGroupName()).isEqualTo("GROUP_title");
+    }
+
+    @Test
+    @SneakyThrows
+    void shouldLeaveChat() {
+        RestAssured
+                .given()
+                .header("Authorization", getAccessToken("user2", "user"))
+                .when()
+                .post("/api/chat/group/leave/" + "51c07af2-5ed1-4e30-b054-e5a3d51da5a5")
+                .then()
+                .statusCode(HttpStatus.SC_OK);
+        assertThat(userChatRepository.findById(UUID.fromString("360cdbbf-5433-47b8-a32b-4fe0ab84df73"))).isEmpty();
+    }
+
+    @Test
+    @SneakyThrows
+    void shouldNotLeaveChat_InvalidChatOperation() {
+        String jsonResponse = RestAssured
+                .given()
+                .header("Authorization", getAccessToken())
+                .when()
+                .post("/api/chat/group/leave/" + "51c07af2-5ed1-4e30-b054-e5a3d51da5a5")
+                .then()
+                .statusCode(HttpStatus.SC_NOT_FOUND)
+                .extract().asString();
+        assertThatResponseWithMessageAndNoData(jsonResponse);
     }
 
     @Test
