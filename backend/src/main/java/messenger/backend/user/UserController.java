@@ -9,6 +9,7 @@ import messenger.backend.utils.Response;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/search") //todo @NotEmpty validation
-    public Response<UserSearchInfoDto> getUserSearchInfo(@RequestParam(name = "username") String username) {
+    public Response<UserSearchInfoDto> getUserSearchInfo(@RequestParam(name = "username") @NotBlank String username) {
         return Response.success(userService.getUserSearchInfo(username));
     }
 
