@@ -8,8 +8,6 @@ import lombok.SneakyThrows;
 import messenger.backend.auth.dto.AuthRequestDto;
 import messenger.backend.auth.dto.AuthResponseDto;
 import messenger.backend.chat.general.dto.GeneralChatResponseDto;
-import messenger.backend.chat.group.dto.ChangeGroupChatNameRequestDto;
-import messenger.backend.chat.group.dto.GroupChatResponseDto;
 import messenger.backend.chat.personal.dto.CreatePersonalChatRequestDto;
 import messenger.backend.chat.personal.dto.DeletePersonalChatRequestDto;
 import messenger.backend.chat.personal.dto.PersonalChatResponseDto;
@@ -27,7 +25,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.util.LinkedHashMap;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;

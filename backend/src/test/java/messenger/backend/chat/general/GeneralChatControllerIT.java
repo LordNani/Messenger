@@ -4,21 +4,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
+import lombok.SneakyThrows;
 import messenger.backend.auth.dto.AuthRequestDto;
 import messenger.backend.auth.dto.AuthResponseDto;
-import messenger.backend.chat.ChatSuperclass;
 import messenger.backend.chat.general.dto.GeneralChatResponseDto;
 import messenger.backend.chat.general.dto.LastSeenResponseDto;
-import messenger.backend.chat.group.GroupChatRepository;
-import messenger.backend.chat.personal.PersonalChatRepository;
 import messenger.backend.message.dto.LastMessageResponseDto;
-import messenger.backend.user.UserEntity;
-import messenger.backend.user.UserRepository;
 import messenger.backend.userChat.UserChatRepository;
 import messenger.backend.utils.Response;
 import org.apache.http.HttpStatus;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,13 +21,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(value = {"/sql/clean.sql", "/sql/chat/initGeneralChatTests.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -50,7 +41,8 @@ class GeneralChatControllerIT {
     }
 
     @Test
-    void shouldGetChatsList() throws JsonProcessingException {
+    @SneakyThrows
+    void shouldGetChatsList() {
         String jsonResponse = RestAssured
                 .given()
                 .header("Authorization", getAccessToken())
@@ -77,7 +69,8 @@ class GeneralChatControllerIT {
     }
 
     @Test
-    void shouldGetSeenList() throws JsonProcessingException {
+    @SneakyThrows
+    void shouldGetSeenList() {
         String jsonResponse = RestAssured
                 .given()
                 .header("Authorization", getAccessToken())
@@ -96,7 +89,8 @@ class GeneralChatControllerIT {
     }
 
     @Test
-    void shouldRead() throws JsonProcessingException {
+    @SneakyThrows
+    void shouldRead() {
         Date newDate = new Date();
         String jsonResponse = RestAssured
                 .given()
@@ -116,7 +110,8 @@ class GeneralChatControllerIT {
     }
 
     @Test
-    void shouldNotRead_UserNotInChat() throws JsonProcessingException {
+    @SneakyThrows
+    void shouldNotRead_UserNotInChat() {
         String jsonResponse = RestAssured
                 .given()
                 .header("Authorization", getAccessToken())

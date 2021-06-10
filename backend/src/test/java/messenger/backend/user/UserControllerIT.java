@@ -22,7 +22,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.util.LinkedHashMap;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;

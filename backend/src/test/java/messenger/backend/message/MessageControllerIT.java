@@ -1,14 +1,12 @@
 package messenger.backend.message;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import lombok.SneakyThrows;
 import messenger.backend.auth.dto.AuthRequestDto;
 import messenger.backend.auth.dto.AuthResponseDto;
-import messenger.backend.chat.group.dto.GroupChatResponseDto;
 import messenger.backend.message.dto.MessageResponseDto;
 import messenger.backend.message.dto.SendMessageRequestDto;
 import messenger.backend.utils.Response;
@@ -25,7 +23,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
