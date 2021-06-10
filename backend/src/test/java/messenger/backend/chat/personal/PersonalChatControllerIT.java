@@ -66,6 +66,7 @@ public class PersonalChatControllerIT {
                                 "Full Name 2",
                                 "user2",
                                 "My info 2",
+                                null,
                                 UserChat.PermissionLevel.MEMBER
                         )));
     }
@@ -93,7 +94,7 @@ public class PersonalChatControllerIT {
         assertThat(response.getData())
                 .usingRecursiveComparison()
                 .ignoringFields("id")
-                .isEqualTo(new GeneralChatResponseDto(null, "Full Name fa", "PERSONAL", null));
+                .isEqualTo(new GeneralChatResponseDto(null, "Full Name fa", "PERSONAL", null, null));
         assertThat(response.getData().getId()).isNotNull();
         assertThat(personalChatRepository.findByMembers(
                 UserEntity.builder().id(UUID.fromString("9f6a075e-a4c5-44da-b7c5-5f22bb64b352")).build(),

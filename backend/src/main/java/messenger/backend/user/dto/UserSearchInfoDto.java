@@ -17,10 +17,12 @@ public class UserSearchInfoDto {
         responseDto.setId(userEntity.getId());
         responseDto.setUsername(userEntity.getUsername());
         responseDto.setFullName(userEntity.getFullName());
+        responseDto.setPicture(userEntity.getPicture());
         return responseDto;
     }
 
     private UUID id;
     private String username;
     private String fullName;
+    private String picture;
 }

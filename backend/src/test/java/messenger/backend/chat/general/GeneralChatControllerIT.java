@@ -59,11 +59,13 @@ class GeneralChatControllerIT {
                         UUID.fromString("51c07af2-5ed1-4e30-b054-e5a3d51da5a5"),
                         "GROUP_title",
                         "GROUP",
+                        null,
                         null),
                 new GeneralChatResponseDto(
                         UUID.fromString("06dfa92e-532d-4b38-bd21-355328bc4270"),
                         "Full Name 2",
                         "PERSONAL",
+                        null,
                         new LastMessageResponseDto("some message text", 1347896872690L))
         );
     }

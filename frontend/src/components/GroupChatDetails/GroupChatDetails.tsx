@@ -22,6 +22,7 @@ interface IOwnProps {
 interface IState {
     info?: IGroupChatInfo;
     deleting: boolean;
+    leaving: boolean;
     adding: boolean;
     changing: boolean;
     toAddUserId?: string;
@@ -33,13 +34,16 @@ const validationSchema = Yup.object().shape({
         .min(4, 'Too Short! Need to be 4-16 digits.')
         .max(16, 'Too Long! Need to be 4-16 digits.')
         .required('This field is required'),
-
+    picture: Yup.string()
+        .max(256, 'Too Long! Need to be less than 256 characters.')
+        
 });
 
 class GroupChatDetails extends React.Component<IOwnProps, IState> {
 
     state = {
         deleting: false,
+        leaving: false,
         adding: false,
         changing: false,
     } as IState;
@@ -63,6 +67,14 @@ class GroupChatDetails extends React.Component<IOwnProps, IState> {
         this.props.deleteChatFromList(id);
     }
 
+    handleLeave = async () => {
+        const id = this.props.chatDetails.id;
+        this.setState({leaving: true});
+        await groupChatService.leaveChatById(id);
+        this.setState({leaving: false});
+        this.props.deleteChatFromList(id);
+    }
+
     handleChange = async (values: any) => {
         const {updateChatInList, chatDetails} = this.props;
         const {info} = this.state;
@@ -73,8 +85,8 @@ class GroupChatDetails extends React.Component<IOwnProps, IState> {
         this.setState({error: undefined});
         try {
             this.setState({changing: true});
-            await groupChatService.changeInfo(info.id, values.title);
-            updateChatInList({...chatDetails, title: values.title});
+            await groupChatService.changeInfo(info.id, values.title, values.picture);
+            updateChatInList({...chatDetails, title: values.title, picture: values.picture});
             await this.loadData();
         } catch (e) {
             this.setState({error: e.message});
@@ -140,12 +152,17 @@ class GroupChatDetails extends React.Component<IOwnProps, IState> {
     }
 
     render() {
-        const {info, deleting, adding, changing, error, toAddUserId} = this.state;
+        const {info, deleting, adding, changing, error, toAddUserId, leaving} = this.state;
 
+        const defaultUserPicture = 
+            'https://www.pngkey.com/png/full/282-2820067_taste-testing-at-baskin-robbins-empty-profile-picture.png';
         return (
             <LoaderWrapper loading={!info}>
                 {info && (
                     <div>
+                        <div className={styles.wrapperPicture}>
+                            <img className={styles.pictureStyle} src={info?.picture ||  defaultUserPicture} />
+                        </div>
                         <div className={styles.title}>{info.title}</div>
                         <div className={styles.permission}>{info.permissionLevel}</div>
                     </div>
@@ -156,7 +173,7 @@ class GroupChatDetails extends React.Component<IOwnProps, IState> {
                 {(info?.permissionLevel && this.isAdminOrOwner(info.permissionLevel)) && (
                     <Formik
                         onSubmit={this.handleChange}
-                        initialValues={{title: info?.title}}
+                        initialValues={{title: info?.title, picture: info?.picture || ""}}
                         validationSchema={validationSchema}
                         render={({
                                      errors,
@@ -165,7 +182,7 @@ class GroupChatDetails extends React.Component<IOwnProps, IState> {
                                      handleBlur,
                                      values
                                  }) => {
-                            const valid = !errors.title;
+                            const valid = !errors.title && !errors.picture;
                             return (
                                 <Form>
                                     <Input
@@ -176,6 +193,15 @@ class GroupChatDetails extends React.Component<IOwnProps, IState> {
                                         onBlur={handleBlur}
                                         error={errors.title}
                                         touched={touched.title}
+                                    />
+                                    <Input
+                                        label="Photo"
+                                        value={values.picture}
+                                        name="picture"
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        error={errors.picture}
+                                        touched={touched.picture}
                                     />
                                     <div className={styles.buttonWrapper}>
                                         <Button
@@ -224,6 +250,15 @@ class GroupChatDetails extends React.Component<IOwnProps, IState> {
                             text="Delete group chat"
                             onClick={this.handleDelete}
                             loading={deleting}
+                        />
+                    </div>
+                )}
+                {info?.permissionLevel !== RoleEnum.OWNER && (
+                    <div className={styles.buttonWrapper}>
+                        <Button
+                            text="Leave group chat"
+                            onClick={this.handleLeave}
+                            loading={leaving}
                         />
                     </div>
                 )}

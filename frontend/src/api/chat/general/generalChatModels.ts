@@ -9,6 +9,7 @@ export interface IChatDetails {
     id: string;
     type: ChatTypeEnum;
     title: string;
+    picture: string | null;
     lastMessage: ILastMessage | null;
     seenAt?: number;
 }

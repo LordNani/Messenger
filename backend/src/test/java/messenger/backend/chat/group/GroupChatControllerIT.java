@@ -69,15 +69,18 @@ public class GroupChatControllerIT {
                                 "Full Name 2",
                                 "user2",
                                 "My info 2",
+                                        null,
                                 UserChat.PermissionLevel.MEMBER),
                                 new UserShortDto(
                                         UUID.fromString("babae9b4-6789-4f03-9520-dc97b0b9470b"),
                                         "Full Name baba",
                                         "user_baba",
                                         "My info baba",
+                                        null,
                                         UserChat.PermissionLevel.ADMIN
                                 )
                         ),
+                        null,
                         UserChat.PermissionLevel.OWNER
                 ));
     }
@@ -121,8 +124,8 @@ public class GroupChatControllerIT {
                 null,
                 "newGroupChatName",
                 "GROUP",
-                null
-                );
+                null,
+                null);
         assertThat(response.getData()).usingRecursiveComparison().ignoringFields("id").isEqualTo(expectedData);
 
         GroupChatEntity groupChatEntity = groupChatRepository

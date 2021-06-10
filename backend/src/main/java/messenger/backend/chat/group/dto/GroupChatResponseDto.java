@@ -38,6 +38,7 @@ public class GroupChatResponseDto {
                 .id(groupChatEntity.getId())
                 .title(groupChatEntity.getGroupName())
                 .members(otherUsers)
+                .picture(groupChatEntity.getPicture())
                 .permissionLevel(contextUserChat.getPermissionLevel())
                 .build();
     }
@@ -45,5 +46,6 @@ public class GroupChatResponseDto {
     private UUID id;
     private String title;
     private List<UserShortDto> members;
+    private String picture;
     private UserChat.PermissionLevel permissionLevel;
 }

@@ -63,7 +63,8 @@ class UserControllerIT {
                 .isEqualTo(new UserSearchInfoDto(
                         UUID.fromString("9f6a075e-a4c5-44da-b7c5-5f22bb64b352"),
                         "user",
-                        "Full Name"));
+                        "Full Name",
+                        null));
     }
 
     @Test
@@ -83,7 +84,7 @@ class UserControllerIT {
 
     @Test
     void shouldUpdateProfile() throws JsonProcessingException {
-        UpdateProfileRequestDto updateProfileDto = new UpdateProfileRequestDto("name", "bio");
+        UpdateProfileRequestDto updateProfileDto = new UpdateProfileRequestDto("name", "bio", "picture");
         String json = objectMapper.writeValueAsString(updateProfileDto);
 
         RestAssured
@@ -99,6 +100,7 @@ class UserControllerIT {
         UserEntity contextUser = userRepository.getByUsername("user").orElseThrow();
         assertThat(contextUser.getFullName()).isEqualTo(updateProfileDto.getFullName());
         assertThat(contextUser.getBio()).isEqualTo(updateProfileDto.getBio());
+        assertThat(contextUser.getPicture()).isEqualTo(updateProfileDto.getPicture());
     }
 
     @Test

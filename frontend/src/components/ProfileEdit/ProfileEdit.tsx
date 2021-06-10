@@ -25,7 +25,8 @@ const validationSchema = Yup.object().shape({
         .required('This field is required'),
     bio: Yup.string()
         .max(100, 'Too Long! Need to be 4-16 digits.'),
-
+    picture: Yup.string()
+        .max(256, 'Too Long! Need to be less than 256 characters.'),
 });
 
 class ProfileEdit extends React.Component<IOwnProps, IState> {
@@ -38,8 +39,8 @@ class ProfileEdit extends React.Component<IOwnProps, IState> {
         try {
             this.setState({error: undefined});
             this.setState({loading: true});
-            const {fullName, bio} = values;
-            await this.props.editProfile({fullName, bio});
+            const {fullName, bio, picture} = values;
+            await this.props.editProfile({fullName, bio, picture});
         } catch (e) {
             this.setState({error: e.message});
         } finally {
@@ -58,6 +59,7 @@ class ProfileEdit extends React.Component<IOwnProps, IState> {
                     initialValues={{
                         fullName: currentUser.fullName,
                         bio: currentUser.bio || '',
+                        picture: currentUser.picture || '',
                     }}
                     validationSchema={validationSchema}
                     render={({
@@ -67,12 +69,16 @@ class ProfileEdit extends React.Component<IOwnProps, IState> {
                                  handleBlur,
                                  values
                              }) => {
-                        const valid = !errors.fullName && !errors.bio;
+                        const valid = !errors.fullName && !errors.bio && !errors.picture;
                         return (
                             <Form>
+                                <div className={styles.wrapperPicture}>
+                                    <img className={styles.pictureStyle} src={values.picture} />
+                                </div>
                                 {error && (
                                     <ErrorMessage text={error} />
                                 )}
+                                
                                 <Input
                                     label="Full Name"
                                     value={values.fullName}
@@ -90,6 +96,15 @@ class ProfileEdit extends React.Component<IOwnProps, IState> {
                                     onBlur={handleBlur}
                                     error={errors.bio}
                                     touched={touched.bio}
+                                />
+                                <Input
+                                    label="Profile picture"
+                                    value={values.picture}
+                                    name="picture"
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    error={errors.picture}
+                                    touched={touched.picture}
                                 />
                                 <div className={styles.buttonWrapper}>
                                     <Button

@@ -48,6 +48,7 @@ public class UserService {
         UserEntity contextUser = JwtTokenService.getContextUser();
         contextUser.setFullName(requestDto.getFullName());
         contextUser.setBio(requestDto.getBio());
+        contextUser.setPicture(requestDto.getPicture());
         userRepository.saveAndFlush(contextUser);
 
         personalChatRepository.findAllByUserId(contextUser.getId())

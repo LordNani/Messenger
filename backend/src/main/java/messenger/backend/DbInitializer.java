@@ -20,6 +20,7 @@ public class DbInitializer {
     public void onApplicationEvent(ContextRefreshedEvent event) {
         if (userRepository.count() == 0) {
             fakerService.generateRandomData();
+
         }
     }
 }

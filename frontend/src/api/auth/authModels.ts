@@ -19,4 +19,5 @@ export interface ICurrentUser {
     username: string;
     fullName: string;
     bio: string | null;
+    picture: string | null;
 }

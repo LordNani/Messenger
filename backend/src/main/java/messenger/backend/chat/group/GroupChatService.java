@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static messenger.backend.auth.jwt.JwtTokenService.getCurrentUserId;
+
 @RequiredArgsConstructor
 
 @Service
@@ -37,7 +39,7 @@ public class GroupChatService {
     private final SocketSender socketSender;
 
     public GroupChatResponseDto getById(UUID chatId) {
-        var currentUserId = JwtTokenService.getCurrentUserId();
+        var currentUserId = getCurrentUserId();
         return groupChatRepository
                 .findByIdAndUserId(chatId, currentUserId)
                 .map(uc -> GroupChatResponseDto.fromEntity(uc, currentUserId))
@@ -98,7 +100,7 @@ public class GroupChatService {
         UserEntity targetUser = chatAndUsersDto.getTargetUserEntity();
 
         UserChat contextUserChat = groupChatEntity.getUserChats().stream()
-                .filter(userChat -> userChat.getUser().getId().equals(JwtTokenService.getCurrentUserId()))
+                .filter(userChat -> userChat.getUser().getId().equals(getCurrentUserId()))
                 .findAny()
                 .orElseThrow(ContextUserNotMemberOfChatException::new);
 
@@ -149,6 +151,24 @@ public class GroupChatService {
                 SubscribedOn.DELETE_CHAT,
                 List.of(requestDto.getTargetUserId()),
                 DeleteChatDto.of(requestDto.getChatId())
+        );
+    }
+
+    public void leaveChatById(UUID chatId) {
+        var currentId = getCurrentUserId();
+        var userChat = userChatRepository.findByUserIdAndChatId(currentId, chatId)
+                .orElseThrow(ChatNotFoundException::new);
+
+        if (userChat.getPermissionLevel().equals(UserChat.PermissionLevel.ADMIN)) {
+            throw new NotEnoughPermissionLevelException();
+        }
+
+        userChatRepository.delete(userChat);
+
+        socketSender.send(
+                SubscribedOn.DELETE_CHAT,
+                currentId,
+                DeleteChatDto.of(chatId)
         );
     }
 
@@ -214,7 +234,7 @@ public class GroupChatService {
 
     private UserChatsDto resolveUserChatEntities(GroupChatEntity groupChatEntity, UUID targetUserId) {
         UserChat contextUserChatEntity = groupChatEntity.getUserChats().stream()
-                .filter(userChat -> userChat.getUser().getId().equals(JwtTokenService.getCurrentUserId()))
+                .filter(userChat -> userChat.getUser().getId().equals(getCurrentUserId()))
                 .findAny()
                 .orElseThrow(ContextUserNotMemberOfChatException::new);
 
@@ -241,7 +261,7 @@ public class GroupChatService {
                 .orElseThrow(ChatNotFoundException::new);
 
         UserChat contextUserChat = groupChatEntity.getUserChats().stream()
-                .filter(userChat -> userChat.getUser().getId().equals(JwtTokenService.getCurrentUserId()))
+                .filter(userChat -> userChat.getUser().getId().equals(getCurrentUserId()))
                 .findAny()
                 .orElseThrow(ContextUserNotMemberOfChatException::new);
 
@@ -249,7 +269,7 @@ public class GroupChatService {
             throw new NotEnoughPermissionLevelException();
 
         groupChatEntity.setGroupName(requestDto.getNewChatName());
-
+        groupChatEntity.setPicture(requestDto.getPicture());
         groupChatRepository.saveAndFlush(groupChatEntity);
 
         List<UUID> uuidList = groupChatEntity.getUserChats().stream()

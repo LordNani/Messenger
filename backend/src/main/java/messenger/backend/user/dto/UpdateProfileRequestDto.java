@@ -17,4 +17,7 @@ public class UpdateProfileRequestDto {
     private String fullName;
     @NotNull
     private String bio;
+    @NotNull
+    @Size( max = 256)
+    private String picture;
 }
