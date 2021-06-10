@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.PrivateChatEntity;
 import messenger.backend.chat.exceptions.ChatNotFoundException;
-import messenger.backend.chat.exceptions.UserNotMemberOfChatException;
+import messenger.backend.chat.exceptions.ContextUserNotMemberOfChatException;
 import messenger.backend.chat.general.dto.DeleteChatDto;
 import messenger.backend.chat.general.dto.GeneralChatResponseDto;
 import messenger.backend.chat.personal.dto.CreatePersonalChatRequestDto;
@@ -48,7 +48,6 @@ public class PersonalChatService {
                 .orElseThrow(ChatNotFoundException::new);
     }
 
-    //todo decide what to do when you create a chat with yourself
     public GeneralChatResponseDto createPrivateChat(CreatePersonalChatRequestDto requestDto) {
         UserEntity contextUser = JwtTokenService.getContextUser();
         UserEntity targetUser = userRepository.findById(requestDto.getTargetId())
@@ -116,7 +115,7 @@ public class PersonalChatService {
         UserEntity contextUser = JwtTokenService.getContextUser();
         boolean isUserMemberOfChat = privateChatEntity.getUserChats().stream()
                 .anyMatch(chat -> chat.getUser().getId().equals(contextUser.getId()));
-        if(!isUserMemberOfChat) throw new UserNotMemberOfChatException();
+        if(!isUserMemberOfChat) throw new ContextUserNotMemberOfChatException();
 
         List<UUID> uuidList = privateChatEntity.getUserChats().stream()
                 .map(chat -> chat.getUser().getId())

@@ -580,7 +580,6 @@ public class GroupChatControllerIT {
         String jsonResponse = RestAssured
                 .given()
                 .header("Authorization", getAccessToken())
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .get("/api/chat/group/" + chatId.toString())
                 .then()
