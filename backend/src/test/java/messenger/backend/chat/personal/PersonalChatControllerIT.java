@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(value = {"/sql/clean.sql", "/sql/chat/initPersonalChatTests.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class PersonalChatControllerIT {
+class PersonalChatControllerIT {
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -46,7 +46,7 @@ public class PersonalChatControllerIT {
 
     @Test
     @SneakyThrows
-    public void shouldGetPersonalChatInfo() {
+    void shouldGetPersonalChatInfo() {
         String jsonResponse = RestAssured
                 .given()
                 .header("Authorization", getAccessToken())
@@ -73,7 +73,7 @@ public class PersonalChatControllerIT {
 
     @Test
     @SneakyThrows
-    public void shouldCreatePersonalChat() {
+    void shouldCreatePersonalChat() {
         CreatePersonalChatRequestDto dto = new CreatePersonalChatRequestDto();
         dto.setTargetId(UUID.fromString("fafae9b4-6789-4f03-9520-dc97b0b9470b"));
         String json = objectMapper.writeValueAsString(dto);
@@ -107,7 +107,7 @@ public class PersonalChatControllerIT {
             "9f6a075e-a4c5-44da-b7c5-5f22bb64b352",
             "dacee9b4-6789-4f03-9520-dc97b0b9470b"
     })
-    public void shouldNotCreatePersonalChat_Conflict(String targetUserId) {
+    void shouldNotCreatePersonalChat_Conflict(String targetUserId) {
         CreatePersonalChatRequestDto dto = new CreatePersonalChatRequestDto();
         dto.setTargetId(UUID.fromString(targetUserId));
         String json = objectMapper.writeValueAsString(dto);
@@ -127,7 +127,7 @@ public class PersonalChatControllerIT {
 
     @Test
     @SneakyThrows
-    public void shouldDeletePersonalChat() {
+    void shouldDeletePersonalChat() {
         DeletePersonalChatRequestDto dto = new DeletePersonalChatRequestDto();
         dto.setChatId(UUID.fromString("06dfa92e-532d-4b38-bd21-355328bc4270"));
         String json = objectMapper.writeValueAsString(dto);
@@ -149,7 +149,7 @@ public class PersonalChatControllerIT {
 
     @Test
     @SneakyThrows
-    public void shouldNotDeletePersonalChat_UserNotMemberOfChat() {
+    void shouldNotDeletePersonalChat_UserNotMemberOfChat() {
         DeletePersonalChatRequestDto dto = new DeletePersonalChatRequestDto();
         dto.setChatId(UUID.fromString("06dfa92e-532d-4b38-bd21-355328bc4270"));
         String json = objectMapper.writeValueAsString(dto);

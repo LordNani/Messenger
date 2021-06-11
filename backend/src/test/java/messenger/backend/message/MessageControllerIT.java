@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(value = {"/sql/clean.sql", "/sql/message/initMessageTests.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class MessageControllerIT {
+class MessageControllerIT {
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -46,7 +46,7 @@ public class MessageControllerIT {
     @ParameterizedTest
     @SneakyThrows
     @MethodSource("getAllMessagesTestProvider")
-    public void shouldGetAllMessagesByChatId(String chatId, List<MessageResponseDto> expectedMessagesInfo) {
+    void shouldGetAllMessagesByChatId(String chatId, List<MessageResponseDto> expectedMessagesInfo) {
         String jsonResponse = RestAssured
                 .given()
                 .header("Authorization", getAccessToken())
@@ -102,7 +102,7 @@ public class MessageControllerIT {
     @ParameterizedTest
     @SneakyThrows
     @MethodSource("sendMessageTestProvider")
-    public void shouldSendMessage(UUID chatId, String text) {
+    void shouldSendMessage(UUID chatId, String text) {
         SendMessageRequestDto dto = new SendMessageRequestDto();
         dto.setChatId(chatId);
         dto.setText(text);

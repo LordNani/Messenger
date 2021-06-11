@@ -137,7 +137,7 @@ class GeneralChatControllerIT {
         assertThat(response.getMessage()).isNotEmpty();
     }
 
-    public String getAccessToken() throws JsonProcessingException {
+    private String getAccessToken() throws JsonProcessingException {
         String json = objectMapper.writeValueAsString(
                 new AuthRequestDto("user", "user")
         );
