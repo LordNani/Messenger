@@ -55,10 +55,9 @@ public class MessageControllerIT {
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract().asString();
-
         Response<List<MessageResponseDto>> response = objectMapper.readValue(jsonResponse, new TypeReference<>(){});
         assertThat(response.getMessage()).isNull();
-        assertThat(response.getData()).isEqualTo(expectedMessagesInfo);
+        assertThat(response.getData()).usingElementComparatorIgnoringFields("createdAt").isEqualTo(expectedMessagesInfo);
     }
 
     private static Stream<Arguments> getAllMessagesTestProvider() {
@@ -70,14 +69,14 @@ public class MessageControllerIT {
                                         "message1 personal",
                                         "Full Name",
                                         UUID.fromString("9f6a075e-a4c5-44da-b7c5-5f22bb64b352"),
-                                        1347896872690L,
+                                        0L,
                                         UUID.fromString("06dfa92e-532d-4b38-bd21-355328bc4270")),
                                 new MessageResponseDto(
                                         UUID.fromString("aaaaa92e-9e5e-4c0b-b661-4e790e76ea4d"),
                                         "message2 personal",
                                         "Full Name 2",
                                         UUID.fromString("dacee9b4-6789-4f03-9520-dc97b0b9470b"),
-                                        1347896873690L,
+                                        0L,
                                         UUID.fromString("06dfa92e-532d-4b38-bd21-355328bc4270"))
                         )),
                 Arguments.of("51c07af2-5ed1-4e30-b054-e5a3d51da5a5",
@@ -87,14 +86,14 @@ public class MessageControllerIT {
                                         "message1 group",
                                         "Full Name",
                                         UUID.fromString("9f6a075e-a4c5-44da-b7c5-5f22bb64b352"),
-                                        1347896872690L,
+                                        0L,
                                         UUID.fromString("51c07af2-5ed1-4e30-b054-e5a3d51da5a5")),
                                 new MessageResponseDto(
                                         UUID.fromString("22222222-9e5e-4c0b-b661-4e790e76ea4d"),
                                         "message2 group",
                                         "Full Name 2",
                                         UUID.fromString("dacee9b4-6789-4f03-9520-dc97b0b9470b"),
-                                        1347896873690L,
+                                        0L,
                                         UUID.fromString("51c07af2-5ed1-4e30-b054-e5a3d51da5a5"))
                                 ))
         );
