@@ -2,9 +2,10 @@ import React from "react";
 import styles from "./ChatSender.module.sass";
 import Textarea from "../FormComponents/Texarea/Textarea";
 import Icon from "../Icon/Icon";
+import {ICallback1} from "../../helpers/types.helper";
 
 interface IOwnProps {
-    sendMessage: (text: string) => Promise<void>;
+    sendMessage: ICallback1<string>;
 }
 
 interface IState {
@@ -23,7 +24,7 @@ class ChatSender extends React.Component<IOwnProps, IState> {
 
     handleSend = () => {
         const {text} = this.state;
-        this.props.sendMessage(text).then();
+        this.props.sendMessage(text);
         this.setState({text: ''});
 
     }

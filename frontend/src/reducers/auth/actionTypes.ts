@@ -1,1 +1,0 @@
-export const SET_CURRENT_USER = 'AUTH.SET_CURRENT_USER';

@@ -159,7 +159,7 @@ public class GroupChatService {
         var userChat = userChatRepository.findByUserIdAndChatId(currentId, chatId)
                 .orElseThrow(ChatNotFoundException::new);
 
-        if (userChat.getPermissionLevel().equals(UserChat.PermissionLevel.ADMIN)) {
+        if (userChat.getPermissionLevel().equals(UserChat.PermissionLevel.OWNER)) {
             throw new NotEnoughPermissionLevelException();
         }
 

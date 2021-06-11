@@ -8,14 +8,12 @@ import Input from "../FormComponents/Input/Input";
 import Button from "../FormComponents/Button/Button";
 import styles from "../LoginForm/LoginForm.module.sass";
 import ErrorMessage from "../FormComponents/ErrorMessage/ErrorMessage";
+import {ICallback1} from "../../helpers/types.helper";
 
 interface IOwnProps {
-    register: (request: IRegisterRequest) => Promise<void>;
-}
-
-interface IState {
-    loading: boolean;
-    error?: string;
+    register: ICallback1<IRegisterRequest>;
+    registerError: string | null;
+    registerLoading: boolean;
 }
 
 const validationSchema = Yup.object().shape({
@@ -34,33 +32,14 @@ const validationSchema = Yup.object().shape({
 
 });
 
-class RegistrationForm extends React.Component<IOwnProps, IState> {
-
-    state = {
-        loading: false,
-    } as IState;
-
-    handleRegistration = async (values: any) => {
-        this.setState({error: undefined});
-        const {register} = this.props;
-        const {username, password, fullName} = values;
-        this.setState({loading: true});
-
-        try {
-            await register({username, password, fullName});
-        } catch (e) {
-            this.setState({error: e.message});
-        } finally {
-            this.setState({loading: false});
-        }
-    };
+class RegistrationForm extends React.Component<IOwnProps> {
 
     render() {
-        const {loading, error} = this.state;
+        const {registerLoading, registerError, register} = this.props;
         return (
             <div>
                 <Formik
-                    onSubmit={this.handleRegistration}
+                    onSubmit={register}
                     initialValues={{username: '', password: '', fullName: ''}}
                     validationSchema={validationSchema}
                     render={({
@@ -74,8 +53,8 @@ class RegistrationForm extends React.Component<IOwnProps, IState> {
                         return (
                             <Form>
                                 <FormWrapper>
-                                    {error && (
-                                        <ErrorMessage text={error} />
+                                    {registerError && (
+                                        <ErrorMessage text={registerError} />
                                     )}
                                     <Input
                                         label="Username"
@@ -107,7 +86,7 @@ class RegistrationForm extends React.Component<IOwnProps, IState> {
                                     />
                                     <Button
                                         text="Sign up"
-                                        loading={loading}
+                                        loading={registerLoading}
                                         disabled={!valid}
                                         submit
                                     />

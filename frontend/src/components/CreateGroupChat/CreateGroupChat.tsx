@@ -5,14 +5,12 @@ import ErrorMessage from "../FormComponents/ErrorMessage/ErrorMessage";
 import * as Yup from "yup";
 import {Form, Formik} from "formik";
 import Input from "../FormComponents/Input/Input";
+import {ICallback1} from "../../helpers/types.helper";
 
 interface IOwnProps {
-    createGroupChat: (title: string) => Promise<void>;
-}
-
-interface IState {
-    loading: boolean;
-    error?: string;
+    createGroupChat: ICallback1<string>;
+    createGroupChatLoading: boolean;
+    createGroupChatError: string | null;
 }
 
 const validationSchema = Yup.object().shape({
@@ -23,31 +21,15 @@ const validationSchema = Yup.object().shape({
 
 });
 
-class CreateGroupChat extends React.Component<IOwnProps, IState> {
-
-    state = {
-        loading: false,
-    } as IState;
-
-    handleCreate = async (values: any) => {
-        try {
-            this.setState({error: undefined});
-            this.setState({loading: true});
-            await this.props.createGroupChat(values.title);
-        } catch (e) {
-            this.setState({error: e.message});
-        } finally {
-            this.setState({loading: false});
-        }
-    }
+class CreateGroupChat extends React.Component<IOwnProps> {
 
     render() {
-        const {loading, error} = this.state;
+        const {createGroupChatLoading, createGroupChatError, createGroupChat} = this.props;
 
         return (
             <div>
                 <Formik
-                    onSubmit={this.handleCreate}
+                    onSubmit={v => createGroupChat(v.title)}
                     initialValues={{title: ''}}
                     validationSchema={validationSchema}
                     render={({
@@ -60,8 +42,8 @@ class CreateGroupChat extends React.Component<IOwnProps, IState> {
                         const valid = !errors.title;
                         return (
                             <Form>
-                                {error && (
-                                    <ErrorMessage text={error} />
+                                {createGroupChatError && (
+                                    <ErrorMessage text={createGroupChatError} />
                                 )}
                                 <Input
                                     label="Title"
@@ -77,7 +59,7 @@ class CreateGroupChat extends React.Component<IOwnProps, IState> {
                                         text="Create group chat"
                                         disabled={!valid}
                                         submit
-                                        loading={loading}
+                                        loading={createGroupChatLoading}
                                     />
                                 </div>
                             </Form>
