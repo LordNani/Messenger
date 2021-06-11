@@ -5,6 +5,7 @@ import chatsListNewSaga from "../containers/ChatsList/sagas";
 import chatSaga from "../containers/Chat/sagas";
 import personalChatSaga from "../containers/PersonalChatDetails/sagas";
 import groupChatSaga from "../containers/GroupChatDetails/sagas";
+import socketHomeSaga from "../containers/SocketHome/sagas";
 
 export default function* rootSaga() {
     yield all([
@@ -14,5 +15,6 @@ export default function* rootSaga() {
         chatSaga(),
         personalChatSaga(),
         groupChatSaga(),
+        socketHomeSaga(),
     ]);
 }

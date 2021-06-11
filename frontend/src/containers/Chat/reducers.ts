@@ -1,10 +1,15 @@
 import {combineReducers} from 'redux';
 import {reducerCreator} from "../../helpers/reducer.helper";
 import {
-    appendDetailsCachedRoutine, appendLoadingMessageRoutine, IAppendLoadingMessageRoutinePayload,
-    ISetChatMessagesRoutinePayload, ISetMessageLoadedRoutinePayload,
+    appendDetailsCachedRoutine,
+    appendLoadingMessageRoutine,
+    changeMessagesUsernameRoutine,
+    IAppendLoadingMessageRoutinePayload, IChangeMessagesUsernameRoutinePayload,
+    ISetChatMessagesRoutinePayload,
+    ISetMessageLoadedRoutinePayload,
     loadFullChatRoutine,
-    setChatMessagesRoutine, setMessageLoadedRoutine
+    setChatMessagesRoutine,
+    setMessageLoadedRoutine
 } from "./routines";
 import {createReducer, PayloadAction} from "@reduxjs/toolkit";
 import {IChatCache} from "../../reducers/chatsList/reducer";
@@ -90,6 +95,20 @@ const data = createReducer(initialStateData, {
             if (message) {
                 message.info = payload.message;
                 message.loading = undefined;
+            }
+        }
+    },
+    [changeMessagesUsernameRoutine.FULFILL]: (
+        state, {payload}: PayloadAction<IChangeMessagesUsernameRoutinePayload>
+    ) => {
+        console.log("here");
+        for (const chat of state.chatsDetailsCached) {
+            if (chat.messages) {
+                for (const message of chat.messages) {
+                    if (message?.info?.senderId === payload.userId) {
+                        message.info.senderName = payload.newUsername;
+                    }
+                }
             }
         }
     },

@@ -13,6 +13,7 @@ export const setChatMessagesRoutine = createLocalRoutine<ISetChatMessagesRoutine
 export const sendMessageRoutine = createLocalRoutine<ISendMessageRoutinePayload>('SEND_MESSAGE');
 export const appendLoadingMessageRoutine = createLocalRoutine<IAppendLoadingMessageRoutinePayload>('APPEND_LOADING_MESSAGE');
 export const setMessageLoadedRoutine = createLocalRoutine<ISetMessageLoadedRoutinePayload>('SET_MESSAGE_LOADED');
+export const changeMessagesUsernameRoutine = createLocalRoutine<IChangeMessagesUsernameRoutinePayload>('CHANGE_MESSAGES_USERNAME');
 
 export interface ISetChatMessagesRoutinePayload {
     chatId: string;
@@ -33,4 +34,9 @@ export interface ISetMessageLoadedRoutinePayload {
     chatId: string;
     loadingId: string;
     message: IMessage;
+}
+
+export interface IChangeMessagesUsernameRoutinePayload {
+    newUsername: string,
+    userId: string
 }
