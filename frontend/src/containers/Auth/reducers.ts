@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import {reducerCreator} from "../../helpers/reducer.helper";
 import {
+    loadCurrentUserRoutine,
     loginRoutine,
     logoutRoutine,
     registerRoutine,
@@ -23,6 +24,7 @@ export interface IAuthPageStateData {
 const initialStateData: IAuthPageStateData = {};
 
 const requests = combineReducers({
+    load: reducerCreator([loadCurrentUserRoutine.TRIGGER]),
     login: reducerCreator([loginRoutine.TRIGGER]),
     register: reducerCreator([registerRoutine.TRIGGER]),
     logout: reducerCreator([logoutRoutine.TRIGGER]),
