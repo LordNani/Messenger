@@ -24,10 +24,13 @@ import PersonalChatDetails from "../PersonalChatDetails/PersonalChatDetails";
 import GroupChatDetails from "../GroupChatDetails/GroupChatDetails";
 import {changeMessagesUsernameRoutine, IChangeMessagesUsernameRoutinePayload} from "../Chat/routines";
 import {setCurrentUserRoutine} from "../Auth/routines";
+import {addChatToListIfAbsentRoutine, updateChatInListRoutine} from "../ChatsList/routines";
 
 interface IActions {
     updateMessagesUsername: ICallback1<IChangeMessagesUsernameRoutinePayload>;
     setCurrentUser: ICallback1<ICurrentUser>;
+    updateChatInList: ICallback1<IChatDetails>;
+    addChatToListIfAbsent: ICallback1<IChatDetails>;
 }
 
 interface IPropsFromState {
@@ -103,9 +106,9 @@ class Home extends React.Component<RouteComponentProps & IActions & IPropsFromSt
     private afterSocketConnect = async (frame: any) => {
         this.stompSubscribe('/topic/messages/', this.messageListener);
         this.stompSubscribe('/topic/chats/read/', this.readChatListener);
-        this.stompSubscribe('/topic/chats/create/',this.createChatListener);
+        this.stompSubscribe('/topic/chats/create/',this.props.addChatToListIfAbsent);
         this.stompSubscribe('/topic/chats/delete/', this.deleteChatListener);
-        this.stompSubscribe('/topic/chats/update/', this.updateChatListener);
+        this.stompSubscribe('/topic/chats/update/', this.props.updateChatInList);
         this.stompSubscribe('/topic/messages/update/username/', this.props.updateMessagesUsername);
     }
 
@@ -137,22 +140,12 @@ class Home extends React.Component<RouteComponentProps & IActions & IPropsFromSt
         // this.props.actions.setSeenChat(seenDto.chatId, seenDto.seenAt);
     }
 
-    private createChatListener = (dataFromServer: any) => {
-        const iChatDetails: IChatDetails = dataFromServer;
-        // this.props.actions.addChatToList(iChatDetails);
-    }
-
     private deleteChatListener = (dataFromServer: any) => {
         const chatId: string = dataFromServer.chatId;
         if (chatId === this.props.selectedChatId) {
             // this.props.actions.removeSelected();
         }
         // this.props.actions.removeChatFromList(chatId);
-    }
-
-    private updateChatListener = (dataFromServer: any) => {
-        const iChatDetails: IChatDetails = dataFromServer;
-        // this.props.actions.updateChatInList(iChatDetails);
     }
 
     render() {
@@ -187,6 +180,8 @@ const mapStateToProps = (state: IAppState) => ({
 const mapDispatchToProps: IActions = {
     updateMessagesUsername: changeMessagesUsernameRoutine.fulfill,
     setCurrentUser: setCurrentUserRoutine.fulfill,
+    updateChatInList: updateChatInListRoutine.fulfill,
+    addChatToListIfAbsent: addChatToListIfAbsentRoutine.fulfill,
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Home));
