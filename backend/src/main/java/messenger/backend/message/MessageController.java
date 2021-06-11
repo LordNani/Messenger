@@ -4,6 +4,7 @@ package messenger.backend.message;
 import lombok.RequiredArgsConstructor;
 import messenger.backend.message.dto.MessageResponseDto;
 import messenger.backend.message.dto.SendMessageRequestDto;
+import messenger.backend.message.dto.UpdateMessageRequestDto;
 import messenger.backend.utils.Response;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,5 +27,10 @@ public class MessageController {
     @PostMapping("/chat")
     public Response<MessageResponseDto> sendMessage(@Valid @RequestBody SendMessageRequestDto requestDto) {
         return Response.success(messageService.sendMessage(requestDto));
+    }
+
+    @PostMapping("/update")
+    public void updateMessage(@Valid @RequestBody UpdateMessageRequestDto requestDto) {
+        messageService.updateMessage(requestDto);
     }
 }

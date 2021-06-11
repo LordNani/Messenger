@@ -3,10 +3,10 @@ package messenger.backend.message;
 import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.exceptions.ChatNotFoundException;
-import messenger.backend.message.dto.LastMessageResponseDto;
-import messenger.backend.message.dto.MessageResponseDto;
-import messenger.backend.message.dto.MessageSocketResponseDto;
-import messenger.backend.message.dto.SendMessageRequestDto;
+import messenger.backend.chat.exceptions.ContextUserNotMemberOfChatException;
+import messenger.backend.message.dto.*;
+import messenger.backend.message.exceptions.MessageNotFoundException;
+import messenger.backend.message.exceptions.UserNotOwnerOfMessage;
 import messenger.backend.sockets.SocketSender;
 import messenger.backend.sockets.SubscribedOn;
 import messenger.backend.userChat.UserChat;
@@ -14,6 +14,7 @@ import messenger.backend.userChat.UserChatRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -55,7 +56,7 @@ public class MessageService {
 
         MessageResponseDto responseDto = MessageResponseDto.fromEntity(message);
         socketSender.send(
-                SubscribedOn.MESSAGE,
+                SubscribedOn.NEW_MESSAGE,
                 userChat.getChat().getUserChats().stream().map(chat -> chat.getUser().getId()).collect(Collectors.toList()),
                 new MessageSocketResponseDto(requestDto.getLoadingId(), responseDto)
         );
@@ -70,5 +71,24 @@ public class MessageService {
                 .findFirst()
                 .map(LastMessageResponseDto::fromEntity)
                 .orElse(null);
+    }
+
+//    @Transactional
+    public void updateMessage(UpdateMessageRequestDto requestDto) {
+        UUID currentUserId = JwtTokenService.getCurrentUserId();
+        MessageEntity messageEntity = messageRepository.findById(requestDto.getMessageId())
+                .orElseThrow(MessageNotFoundException::new);
+        if (!messageEntity.getUser().getId().equals(currentUserId)) throw new UserNotOwnerOfMessage();
+        if (userChatRepository.findByUserIdAndChatId(currentUserId, messageEntity.getChat().getId()).isEmpty())
+            throw new ContextUserNotMemberOfChatException();
+
+        messageEntity.setMessageBody(requestDto.getNewText());
+        messageRepository.saveAndFlush(messageEntity);
+
+        socketSender.send(
+                SubscribedOn.UPDATE_MESSAGE_TEXT,
+                messageEntity.getChat().getUserChats().stream().map(chat -> chat.getUser().getId()).collect(Collectors.toList()),
+                new MessageSocketResponseDto(requestDto.getLoadingId(), MessageResponseDto.fromEntity(messageEntity))
+        );
     }
 }
