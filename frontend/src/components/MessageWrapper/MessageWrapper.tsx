@@ -3,7 +3,7 @@ import styles from "./MessageWrapper.module.sass";
 import Message from "../Message/Message";
 import {ICurrentUser} from "../../api/auth/authModels";
 import classnames from "classnames";
-import {IMessageWrapper} from "../../reducers/chatsList/reducer";
+import {IMessageWrapper} from "../../containers/Chat/models";
 
 interface IOwnProps {
     message: IMessageWrapper;

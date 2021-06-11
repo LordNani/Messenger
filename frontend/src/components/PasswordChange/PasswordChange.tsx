@@ -6,14 +6,12 @@ import * as Yup from "yup";
 import {Form, Formik} from "formik";
 import Input from "../FormComponents/Input/Input";
 import {IPasswordChange} from "../../api/user/userModels";
+import {ICallback1} from "../../helpers/types.helper";
 
 interface IOwnProps {
-    changePassword: (request: IPasswordChange) => Promise<void>;
-}
-
-interface IState {
-    loading: boolean;
-    error?: string;
+    changePassword: ICallback1<IPasswordChange>;
+    changePasswordLoading: boolean;
+    changePasswordError: string | null;
 }
 
 const validationSchema = Yup.object().shape({
@@ -28,32 +26,14 @@ const validationSchema = Yup.object().shape({
 
 });
 
-class PasswordChange extends React.Component<IOwnProps, IState> {
-
-    state = {
-        loading: false,
-    } as IState;
-
-    handleChange = async (values: any) => {
-        try {
-            this.setState({error: undefined});
-            this.setState({loading: true});
-            const {oldPassword, newPassword} = values;
-            await this.props.changePassword({oldPassword, newPassword});
-        } catch (e) {
-            this.setState({error: e.message});
-        } finally {
-            this.setState({loading: false});
-        }
-    }
-
+class PasswordChange extends React.Component<IOwnProps> {
     render() {
-        const {loading, error} = this.state;
+        const {changePassword, changePasswordError, changePasswordLoading} = this.props;
 
         return (
             <div>
                 <Formik
-                    onSubmit={this.handleChange}
+                    onSubmit={changePassword}
                     initialValues={{
                         oldPassword: '',
                         newPassword: '',
@@ -71,8 +51,8 @@ class PasswordChange extends React.Component<IOwnProps, IState> {
                             !errors.newPassword;
                         return (
                             <Form>
-                                {error && (
-                                    <ErrorMessage text={error} />
+                                {changePasswordError && (
+                                    <ErrorMessage text={changePasswordError} />
                                 )}
                                 <Input
                                     label="Old password"
@@ -99,7 +79,7 @@ class PasswordChange extends React.Component<IOwnProps, IState> {
                                         text="Change"
                                         disabled={!valid}
                                         submit
-                                        loading={loading}
+                                        loading={changePasswordLoading}
                                     />
                                 </div>
                             </Form>
