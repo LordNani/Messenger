@@ -15,7 +15,7 @@ import {
     setCreateChatModalShownRoutine,
     setFirstChatInListRoutine,
     setSeenChatRoutine,
-    updateChatInListRoutine, updateChatLastMessageRoutine
+    updateChatInListRoutine, updateChatLastMessageAndReadRoutine, updateChatLastMessageRoutine
 } from "./routines";
 import {IChatDetails, ILastSeen} from "../../api/chat/general/generalChatModels";
 import {createReducer, PayloadAction} from "@reduxjs/toolkit";
@@ -72,7 +72,7 @@ const data = createReducer(initialStateData, {
     },
     [setSeenChatRoutine.FULFILL]: (state, {payload}: PayloadAction<ISetSeenChatRoutinePayload>) => {
         const chat = state.chatsList?.find(c => c.id === payload.chatId);
-        if (chat) {
+        if (chat && (!chat.seenAt || chat.seenAt < payload.seenAt)) {
             chat.seenAt = payload.seenAt;
         }
     },
@@ -82,9 +82,19 @@ const data = createReducer(initialStateData, {
             : c
         );
     },
-    [updateChatLastMessageRoutine.FULFILL]: (state, {payload}: PayloadAction<IUpdateChatLastMessageRoutinePayload>) => {
+    [updateChatLastMessageAndReadRoutine.FULFILL]: (
+        state, {payload}: PayloadAction<IUpdateChatLastMessageRoutinePayload>
+    ) => {
         state.chatsList = state.chatsList?.map(c => c.id === payload.chatId
             ? {...c, seenAt: payload.lastMessage.createdAt, lastMessage: payload.lastMessage}
+            : c
+        );
+    },
+    [updateChatLastMessageRoutine.FULFILL]: (
+        state, {payload}: PayloadAction<IUpdateChatLastMessageRoutinePayload>
+    ) => {
+        state.chatsList = state.chatsList?.map(c => c.id === payload.chatId
+            ? {...c, lastMessage: payload.lastMessage}
             : c
         );
     },

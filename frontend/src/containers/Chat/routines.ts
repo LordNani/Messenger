@@ -14,6 +14,7 @@ export const sendMessageRoutine = createLocalRoutine<ISendMessageRoutinePayload>
 export const appendLoadingMessageRoutine = createLocalRoutine<IAppendLoadingMessageRoutinePayload>('APPEND_LOADING_MESSAGE');
 export const setMessageLoadedRoutine = createLocalRoutine<ISetMessageLoadedRoutinePayload>('SET_MESSAGE_LOADED');
 export const changeMessagesUsernameRoutine = createLocalRoutine<IChangeMessagesUsernameRoutinePayload>('CHANGE_MESSAGES_USERNAME');
+export const appendReadyMessageIfAbsentRoutine = createLocalRoutine<ISetMessageLoadedRoutinePayload>('APPEND_READY_MESSAGE_IF_ABSENT');
 
 export interface ISetChatMessagesRoutinePayload {
     chatId: string;

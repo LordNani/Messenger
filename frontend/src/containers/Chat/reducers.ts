@@ -2,7 +2,7 @@ import {combineReducers} from 'redux';
 import {reducerCreator} from "../../helpers/reducer.helper";
 import {
     appendDetailsCachedRoutine,
-    appendLoadingMessageRoutine,
+    appendLoadingMessageRoutine, appendReadyMessageIfAbsentRoutine,
     changeMessagesUsernameRoutine,
     IAppendLoadingMessageRoutinePayload, IChangeMessagesUsernameRoutinePayload,
     ISetChatMessagesRoutinePayload,
@@ -18,7 +18,7 @@ import {
     ISetSeenChatRoutinePayload, IUpdateChatLastMessageRoutinePayload, removeChatsListRoutine,
     setSeenChatRoutine,
     updateChatInListRoutine,
-    updateChatLastMessageRoutine
+    updateChatLastMessageAndReadRoutine, updateChatLastMessageRoutine
 } from "../ChatsList/routines";
 
 export interface IChatState {
@@ -53,7 +53,7 @@ const data = createReducer(initialStateData, {
     },
     [setSeenChatRoutine.FULFILL]: (state, {payload}: PayloadAction<ISetSeenChatRoutinePayload>) => {
         const chat = state.chatsDetailsCached.find(c => c.details.id === payload.chatId);
-        if (chat) {
+        if (chat && (!chat.details.seenAt || chat.details.seenAt < payload.seenAt)) {
             chat.details.seenAt = payload.seenAt;
         }
     },
@@ -69,13 +69,29 @@ const data = createReducer(initialStateData, {
             : c
         );
     },
-    [updateChatLastMessageRoutine.FULFILL]: (state, {payload}: PayloadAction<IUpdateChatLastMessageRoutinePayload>) => {
+    [updateChatLastMessageAndReadRoutine.FULFILL]: (
+        state, {payload}: PayloadAction<IUpdateChatLastMessageRoutinePayload>
+    ) => {
         state.chatsDetailsCached = state.chatsDetailsCached?.map(c => c.details.id === payload.chatId
             ? {
                 ...c,
                 details: {
                     ...c.details,
                     seenAt: payload.lastMessage.createdAt,
+                    lastMessage: payload.lastMessage
+                }
+            }
+            : c
+        );
+    },
+    [updateChatLastMessageRoutine.FULFILL]: (
+        state, {payload}: PayloadAction<IUpdateChatLastMessageRoutinePayload>
+    ) => {
+        state.chatsDetailsCached = state.chatsDetailsCached?.map(c => c.details.id === payload.chatId
+            ? {
+                ...c,
+                details: {
+                    ...c.details,
                     lastMessage: payload.lastMessage
                 }
             }
@@ -101,7 +117,6 @@ const data = createReducer(initialStateData, {
     [changeMessagesUsernameRoutine.FULFILL]: (
         state, {payload}: PayloadAction<IChangeMessagesUsernameRoutinePayload>
     ) => {
-        console.log("here");
         for (const chat of state.chatsDetailsCached) {
             if (chat.messages) {
                 for (const message of chat.messages) {
@@ -109,6 +124,20 @@ const data = createReducer(initialStateData, {
                         message.info.senderName = payload.newUsername;
                     }
                 }
+            }
+        }
+    },
+    [appendReadyMessageIfAbsentRoutine.FULFILL]: (
+        state, {payload}: PayloadAction<ISetMessageLoadedRoutinePayload>
+    ) => {
+        const chat = state.chatsDetailsCached.find(c => c.details.id === payload.chatId);
+        if (chat) {
+            const present = chat.messages?.find(
+                mw => mw.info?.id === payload.message.id ||
+                mw.loading?.id === payload.loadingId
+            );
+            if (!present) {
+                chat.messages?.push({info: payload.message});
             }
         }
     },

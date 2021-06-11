@@ -1,6 +1,5 @@
 import React from "react";
 import {Redirect, RouteComponentProps, withRouter} from "react-router-dom";
-import {bindActionCreators} from "redux";
 import {IAppState} from "../../reducers";
 import {connect} from "react-redux";
 import LoaderWrapper from "../../components/LoaderWrapper/LoaderWrapper";
@@ -10,11 +9,8 @@ import Header from "../Header/Header";
 import ChatsList from "../ChatsList/ChatsList";
 import styles from "./Home.module.sass";
 import Chat from "../Chat/Chat";
-import {chatsListActions} from "../../reducers/chatsList/actions";
-import {IChatDetails, ILastSeen} from "../../api/chat/general/generalChatModels";
-import generalChatService from "../../api/chat/general/generalChatService";
+import {IChatDetails} from "../../api/chat/general/generalChatModels";
 import {IChatCache} from "../../reducers/chatsList/reducer";
-import {toastr} from 'react-redux-toastr';
 import SockJS from "sockjs-client";
 import tokenService from "../../api/token/tokenService";
 import {CompatClient, Stomp} from "@stomp/stompjs";
@@ -30,7 +26,11 @@ import {
     setSeenChatRoutine,
     updateChatInListRoutine
 } from "../ChatsList/routines";
-import {IRemoveChatFromSocketRoutinePayload, removeChatFromSocketRoutine} from "../SocketHome/routines";
+import {
+    IReceiveMessageFromSocketRoutinePayload,
+    IRemoveChatFromSocketRoutinePayload, receiveMessageFromSocketRoutine,
+    removeChatFromSocketRoutine
+} from "../SocketHome/routines";
 
 interface IActions {
     updateMessagesUsername: ICallback1<IChangeMessagesUsernameRoutinePayload>;
@@ -39,6 +39,7 @@ interface IActions {
     addChatToListIfAbsent: ICallback1<IChatDetails>;
     removeChat: ICallback1<IRemoveChatFromSocketRoutinePayload>;
     setChatSeenAt: ICallback1<ISetSeenChatRoutinePayload>;
+    receiveMessage: ICallback1<IReceiveMessageFromSocketRoutinePayload>;
 }
 
 interface IPropsFromState {
@@ -111,36 +112,13 @@ class Home extends React.Component<RouteComponentProps & IActions & IPropsFromSt
         );
     }
 
-    private afterSocketConnect = async (frame: any) => {
-        this.stompSubscribe('/topic/messages/', this.messageListener);
+    private afterSocketConnect = async () => {
+        this.stompSubscribe('/topic/messages/', this.props.receiveMessage);
         this.stompSubscribe('/topic/chats/read/', this.props.setChatSeenAt);
         this.stompSubscribe('/topic/chats/create/',this.props.addChatToListIfAbsent);
         this.stompSubscribe('/topic/chats/delete/', this.props.removeChat);
         this.stompSubscribe('/topic/chats/update/', this.props.updateChatInList);
         this.stompSubscribe('/topic/messages/update/username/', this.props.updateMessagesUsername);
-    }
-
-    private messageListener = async (dataFromServer: any) => {
-        const {loadingId, message: iMessage} = dataFromServer;
-        // this.props.actions.appendReadyMessage(iMessage.chatId, iMessage, loadingId);
-        const {selectedChatId} = this.props;
-        let seenAt;
-        if (selectedChatId !== iMessage.chatId && iMessage.senderId !== this.props.currentUser?.id) {
-            toastr.success('New message', 'You have received a new message');
-        }
-        if (selectedChatId === iMessage.chatId) {
-            seenAt = await generalChatService.readChat(iMessage.chatId);
-        }
-        const chat = this.props.chatsList?.find(c => c.id === iMessage.chatId);
-        if (chat) { // todo always true?
-            // this.props.actions.setFirstChatInList(chat.id);
-            // this.props.actions.updateChatInList({
-            //     ...chat,
-            //     seenAt: seenAt || chat.seenAt,
-            //     lastMessage: {text: iMessage.text, createdAt: iMessage.createdAt},
-            // });
-        }
-
     }
 
     render() {
@@ -179,6 +157,7 @@ const mapDispatchToProps: IActions = {
     addChatToListIfAbsent: addChatToListIfAbsentRoutine.fulfill,
     removeChat: removeChatFromSocketRoutine.fulfill,
     setChatSeenAt: setSeenChatRoutine.fulfill,
+    receiveMessage: receiveMessageFromSocketRoutine,
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Home));

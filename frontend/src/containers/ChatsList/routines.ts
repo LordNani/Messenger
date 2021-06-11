@@ -18,6 +18,7 @@ export const selectChatIdRoutine = createLocalRoutine<string>('SELECT_CHAT_ID');
 export const removeSelectedChatIdRoutine = createLocalRoutine('REMOVE_SELECTED_CHAT_ID');
 export const setSeenChatRoutine = createLocalRoutine<ISetSeenChatRoutinePayload>('SET_SEEN_CHAT');
 export const updateChatInListRoutine = createLocalRoutine<IChatDetails>('UPDATE_CHAT_IN_LIST');
+export const updateChatLastMessageAndReadRoutine = createLocalRoutine<IUpdateChatLastMessageRoutinePayload>('UPDATE_CHAT_LAST_MESSAGE_AND_READ');
 export const updateChatLastMessageRoutine = createLocalRoutine<IUpdateChatLastMessageRoutinePayload>('UPDATE_CHAT_LAST_MESSAGE');
 export const deleteChatInListRoutine = createLocalRoutine<string>('DELETE_CHAT_IN_LIST');
 export const setFirstChatInListRoutine = createLocalRoutine<string>('SET_FIRST_CHAT_IN_LIST');

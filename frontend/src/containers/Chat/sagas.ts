@@ -16,7 +16,7 @@ import {toastr} from "react-redux-toastr";
 import {
     setFirstChatInListRoutine,
     setSeenChatRoutine,
-    updateChatLastMessageRoutine
+    updateChatLastMessageAndReadRoutine
 } from "../ChatsList/routines";
 import {v4 as uuid} from "uuid";
 import {IMessage} from "../../api/message/messageModels";
@@ -54,7 +54,7 @@ function* sendMessageSaga({payload}: PayloadAction<ISendMessageRoutinePayload>) 
             message
         }));
         yield put(setFirstChatInListRoutine.fulfill(payload.chatId));
-        yield put(updateChatLastMessageRoutine.fulfill({
+        yield put(updateChatLastMessageAndReadRoutine.fulfill({
             chatId: payload.chatId,
             lastMessage: {text: payload.text, createdAt: message.createdAt}
         }));
