@@ -31,8 +31,8 @@ function* loadFullChatSaga({payload}: PayloadAction<string>) {
             const messages = yield call(messageService.getMessagesByChatId, payload);
             yield put(setChatMessagesRoutine.fulfill({chatId: payload, messages}));
         }
-        const seen = yield call(generalChatService.readChat, payload);
-        yield put(setSeenChatRoutine.fulfill({chatId: payload, seen}));
+        const seenAt = yield call(generalChatService.readChat, payload);
+        yield put(setSeenChatRoutine.fulfill({chatId: payload, seenAt}));
         yield put(loadFullChatRoutine.success());
     } catch (e) {
         toastr.error("Unexpected error", "Couldn't load chat details");
@@ -58,8 +58,8 @@ function* sendMessageSaga({payload}: PayloadAction<ISendMessageRoutinePayload>) 
             chatId: payload.chatId,
             lastMessage: {text: payload.text, createdAt: message.createdAt}
         }));
-        const seen = yield call(generalChatService.readChat, payload.chatId);
-        yield put(setSeenChatRoutine.fulfill({chatId: payload, seen}));
+        const seenAt = yield call(generalChatService.readChat, payload.chatId);
+        yield put(setSeenChatRoutine.fulfill({chatId: payload, seenAt}));
         yield put(sendMessageRoutine.success());
     } catch (e) {
         yield put(sendMessageRoutine.failure(e?.message));

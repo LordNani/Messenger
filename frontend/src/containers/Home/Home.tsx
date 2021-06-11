@@ -24,7 +24,12 @@ import PersonalChatDetails from "../PersonalChatDetails/PersonalChatDetails";
 import GroupChatDetails from "../GroupChatDetails/GroupChatDetails";
 import {changeMessagesUsernameRoutine, IChangeMessagesUsernameRoutinePayload} from "../Chat/routines";
 import {setCurrentUserRoutine} from "../Auth/routines";
-import {addChatToListIfAbsentRoutine, updateChatInListRoutine} from "../ChatsList/routines";
+import {
+    addChatToListIfAbsentRoutine,
+    ISetSeenChatRoutinePayload,
+    setSeenChatRoutine,
+    updateChatInListRoutine
+} from "../ChatsList/routines";
 import {IRemoveChatFromSocketRoutinePayload, removeChatFromSocketRoutine} from "../SocketHome/routines";
 
 interface IActions {
@@ -33,6 +38,7 @@ interface IActions {
     updateChatInList: ICallback1<IChatDetails>;
     addChatToListIfAbsent: ICallback1<IChatDetails>;
     removeChat: ICallback1<IRemoveChatFromSocketRoutinePayload>;
+    setChatSeenAt: ICallback1<ISetSeenChatRoutinePayload>;
 }
 
 interface IPropsFromState {
@@ -107,7 +113,7 @@ class Home extends React.Component<RouteComponentProps & IActions & IPropsFromSt
 
     private afterSocketConnect = async (frame: any) => {
         this.stompSubscribe('/topic/messages/', this.messageListener);
-        this.stompSubscribe('/topic/chats/read/', this.readChatListener);
+        this.stompSubscribe('/topic/chats/read/', this.props.setChatSeenAt);
         this.stompSubscribe('/topic/chats/create/',this.props.addChatToListIfAbsent);
         this.stompSubscribe('/topic/chats/delete/', this.props.removeChat);
         this.stompSubscribe('/topic/chats/update/', this.props.updateChatInList);
@@ -135,11 +141,6 @@ class Home extends React.Component<RouteComponentProps & IActions & IPropsFromSt
             // });
         }
 
-    }
-
-    private readChatListener = (dataFromServer: any) => {
-        const seenDto: ILastSeen = dataFromServer;
-        // this.props.actions.setSeenChat(seenDto.chatId, seenDto.seenAt);
     }
 
     render() {
@@ -177,6 +178,7 @@ const mapDispatchToProps: IActions = {
     updateChatInList: updateChatInListRoutine.fulfill,
     addChatToListIfAbsent: addChatToListIfAbsentRoutine.fulfill,
     removeChat: removeChatFromSocketRoutine.fulfill,
+    setChatSeenAt: setSeenChatRoutine.fulfill,
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Home));

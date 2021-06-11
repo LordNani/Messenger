@@ -24,7 +24,7 @@ export const setFirstChatInListRoutine = createLocalRoutine<string>('SET_FIRST_C
 
 export interface ISetSeenChatRoutinePayload {
     chatId: string;
-    seen: number;
+    seenAt: number;
 }
 
 export interface IUpdateChatLastMessageRoutinePayload {

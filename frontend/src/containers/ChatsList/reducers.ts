@@ -73,7 +73,7 @@ const data = createReducer(initialStateData, {
     [setSeenChatRoutine.FULFILL]: (state, {payload}: PayloadAction<ISetSeenChatRoutinePayload>) => {
         const chat = state.chatsList?.find(c => c.id === payload.chatId);
         if (chat) {
-            chat.seenAt = payload.seen;
+            chat.seenAt = payload.seenAt;
         }
     },
     [updateChatInListRoutine.FULFILL]: (state, {payload}: PayloadAction<IChatDetails>) => {
