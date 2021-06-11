@@ -1,8 +1,8 @@
 import React from "react";
 import styles from "./Message.module.sass";
-import {IMessageWrapper} from "../../reducers/chatsList/reducer";
 import classnames from "classnames";
 import moment from "moment";
+import {IMessageWrapper} from "../../containers/Chat/models";
 
 interface IOwnProps {
     message: IMessageWrapper;

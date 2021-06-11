@@ -12,7 +12,6 @@ import {
     setMessageLoadedRoutine
 } from "./routines";
 import {createReducer, PayloadAction} from "@reduxjs/toolkit";
-import {IChatCache} from "../../reducers/chatsList/reducer";
 import {IChatDetails} from "../../api/chat/general/generalChatModels";
 import {
     ISetSeenChatRoutinePayload, IUpdateChatLastMessageRoutinePayload, removeChatsListRoutine,
@@ -20,6 +19,7 @@ import {
     updateChatInListRoutine,
     updateChatLastMessageAndReadRoutine, updateChatLastMessageRoutine
 } from "../ChatsList/routines";
+import {IChatCache} from "./models";
 
 export interface IChatState {
     requests: any;

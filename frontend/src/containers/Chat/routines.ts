@@ -2,7 +2,7 @@
 import {createRoutine} from "redux-saga-routines";
 import {IChatDetails} from "../../api/chat/general/generalChatModels";
 import {IMessage} from "../../api/message/messageModels";
-import {IMessageLoading} from "../../reducers/chatsList/reducer";
+import {IMessageLoading} from "./models";
 
 const createLocalRoutine = <T extends unknown>(actionName: string) =>
     createRoutine<T>(`CHAT:${actionName}`);

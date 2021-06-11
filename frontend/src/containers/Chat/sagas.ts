@@ -25,7 +25,7 @@ function* loadFullChatSaga({payload}: PayloadAction<string>) {
     try {
         const cachedChats = yield select((state: IAppState) => state.chat.data.chatsDetailsCached);
         if (!cachedChats.find(c => c.details.id === payload)) {
-            const list: IChatDetails[] = yield select((state: IAppState) => state.chatsListNew.data.chatsList);
+            const list: IChatDetails[] = yield select((state: IAppState) => state.chatsList.data.chatsList);
             const details = list.find(c => c.id === payload);
             yield put(appendDetailsCachedRoutine.fulfill(details));
             const messages = yield call(messageService.getMessagesByChatId, payload);

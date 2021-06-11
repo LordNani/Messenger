@@ -3,8 +3,8 @@ import styles from "./MessagesListWrapper.module.sass";
 import LoaderWrapper from "../LoaderWrapper/LoaderWrapper";
 import MessageWrapper from "../MessageWrapper/MessageWrapper";
 import {ICurrentUser} from "../../api/auth/authModels";
-import {IChatCache} from "../../reducers/chatsList/reducer";
 import {ChatTypeEnum} from "../../api/chat/general/generalChatModels";
+import {IChatCache} from "../../containers/Chat/models";
 
 interface IOwnProps {
     chatInfo?: IChatCache;

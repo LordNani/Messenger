@@ -1,14 +1,11 @@
 import React from "react";
 import styles from "./Chat.module.sass";
-import {IChatCache} from "../../reducers/chatsList/reducer";
 import classnames from "classnames";
 import ChatHeader from "../../components/ChatHeader/ChatHeader";
 import MessagesListWrapper from "../../components/MessagesListWrapper/MessagesListWrapper";
 import {ICurrentUser} from "../../api/auth/authModels";
 import ChatSender from "../../components/ChatSender/ChatSender";
-import Modal from "../../components/Modal/Modal";
 import {ChatTypeEnum, IChatDetails} from "../../api/chat/general/generalChatModels";
-import GroupChatDetails from "../GroupChatDetails/GroupChatDetails";
 import {IAppState} from "../../reducers";
 import {connect} from "react-redux";
 import {IAction, ICallback1} from "../../helpers/types.helper";
@@ -16,6 +13,7 @@ import {ISendMessageRoutinePayload, loadFullChatRoutine, sendMessageRoutine} fro
 import {deleteChatInListRoutine, removeSelectedChatIdRoutine, updateChatInListRoutine} from "../ChatsList/routines";
 import {selectPersonalChatIdRoutine} from "../PersonalChatDetails/routines";
 import {selectGroupChatIdRoutine} from "../GroupChatDetails/routines";
+import {IChatCache} from "./models";
 
 interface IPropsFromState {
     currentUser?: ICurrentUser;
@@ -111,7 +109,7 @@ class Chat extends React.Component<IPropsFromState & IActions, IState> {
 const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
     currentUser: state.auth.data.currentUser,
     chatsDetailsCached: state.chat.data.chatsDetailsCached,
-    selectedChatId: state.chatsListNew.data.selectedChatId
+    selectedChatId: state.chatsList.data.selectedChatId
 });
 
 const mapDispatchToProps: IActions = {

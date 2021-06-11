@@ -97,7 +97,7 @@ function* updateGroupChatSaga({payload}: PayloadAction<IUpdateGroupChatRoutinePa
     try {
         const {id, title, picture} = payload;
         yield call(groupChatService.changeInfo, id, title, picture);
-        const chatsList = yield select((state: IAppState) => state.chatsListNew.data.chatsList);
+        const chatsList = yield select((state: IAppState) => state.chatsList.data.chatsList);
         const currChat = chatsList?.find(c => c.id === id);
         if (currChat) {
             yield put(updateChatInListRoutine.fulfill({...currChat, title, picture}));

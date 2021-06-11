@@ -25,7 +25,7 @@ function* removeChatFromSocketSaga({payload}: PayloadAction<IRemoveChatFromSocke
     const {chatId} = payload;
     const selectedPersonalId = yield select((state: IAppState) => state.personalChat.data.selectedId);
     const selectedGroupId = yield select((state: IAppState) => state.groupChat.data.selectedId);
-    const selectedChat = yield select((state: IAppState) => state.chatsListNew.data.selectedChatId);
+    const selectedChat = yield select((state: IAppState) => state.chatsList.data.selectedChatId);
 
     if (selectedPersonalId === chatId) {
         yield put(selectPersonalChatIdRoutine.fulfill(undefined));
@@ -44,7 +44,7 @@ function* receiveMessageFromSocketSaga({payload}: PayloadAction<IReceiveMessageF
     try {
         const { loadingId, message } = payload;
         yield put(appendReadyMessageIfAbsentRoutine.fulfill({loadingId, chatId: message.chatId, message}));
-        const selectedChatId = yield select((state: IAppState) => state.chatsListNew.data.selectedChatId);
+        const selectedChatId = yield select((state: IAppState) => state.chatsList.data.selectedChatId);
         const currentUser = yield select((state: IAppState) => state.auth.data.currentUser);
         if (selectedChatId !== message.chatId && message.senderId !== currentUser?.id) {
             toastr.success('New message', 'You have received a new message');

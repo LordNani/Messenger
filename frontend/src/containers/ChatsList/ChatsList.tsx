@@ -118,14 +118,14 @@ class ChatsList extends React.Component<IPropsFromState & IActions, IState> {
 }
 
 const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
-    chatsList: state.chatsListNew.data.chatsList,
-    chatsListLoading: state.chatsListNew.requests.loadChatsList.loading,
-    createPersonalChatLoading: state.chatsListNew.requests.createPersonalChat.loading,
-    createPersonalChatError: state.chatsListNew.requests.createPersonalChat.error,
-    createGroupChatLoading: state.chatsListNew.requests.createGroupChat.loading,
-    createGroupChatError: state.chatsListNew.requests.createGroupChat.error,
-    createModalShown: state.chatsListNew.data.createModalShown,
-    selectedChatId: state.chatsListNew.data.selectedChatId,
+    chatsList: state.chatsList.data.chatsList,
+    chatsListLoading: state.chatsList.requests.loadChatsList.loading,
+    createPersonalChatLoading: state.chatsList.requests.createPersonalChat.loading,
+    createPersonalChatError: state.chatsList.requests.createPersonalChat.error,
+    createGroupChatLoading: state.chatsList.requests.createGroupChat.loading,
+    createGroupChatError: state.chatsList.requests.createGroupChat.error,
+    createModalShown: state.chatsList.data.createModalShown,
+    selectedChatId: state.chatsList.data.selectedChatId,
 });
 
 const mapDispatchToProps: IActions = {
