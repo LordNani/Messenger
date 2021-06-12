@@ -72,17 +72,14 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-websocket</artifactId>
-<!--			<version>5.2.2.RELEASE</version>-->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-messaging</artifactId>
-<!--			<version>5.2.2.RELEASE</version>-->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-messaging</artifactId>
-<!--			<version>${spring-security.version}</version>-->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -96,6 +93,11 @@
 		<dependency>
 			<groupId>io.rest-assured</groupId>
 			<artifactId>rest-assured</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

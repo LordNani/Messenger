@@ -22,7 +22,5 @@ public class DbInitializer {
             fakerService.generateRandomData();
 
         }
-
-
     }
 }

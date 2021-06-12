@@ -160,7 +160,7 @@ public class GroupChatService {
                 .orElseThrow(ChatNotFoundException::new);
 
         if (userChat.getPermissionLevel().equals(UserChat.PermissionLevel.OWNER)) {
-            throw new NotEnoughPermissionLevelException();
+            throw new InvalidChatOperationException();
         }
 
         userChatRepository.delete(userChat);
@@ -181,7 +181,7 @@ public class GroupChatService {
 
         boolean isContextUserInChat = groupChatEntity.getUserChats().stream()
                 .anyMatch(userChat -> userChat.getUser().getId().equals(contextUser.getId()));
-        if (!isContextUserInChat) throw new UserNotMemberOfChatException();
+        if (!isContextUserInChat) throw new ContextUserNotMemberOfChatException();
 
         return groupChatEntity.getUserChats().stream()
                 .map(GroupChatUserInfoDto::from)
