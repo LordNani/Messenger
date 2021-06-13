@@ -9,6 +9,7 @@ import messenger.backend.auth.dto.AuthRequestDto;
 import messenger.backend.auth.dto.AuthResponseDto;
 import messenger.backend.chat.general.dto.GeneralChatResponseDto;
 import messenger.backend.chat.general.dto.LastSeenResponseDto;
+import messenger.backend.message.MessageRepository;
 import messenger.backend.message.dto.LastMessageResponseDto;
 import messenger.backend.userChat.UserChatRepository;
 import messenger.backend.utils.Response;
@@ -34,6 +35,8 @@ class GeneralChatControllerIT {
     private ObjectMapper objectMapper;
     @Autowired
     private UserChatRepository userChatRepository;
+    @Autowired
+    private MessageRepository messageRepository;
 
     @LocalServerPort
     void setPort(int port) {
@@ -66,7 +69,9 @@ class GeneralChatControllerIT {
                         "Full Name 2",
                         "PERSONAL",
                         null,
-                        new LastMessageResponseDto("some message text", 1347896872690L))
+                        new LastMessageResponseDto("some message text",
+                                messageRepository.findById(UUID.fromString("ffffa92e-9e5e-4c0b-b661-4e790e76ea4d"))
+                                        .orElseThrow().getCreatedAt().getTime()))
         );
     }
 
@@ -85,8 +90,12 @@ class GeneralChatControllerIT {
         Response<List<LastSeenResponseDto>> response = objectMapper.readValue(jsonResponse, new TypeReference<>(){});
         assertThat(response.getMessage()).isNull();
         assertThat(response.getData()).containsExactly(
-                new LastSeenResponseDto(UUID.fromString("51c07af2-5ed1-4e30-b054-e5a3d51da5a5"), 1546293600000L),
-                new LastSeenResponseDto(UUID.fromString("06dfa92e-532d-4b38-bd21-355328bc4270"), 1546293600000L)
+                new LastSeenResponseDto(UUID.fromString("51c07af2-5ed1-4e30-b054-e5a3d51da5a5"),
+                        userChatRepository.findById(UUID.fromString("e2c146a4-9e5e-4c0b-b661-4e790e76ea4d"))
+                                .orElseThrow().getSeenAt().getTime()),
+                new LastSeenResponseDto(UUID.fromString("06dfa92e-532d-4b38-bd21-355328bc4270"),
+                        userChatRepository.findById(UUID.fromString("e9fe386e-e194-4d97-aae5-bfc03ce8767a"))
+                                .orElseThrow().getSeenAt().getTime())
         );
     }
 
@@ -128,7 +137,7 @@ class GeneralChatControllerIT {
         assertThat(response.getMessage()).isNotEmpty();
     }
 
-    public String getAccessToken() throws JsonProcessingException {
+    private String getAccessToken() throws JsonProcessingException {
         String json = objectMapper.writeValueAsString(
                 new AuthRequestDto("user", "user")
         );

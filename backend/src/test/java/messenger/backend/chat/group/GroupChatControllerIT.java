@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(value = {"/sql/clean.sql", "/sql/chat/initGroupChatTests.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class GroupChatControllerIT {
+class GroupChatControllerIT {
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -49,7 +49,7 @@ public class GroupChatControllerIT {
 
     @Test
     @SneakyThrows
-    public void shouldGetGroupChatInfo() {
+    void shouldGetGroupChatInfo() {
         String jsonResponse = RestAssured
                 .given()
                 .header("Authorization", getAccessToken())
@@ -88,7 +88,7 @@ public class GroupChatControllerIT {
 
     @Test
     @SneakyThrows
-    public void shouldNotGetGroupChatInfo_ChatNotFound() {
+    void shouldNotGetGroupChatInfo_ChatNotFound() {
         String jsonResponse = RestAssured
                 .given()
                 .header("Authorization", getAccessToken())
@@ -104,7 +104,7 @@ public class GroupChatControllerIT {
     @Test
     @SneakyThrows
     @Transactional
-    public void shouldCreateGroupChat() {
+    void shouldCreateGroupChat() {
         CreateGroupChatRequestDto dto = new CreateGroupChatRequestDto();
         dto.setChatName("newGroupChatName");
         String json = objectMapper.writeValueAsString(dto);
@@ -138,7 +138,7 @@ public class GroupChatControllerIT {
 
     @Test
     @SneakyThrows
-    public void shouldDeleteGroupChat() {
+    void shouldDeleteGroupChat() {
         DeleteGroupChatRequestDto dto = new DeleteGroupChatRequestDto();
         dto.setChatId(UUID.fromString("51c07af2-5ed1-4e30-b054-e5a3d51da5a5"));
         String json = objectMapper.writeValueAsString(dto);
@@ -161,7 +161,7 @@ public class GroupChatControllerIT {
 
     @Test
     @SneakyThrows
-    public void shouldNotDeleteGroupChat_ChatNotFound() {
+    void shouldNotDeleteGroupChat_ChatNotFound() {
         DeleteGroupChatRequestDto dto = new DeleteGroupChatRequestDto();
         dto.setChatId(UUID.fromString("00000000-0000-0000-0000-00000000000"));
         String json = objectMapper.writeValueAsString(dto);
@@ -186,7 +186,7 @@ public class GroupChatControllerIT {
             "user2, user, 51c07af2-5ed1-4e30-b054-e5a3d51da5a5",
             "user_baba, user, 51c07af2-5ed1-4e30-b054-e5a3d51da5a5"
     })
-    public void shouldNotDeleteGroupChat_UserNotOwnerOfChat(String username, String password, String chatId) {
+    void shouldNotDeleteGroupChat_UserNotOwnerOfChat(String username, String password, String chatId) {
         DeleteGroupChatRequestDto dto = new DeleteGroupChatRequestDto();
         dto.setChatId(UUID.fromString(chatId));
         String json = objectMapper.writeValueAsString(dto);
@@ -212,7 +212,7 @@ public class GroupChatControllerIT {
             "user, user, 51c07af2-5ed1-4e30-b054-e5a3d51da5a5, fafae9b4-6789-4f03-9520-dc97b0b9470b",
             "user_baba, user, 51c07af2-5ed1-4e30-b054-e5a3d51da5a5, fafae9b4-6789-4f03-9520-dc97b0b9470b"
     })
-    public void shouldAddMemberToChat(String username, String password, String chatId, String targetUserId) {
+    void shouldAddMemberToChat(String username, String password, String chatId, String targetUserId) {
         AddMemberToGroupChatRequestDto dto = new AddMemberToGroupChatRequestDto();
         dto.setChatId(UUID.fromString(chatId));
         dto.setTargetUserId(UUID.fromString(targetUserId));
@@ -239,7 +239,7 @@ public class GroupChatControllerIT {
 
     @Test
     @SneakyThrows
-    public void shouldNotAddMemberToChat_NotEnoughPermissionLevel() {
+    void shouldNotAddMemberToChat_NotEnoughPermissionLevel() {
         AddMemberToGroupChatRequestDto dto = new AddMemberToGroupChatRequestDto();
         dto.setChatId(UUID.fromString("51c07af2-5ed1-4e30-b054-e5a3d51da5a5"));
         dto.setTargetUserId(UUID.fromString("fafae9b4-6789-4f03-9520-dc97b0b9470b"));
@@ -260,7 +260,7 @@ public class GroupChatControllerIT {
 
     @Test
     @SneakyThrows
-    public void shouldNotAddMemberToChat_UserAlreadyMemberOfChat() {
+    void shouldNotAddMemberToChat_UserAlreadyMemberOfChat() {
         AddMemberToGroupChatRequestDto dto = new AddMemberToGroupChatRequestDto();
         dto.setChatId(UUID.fromString("51c07af2-5ed1-4e30-b054-e5a3d51da5a5"));
         dto.setTargetUserId(UUID.fromString("dacee9b4-6789-4f03-9520-dc97b0b9470b"));
@@ -282,7 +282,7 @@ public class GroupChatControllerIT {
 
     @Test
     @SneakyThrows
-    public void shouldNotAddMemberToChat_ContextUserNotMemberOfChat() {
+    void shouldNotAddMemberToChat_ContextUserNotMemberOfChat() {
         AddMemberToGroupChatRequestDto dto = new AddMemberToGroupChatRequestDto();
         dto.setChatId(UUID.fromString("12345678-5ed1-4e30-b054-e5a3d51da5a5"));
         dto.setTargetUserId(UUID.fromString("fafae9b4-6789-4f03-9520-dc97b0b9470b"));
@@ -308,7 +308,7 @@ public class GroupChatControllerIT {
             "user, user, 51c07af2-5ed1-4e30-b054-e5a3d51da5a5, dacee9b4-6789-4f03-9520-dc97b0b9470b",
             "user, user, 51c07af2-5ed1-4e30-b054-e5a3d51da5a5, babae9b4-6789-4f03-9520-dc97b0b9470b",
     })
-    public void shouldRemoveMemberFromChat(String username, String password, String chatId, String targetUserId) {
+    void shouldRemoveMemberFromChat(String username, String password, String chatId, String targetUserId) {
         RemoveMemberFromGroupChatRequestDto dto = new RemoveMemberFromGroupChatRequestDto();
         dto.setChatId(UUID.fromString(chatId));
         dto.setTargetUserId(UUID.fromString(targetUserId));
@@ -338,7 +338,7 @@ public class GroupChatControllerIT {
             "user_baba, user, 51c07af2-5ed1-4e30-b054-e5a3d51da5a5, 9f6a075e-a4c5-44da-b7c5-5f22bb64b352",
             "user, user, 51c07af2-5ed1-4e30-b054-e5a3d51da5a5, 9f6a075e-a4c5-44da-b7c5-5f22bb64b352",
     })
-    public void shouldNotRemoveMemberFromChat_NotEnoughPermissionLevel(String username, String password, String chatId, String targetUserId) {
+    void shouldNotRemoveMemberFromChat_NotEnoughPermissionLevel(String username, String password, String chatId, String targetUserId) {
         RemoveMemberFromGroupChatRequestDto dto = new RemoveMemberFromGroupChatRequestDto();
         dto.setChatId(UUID.fromString(chatId));
         dto.setTargetUserId(UUID.fromString(targetUserId));
@@ -363,7 +363,7 @@ public class GroupChatControllerIT {
 
     @Test
     @SneakyThrows
-    public void shouldUpgradeToAdmin() {
+    void shouldUpgradeToAdmin() {
         UpgradeToAdminRequestDto dto = new UpgradeToAdminRequestDto();
         dto.setChatId(UUID.fromString("51c07af2-5ed1-4e30-b054-e5a3d51da5a5"));
         dto.setTargetUserId(UUID.fromString("dacee9b4-6789-4f03-9520-dc97b0b9470b"));
@@ -392,7 +392,7 @@ public class GroupChatControllerIT {
             "user2, user, 51c07af2-5ed1-4e30-b054-e5a3d51da5a5, dacee9b4-6789-4f03-9520-dc97b0b9470b",
             "user_baba, user, 51c07af2-5ed1-4e30-b054-e5a3d51da5a5, dacee9b4-6789-4f03-9520-dc97b0b9470b"
     })
-    public void shouldNotUpgradeToAdmin_NotEnoughPermissionLevel(String username, String password, String chatId, String targetUserId) {
+    void shouldNotUpgradeToAdmin_NotEnoughPermissionLevel(String username, String password, String chatId, String targetUserId) {
         UpgradeToAdminRequestDto dto = new UpgradeToAdminRequestDto();
         dto.setChatId(UUID.fromString(chatId));
         dto.setTargetUserId(UUID.fromString(targetUserId));
@@ -422,7 +422,7 @@ public class GroupChatControllerIT {
             "user, user, 51c07af2-5ed1-4e30-b054-e5a3d51da5a5, 9f6a075e-a4c5-44da-b7c5-5f22bb64b352",
             "user, user, 51c07af2-5ed1-4e30-b054-e5a3d51da5a5, babae9b4-6789-4f03-9520-dc97b0b9470b"
     })
-    public void shouldNotUpgradeToAdmin_InvalidChatOperation(String username, String password, String chatId, String targetUserId) {
+    void shouldNotUpgradeToAdmin_InvalidChatOperation(String username, String password, String chatId, String targetUserId) {
         UpgradeToAdminRequestDto dto = new UpgradeToAdminRequestDto();
         dto.setChatId(UUID.fromString(chatId));
         dto.setTargetUserId(UUID.fromString(targetUserId));
@@ -447,7 +447,7 @@ public class GroupChatControllerIT {
 
     @Test
     @SneakyThrows
-    public void shouldDowngradeToMember() {
+    void shouldDowngradeToMember() {
         DowngradeToMemberRequestDto requestDto = new DowngradeToMemberRequestDto();
         requestDto.setChatId(UUID.fromString("51c07af2-5ed1-4e30-b054-e5a3d51da5a5"));
         requestDto.setTargetUserId(UUID.fromString("babae9b4-6789-4f03-9520-dc97b0b9470b"));
@@ -478,7 +478,7 @@ public class GroupChatControllerIT {
             "user_baba, user, 51c07af2-5ed1-4e30-b054-e5a3d51da5a5, fafae9b4-6789-4f03-9520-dc97b0b9470b",
             "user_baba, user, 51c07af2-5ed1-4e30-b054-e5a3d51da5a5, babae9b4-6789-4f03-9520-dc97b0b9470b",
     })
-    public void shouldNotDowngradeToMember_NotEnoughPermissionLevel(String username, String password, String chatId, String targetUserId) {
+    void shouldNotDowngradeToMember_NotEnoughPermissionLevel(String username, String password, String chatId, String targetUserId) {
         DowngradeToMemberRequestDto requestDto = new DowngradeToMemberRequestDto();
         requestDto.setChatId(UUID.fromString(chatId));
         requestDto.setTargetUserId(UUID.fromString(targetUserId));
@@ -508,7 +508,7 @@ public class GroupChatControllerIT {
             "9f6a075e-a4c5-44da-b7c5-5f22bb64b352",
             "dacee9b4-6789-4f03-9520-dc97b0b9470b",
     })
-    public void shouldNotDowngradeToMember_InvalidChatOperation(String targetUserId) {
+    void shouldNotDowngradeToMember_InvalidChatOperation(String targetUserId) {
         DowngradeToMemberRequestDto requestDto = new DowngradeToMemberRequestDto();
         requestDto.setChatId(UUID.fromString("51c07af2-5ed1-4e30-b054-e5a3d51da5a5"));
         requestDto.setTargetUserId(UUID.fromString(targetUserId));
@@ -534,7 +534,7 @@ public class GroupChatControllerIT {
 
     @Test
     @SneakyThrows
-    public void shouldChangeInfo() {
+    void shouldChangeInfo() {
         ChangeGroupChatNameRequestDto dto = new ChangeGroupChatNameRequestDto();
         dto.setChatId(UUID.fromString("51c07af2-5ed1-4e30-b054-e5a3d51da5a5"));
         dto.setNewChatName("newName");
@@ -555,7 +555,7 @@ public class GroupChatControllerIT {
 
     @Test
     @SneakyThrows
-    public void shouldNotChangeInfo_NotEnoughPermissionLevel() {
+    void shouldNotChangeInfo_NotEnoughPermissionLevel() {
         ChangeGroupChatNameRequestDto dto = new ChangeGroupChatNameRequestDto();
         dto.setChatId(UUID.fromString("51c07af2-5ed1-4e30-b054-e5a3d51da5a5"));
         dto.setNewChatName("newName");
