@@ -9,6 +9,7 @@ import messenger.backend.auth.dto.AuthRequestDto;
 import messenger.backend.auth.dto.AuthResponseDto;
 import messenger.backend.message.dto.MessageResponseDto;
 import messenger.backend.message.dto.SendMessageRequestDto;
+import messenger.backend.message.dto.UpdateMessageRequestDto;
 import messenger.backend.utils.Response;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
@@ -94,8 +95,16 @@ class MessageControllerIT {
                                         "Full Name 2",
                                         UUID.fromString("dacee9b4-6789-4f03-9520-dc97b0b9470b"),
                                         0L,
+                                        UUID.fromString("51c07af2-5ed1-4e30-b054-e5a3d51da5a5")),
+                                new MessageResponseDto(
+                                        UUID.fromString("33333333-9e5e-4c0b-b661-4e790e76ea4d"),
+                                        "message3 group",
+                                        "Full Name 1111",
+                                        UUID.fromString("11111111-6789-4f03-9520-dc97b0b9470b"),
+                                        0L,
                                         UUID.fromString("51c07af2-5ed1-4e30-b054-e5a3d51da5a5"))
-                                ))
+                                )
+                )
         );
     }
 
@@ -172,6 +181,55 @@ class MessageControllerIT {
                 .statusCode(HttpStatus.SC_NOT_FOUND)
                 .extract().asString();
         assertThatResponseWithMessageAndNoData(jsonResponse);
+    }
+
+    @Test
+    @SneakyThrows
+    void shouldUpdateMessage() {
+        UpdateMessageRequestDto requestDto = new UpdateMessageRequestDto(UUID.fromString("11111111-9e5e-4c0b-b661-4e790e76ea4d"),
+                "new text", UUID.randomUUID());
+        String json = objectMapper.writeValueAsString(requestDto);
+
+        RestAssured
+                .given()
+                .header("Authorization", getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(json)
+                .when()
+                .post("/api/messages/update")
+                .then()
+                .statusCode(HttpStatus.SC_OK);
+
+        assertThat(messageRepository.findById(requestDto.getMessageId()).orElseThrow().getMessageBody()).isEqualTo(requestDto.getNewText());
+    }
+
+    @ParameterizedTest
+    @SneakyThrows
+    @MethodSource("updateMessageTestProvider")
+    void shouldNotUpdateMessage(String username, String password, UUID messageId, int statusCode) {
+        UpdateMessageRequestDto requestDto = new UpdateMessageRequestDto(messageId,
+                "new text", UUID.randomUUID());
+        String json = objectMapper.writeValueAsString(requestDto);
+
+        String jsonResponse = RestAssured
+                .given()
+                .header("Authorization", getAccessToken(username, password))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(json)
+                .when()
+                .post("/api/messages/update")
+                .then()
+                .statusCode(statusCode)
+                .extract().asString();
+        assertThatResponseWithMessageAndNoData(jsonResponse);
+    }
+
+    private static Stream<Arguments> updateMessageTestProvider() {
+        return Stream.of(
+                Arguments.of("user", "user", UUID.fromString("06dfa92e-532d-4b38-bd21-355328bc4270"), HttpStatus.SC_NOT_FOUND),
+                Arguments.of("user2", "user", UUID.fromString("11111111-9e5e-4c0b-b661-4e790e76ea4d"), HttpStatus.SC_FORBIDDEN),
+                Arguments.of("1111", "user", UUID.fromString("33333333-9e5e-4c0b-b661-4e790e76ea4d"), HttpStatus.SC_FORBIDDEN)
+        );
     }
 
     private String getAccessToken() {
