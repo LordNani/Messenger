@@ -14,7 +14,6 @@ import messenger.backend.userChat.UserChatRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -73,14 +72,9 @@ public class MessageService {
                 .orElse(null);
     }
 
-//    @Transactional
     public void updateMessage(UpdateMessageRequestDto requestDto) {
         UUID currentUserId = JwtTokenService.getCurrentUserId();
-        MessageEntity messageEntity = messageRepository.findById(requestDto.getMessageId())
-                .orElseThrow(MessageNotFoundException::new);
-        if (!messageEntity.getUser().getId().equals(currentUserId)) throw new UserNotOwnerOfMessage();
-        if (userChatRepository.findByUserIdAndChatId(currentUserId, messageEntity.getChat().getId()).isEmpty())
-            throw new ContextUserNotMemberOfChatException();
+        MessageEntity messageEntity = checkMessageManagementConstraints(currentUserId, requestDto.getMessageId());
 
         messageEntity.setMessageBody(requestDto.getNewText());
         messageRepository.saveAndFlush(messageEntity);
@@ -90,5 +84,26 @@ public class MessageService {
                 messageEntity.getChat().getUserChats().stream().map(chat -> chat.getUser().getId()).collect(Collectors.toList()),
                 new MessageSocketResponseDto(requestDto.getLoadingId(), MessageResponseDto.fromEntity(messageEntity))
         );
+    }
+
+    public void deleteMessage(DeleteMessageRequestDto requestDto) {
+        UUID currentUserId = JwtTokenService.getCurrentUserId();
+        MessageEntity messageEntity = checkMessageManagementConstraints(currentUserId, requestDto.getMessageId());
+
+        socketSender.send(
+                SubscribedOn.DELETE_MESSAGE,
+                messageEntity.getChat().getUserChats().stream().map(chat -> chat.getUser().getId()).collect(Collectors.toList()),
+                new DeleteMessageSocketDto(messageEntity.getId()));
+
+        messageRepository.deleteById(messageEntity.getId());
+    }
+
+    private MessageEntity checkMessageManagementConstraints(UUID currentUserId, UUID messageId) {
+        MessageEntity messageEntity = messageRepository.findById(messageId)
+                .orElseThrow(MessageNotFoundException::new);
+        if (!messageEntity.getUser().getId().equals(currentUserId)) throw new UserNotOwnerOfMessage();
+        if (userChatRepository.findByUserIdAndChatId(currentUserId, messageEntity.getChat().getId()).isEmpty())
+            throw new ContextUserNotMemberOfChatException();
+        return messageEntity;
     }
 }

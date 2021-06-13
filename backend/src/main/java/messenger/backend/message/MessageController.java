@@ -2,6 +2,7 @@ package messenger.backend.message;
 
 
 import lombok.RequiredArgsConstructor;
+import messenger.backend.message.dto.DeleteMessageRequestDto;
 import messenger.backend.message.dto.MessageResponseDto;
 import messenger.backend.message.dto.SendMessageRequestDto;
 import messenger.backend.message.dto.UpdateMessageRequestDto;
@@ -32,5 +33,10 @@ public class MessageController {
     @PostMapping("/update")
     public void updateMessage(@Valid @RequestBody UpdateMessageRequestDto requestDto) {
         messageService.updateMessage(requestDto);
+    }
+
+    @PostMapping("/delete")
+    public void deleteMessage(@Valid @RequestBody DeleteMessageRequestDto requestDto) {
+        messageService.deleteMessage(requestDto);
     }
 }
