@@ -72,6 +72,7 @@ class MessageControllerIT {
                                         "Full Name",
                                         UUID.fromString("9f6a075e-a4c5-44da-b7c5-5f22bb64b352"),
                                         0L,
+                                        false,
                                         UUID.fromString("06dfa92e-532d-4b38-bd21-355328bc4270")),
                                 new MessageResponseDto(
                                         UUID.fromString("aaaaa92e-9e5e-4c0b-b661-4e790e76ea4d"),
@@ -79,6 +80,7 @@ class MessageControllerIT {
                                         "Full Name 2",
                                         UUID.fromString("dacee9b4-6789-4f03-9520-dc97b0b9470b"),
                                         0L,
+                                        false,
                                         UUID.fromString("06dfa92e-532d-4b38-bd21-355328bc4270"))
                         )),
                 Arguments.of("51c07af2-5ed1-4e30-b054-e5a3d51da5a5",
@@ -89,6 +91,7 @@ class MessageControllerIT {
                                         "Full Name",
                                         UUID.fromString("9f6a075e-a4c5-44da-b7c5-5f22bb64b352"),
                                         0L,
+                                        false,
                                         UUID.fromString("51c07af2-5ed1-4e30-b054-e5a3d51da5a5")),
                                 new MessageResponseDto(
                                         UUID.fromString("22222222-9e5e-4c0b-b661-4e790e76ea4d"),
@@ -96,6 +99,7 @@ class MessageControllerIT {
                                         "Full Name 2",
                                         UUID.fromString("dacee9b4-6789-4f03-9520-dc97b0b9470b"),
                                         0L,
+                                        false,
                                         UUID.fromString("51c07af2-5ed1-4e30-b054-e5a3d51da5a5")),
                                 new MessageResponseDto(
                                         UUID.fromString("33333333-9e5e-4c0b-b661-4e790e76ea4d"),
@@ -103,6 +107,7 @@ class MessageControllerIT {
                                         "Full Name 1111",
                                         UUID.fromString("11111111-6789-4f03-9520-dc97b0b9470b"),
                                         0L,
+                                        false,
                                         UUID.fromString("51c07af2-5ed1-4e30-b054-e5a3d51da5a5"))
                                 )
                 )
@@ -190,6 +195,7 @@ class MessageControllerIT {
         UpdateMessageRequestDto requestDto = new UpdateMessageRequestDto(UUID.fromString("11111111-9e5e-4c0b-b661-4e790e76ea4d"),
                 "new text", UUID.randomUUID());
         String json = objectMapper.writeValueAsString(requestDto);
+        Date dateBeforeRequest = new Date();
 
         RestAssured
                 .given()
@@ -200,8 +206,9 @@ class MessageControllerIT {
                 .post("/api/messages/update")
                 .then()
                 .statusCode(HttpStatus.SC_OK);
-
-        assertThat(messageRepository.findById(requestDto.getMessageId()).orElseThrow().getMessageBody()).isEqualTo(requestDto.getNewText());
+        MessageEntity messageEntity = messageRepository.findById(requestDto.getMessageId()).orElseThrow();
+        assertThat(messageEntity.getMessageBody()).isEqualTo(requestDto.getNewText());
+        assertThat(messageEntity.getUpdatedAt()).isAfter(dateBeforeRequest);
     }
 
     @ParameterizedTest

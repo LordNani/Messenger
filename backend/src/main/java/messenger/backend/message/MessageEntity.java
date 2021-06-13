@@ -6,8 +6,10 @@ import messenger.backend.chat.ChatSuperclass;
 import messenger.backend.seeds.FakerService;
 import messenger.backend.user.UserEntity;
 import messenger.backend.userChat.UserChat;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -53,8 +55,14 @@ public class MessageEntity {
     private UUID id;
 
     @Column(name = "created_at", nullable = false)
-    @Builder.Default
-    private Date createdAt = new Date();
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
+    @Column(name = "updated_at")
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
 
     @Column(name = "message_body",length = 1024, nullable = false)
     private String messageBody;

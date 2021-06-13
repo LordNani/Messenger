@@ -82,7 +82,7 @@ public class MessageService {
         socketSender.send(
                 SubscribedOn.UPDATE_MESSAGE_TEXT,
                 messageEntity.getChat().getUserChats().stream().map(chat -> chat.getUser().getId()).collect(Collectors.toList()),
-                new MessageSocketResponseDto(requestDto.getLoadingId(), MessageResponseDto.fromEntity(messageEntity))
+                MessageResponseDto.fromEntity(messageEntity)
         );
     }
 
