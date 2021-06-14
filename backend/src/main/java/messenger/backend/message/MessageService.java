@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.exceptions.ChatNotFoundException;
 import messenger.backend.chat.exceptions.ContextUserNotMemberOfChatException;
+import messenger.backend.chat.general.GeneralChatService;
 import messenger.backend.message.dto.*;
 import messenger.backend.message.exceptions.MessageNotFoundException;
 import messenger.backend.message.exceptions.UserNotOwnerOfMessage;
@@ -54,11 +55,10 @@ public class MessageService {
         messageRepository.save(message);
 
         MessageResponseDto responseDto = MessageResponseDto.fromEntity(message);
-        socketSender.send(
+        socketSender.sendToAllMembersInChat(
                 SubscribedOn.NEW_MESSAGE,
-                userChat.getChat().getUserChats().stream().map(chat -> chat.getUser().getId()).collect(Collectors.toList()),
-                new MessageSocketResponseDto(requestDto.getLoadingId(), responseDto)
-        );
+                userChat.getChat(),
+                new MessageSocketResponseDto(requestDto.getLoadingId(), responseDto));
 
         return responseDto;
     }
@@ -79,21 +79,21 @@ public class MessageService {
         messageEntity.setMessageBody(requestDto.getNewText());
         messageRepository.saveAndFlush(messageEntity);
 
-        socketSender.send(
+        socketSender.sendToAllMembersInChat(
                 SubscribedOn.UPDATE_MESSAGE_TEXT,
-                messageEntity.getChat().getUserChats().stream().map(chat -> chat.getUser().getId()).collect(Collectors.toList()),
-                MessageResponseDto.fromEntity(messageEntity)
-        );
+                messageEntity.getChat(),
+                MessageResponseDto.fromEntity(messageEntity));
     }
 
     public void deleteMessage(DeleteMessageRequestDto requestDto) {
         UUID currentUserId = JwtTokenService.getCurrentUserId();
         MessageEntity messageEntity = checkMessageManagementConstraints(currentUserId, requestDto.getMessageId());
 
-        socketSender.send(
+        socketSender.sendToAllMembersInChat(
                 SubscribedOn.DELETE_MESSAGE,
-                messageEntity.getChat().getUserChats().stream().map(chat -> chat.getUser().getId()).collect(Collectors.toList()),
-                new DeleteMessageSocketDto(messageEntity.getId()));
+                messageEntity.getChat(),
+                new DeleteMessageSocketDto(messageEntity.getId())
+        );
 
         messageRepository.deleteById(messageEntity.getId());
     }

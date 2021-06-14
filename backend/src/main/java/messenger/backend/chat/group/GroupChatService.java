@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.GroupChatEntity;
 import messenger.backend.chat.exceptions.*;
+import messenger.backend.chat.general.GeneralChatService;
 import messenger.backend.chat.general.dto.DeleteChatDto;
 import messenger.backend.chat.general.dto.GeneralChatResponseDto;
 import messenger.backend.chat.group.dto.*;
@@ -81,17 +82,9 @@ public class GroupChatService {
                         && chat.getUser().getId().equals(contextUser.getId()));
         if (!isUserOwnerOfChat) throw new UserNotOwnerOfChatException();
 
-        List<UUID> uuidList = groupChatEntity.getUserChats().stream()
-                .map(chat -> chat.getUser().getId())
-                .collect(Collectors.toList());
-
         groupChatRepository.delete(groupChatEntity);
 
-        socketSender.send(
-                SubscribedOn.DELETE_CHAT,
-                uuidList,
-                DeleteChatDto.of(requestDto.getChatId())
-        );
+        socketSender.sendToAllMembersInChat(SubscribedOn.DELETE_CHAT, groupChatEntity, DeleteChatDto.of(requestDto.getChatId()));
     }
 
     public void addMemberToChat(AddMemberToGroupChatRequestDto requestDto) {
@@ -272,13 +265,9 @@ public class GroupChatService {
         groupChatEntity.setPicture(requestDto.getPicture());
         groupChatRepository.saveAndFlush(groupChatEntity);
 
-        List<UUID> uuidList = groupChatEntity.getUserChats().stream()
-                .map(chat -> chat.getUser().getId())
-                .collect(Collectors.toList());
-
-        socketSender.send(
+        socketSender.sendToAllMembersInChat(
                 SubscribedOn.UPDATE_CHAT,
-                uuidList,
+                groupChatEntity,
                 GeneralChatResponseDto.fromGroupEntity(
                         groupChatEntity,
                         messageService.getLastMessageByChatId(groupChatEntity.getId())
