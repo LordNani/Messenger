@@ -2,7 +2,9 @@ insert into users (id, username, password, full_name, bio, role)
 values ('9f6a075e-a4c5-44da-b7c5-5f22bb64b352', 'user', '$2y$12$ixe4Lh4uQVncJDzPJWckfeyTXPMkuVZm55miqLdnn/TjH0FoF8HOq',
         'Full Name', 'My info', 'USER'),
        ('dacee9b4-6789-4f03-9520-dc97b0b9470b', 'user2', '$2y$12$ixe4Lh4uQVncJDzPJWckfeyTXPMkuVZm55miqLdnn/TjH0FoF8HOq',
-        'Full Name 2', 'My info 2', 'USER');
+        'Full Name 2', 'My info 2', 'USER'),
+       ('11111111-6789-4f03-9520-dc97b0b9470b', '1111', '$2y$12$ixe4Lh4uQVncJDzPJWckfeyTXPMkuVZm55miqLdnn/TjH0FoF8HOq',
+        'Full Name 1111', 'My info 1111', 'USER');
 
 insert into group_chat (id, group_name)
 values ('51c07af2-5ed1-4e30-b054-e5a3d51da5a5', 'GROUP');
@@ -28,4 +30,6 @@ values ('ffffa92e-9e5e-4c0b-b661-4e790e76ea4d', '2012-09-17 18:47:52.69', 'messa
        ('11111111-9e5e-4c0b-b661-4e790e76ea4d', '2012-09-17 18:47:52.69', 'message1 group',
         '9f6a075e-a4c5-44da-b7c5-5f22bb64b352', '51c07af2-5ed1-4e30-b054-e5a3d51da5a5'),
        ('22222222-9e5e-4c0b-b661-4e790e76ea4d', '2012-09-17 18:47:53.69', 'message2 group',
-        'dacee9b4-6789-4f03-9520-dc97b0b9470b', '51c07af2-5ed1-4e30-b054-e5a3d51da5a5');
+        'dacee9b4-6789-4f03-9520-dc97b0b9470b', '51c07af2-5ed1-4e30-b054-e5a3d51da5a5'),
+       ('33333333-9e5e-4c0b-b661-4e790e76ea4d', '2012-09-17 18:47:53.69', 'message3 group',
+        '11111111-6789-4f03-9520-dc97b0b9470b', '51c07af2-5ed1-4e30-b054-e5a3d51da5a5');

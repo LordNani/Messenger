@@ -7,8 +7,10 @@ import io.restassured.RestAssured;
 import lombok.SneakyThrows;
 import messenger.backend.auth.dto.AuthRequestDto;
 import messenger.backend.auth.dto.AuthResponseDto;
+import messenger.backend.message.dto.DeleteMessageRequestDto;
 import messenger.backend.message.dto.MessageResponseDto;
 import messenger.backend.message.dto.SendMessageRequestDto;
+import messenger.backend.message.dto.UpdateMessageRequestDto;
 import messenger.backend.utils.Response;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
@@ -70,6 +72,7 @@ class MessageControllerIT {
                                         "Full Name",
                                         UUID.fromString("9f6a075e-a4c5-44da-b7c5-5f22bb64b352"),
                                         0L,
+                                        false,
                                         UUID.fromString("06dfa92e-532d-4b38-bd21-355328bc4270")),
                                 new MessageResponseDto(
                                         UUID.fromString("aaaaa92e-9e5e-4c0b-b661-4e790e76ea4d"),
@@ -77,6 +80,7 @@ class MessageControllerIT {
                                         "Full Name 2",
                                         UUID.fromString("dacee9b4-6789-4f03-9520-dc97b0b9470b"),
                                         0L,
+                                        false,
                                         UUID.fromString("06dfa92e-532d-4b38-bd21-355328bc4270"))
                         )),
                 Arguments.of("51c07af2-5ed1-4e30-b054-e5a3d51da5a5",
@@ -87,6 +91,7 @@ class MessageControllerIT {
                                         "Full Name",
                                         UUID.fromString("9f6a075e-a4c5-44da-b7c5-5f22bb64b352"),
                                         0L,
+                                        false,
                                         UUID.fromString("51c07af2-5ed1-4e30-b054-e5a3d51da5a5")),
                                 new MessageResponseDto(
                                         UUID.fromString("22222222-9e5e-4c0b-b661-4e790e76ea4d"),
@@ -94,8 +99,18 @@ class MessageControllerIT {
                                         "Full Name 2",
                                         UUID.fromString("dacee9b4-6789-4f03-9520-dc97b0b9470b"),
                                         0L,
+                                        false,
+                                        UUID.fromString("51c07af2-5ed1-4e30-b054-e5a3d51da5a5")),
+                                new MessageResponseDto(
+                                        UUID.fromString("33333333-9e5e-4c0b-b661-4e790e76ea4d"),
+                                        "message3 group",
+                                        "Full Name 1111",
+                                        UUID.fromString("11111111-6789-4f03-9520-dc97b0b9470b"),
+                                        0L,
+                                        false,
                                         UUID.fromString("51c07af2-5ed1-4e30-b054-e5a3d51da5a5"))
-                                ))
+                                )
+                )
         );
     }
 
@@ -172,6 +187,96 @@ class MessageControllerIT {
                 .statusCode(HttpStatus.SC_NOT_FOUND)
                 .extract().asString();
         assertThatResponseWithMessageAndNoData(jsonResponse);
+    }
+
+    @Test
+    @SneakyThrows
+    void shouldUpdateMessage() {
+        UpdateMessageRequestDto requestDto = new UpdateMessageRequestDto(UUID.fromString("11111111-9e5e-4c0b-b661-4e790e76ea4d"),
+                "new text", UUID.randomUUID());
+        String json = objectMapper.writeValueAsString(requestDto);
+        Date dateBeforeRequest = new Date();
+
+        RestAssured
+                .given()
+                .header("Authorization", getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(json)
+                .when()
+                .post("/api/messages/update")
+                .then()
+                .statusCode(HttpStatus.SC_OK);
+        MessageEntity messageEntity = messageRepository.findById(requestDto.getMessageId()).orElseThrow();
+        assertThat(messageEntity.getMessageBody()).isEqualTo(requestDto.getNewText());
+        assertThat(messageEntity.getUpdatedAt()).isAfter(dateBeforeRequest);
+    }
+
+    @ParameterizedTest
+    @SneakyThrows
+    @MethodSource("manageMessageTestProvider")
+    void shouldNotUpdateMessage(String username, String password, UUID messageId, int statusCode) {
+        UpdateMessageRequestDto requestDto = new UpdateMessageRequestDto(messageId,
+                "new text", UUID.randomUUID());
+        String json = objectMapper.writeValueAsString(requestDto);
+
+        String jsonResponse = RestAssured
+                .given()
+                .header("Authorization", getAccessToken(username, password))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(json)
+                .when()
+                .post("/api/messages/update")
+                .then()
+                .statusCode(statusCode)
+                .extract().asString();
+        assertThatResponseWithMessageAndNoData(jsonResponse);
+    }
+
+    @Test
+    @SneakyThrows
+    void shouldDeleteMessage() {
+        DeleteMessageRequestDto requestDto = new DeleteMessageRequestDto(UUID.fromString("11111111-9e5e-4c0b-b661-4e790e76ea4d"));
+        String json = objectMapper.writeValueAsString(requestDto);
+
+        RestAssured
+                .given()
+                .header("Authorization", getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(json)
+                .when()
+                .post("/api/messages/delete")
+                .then()
+                .statusCode(HttpStatus.SC_OK);
+
+        assertThat(messageRepository.findById(requestDto.getMessageId())).isEmpty();
+    }
+
+    @ParameterizedTest
+    @SneakyThrows
+    @MethodSource("manageMessageTestProvider")
+    void shouldNotDeleteMessage(String username, String password, UUID messageId, int statusCode) {
+        DeleteMessageRequestDto requestDto = new DeleteMessageRequestDto(messageId);
+        String json = objectMapper.writeValueAsString(requestDto);
+
+        String jsonResponse = RestAssured
+                .given()
+                .header("Authorization", getAccessToken(username, password))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(json)
+                .when()
+                .post("/api/messages/delete")
+                .then()
+                .statusCode(statusCode)
+                .extract().asString();
+        assertThatResponseWithMessageAndNoData(jsonResponse);
+    }
+
+    private static Stream<Arguments> manageMessageTestProvider() {
+        return Stream.of(
+                Arguments.of("user", "user", UUID.fromString("00000000-532d-4b38-bd21-355328bc4270"), HttpStatus.SC_NOT_FOUND),
+                Arguments.of("user2", "user", UUID.fromString("11111111-9e5e-4c0b-b661-4e790e76ea4d"), HttpStatus.SC_FORBIDDEN),
+                Arguments.of("1111", "user", UUID.fromString("33333333-9e5e-4c0b-b661-4e790e76ea4d"), HttpStatus.SC_FORBIDDEN)
+        );
     }
 
     private String getAccessToken() {

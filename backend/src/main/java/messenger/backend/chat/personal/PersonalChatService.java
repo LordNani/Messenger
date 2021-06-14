@@ -5,8 +5,10 @@ import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.PrivateChatEntity;
 import messenger.backend.chat.exceptions.ChatNotFoundException;
 import messenger.backend.chat.exceptions.ContextUserNotMemberOfChatException;
+import messenger.backend.chat.general.GeneralChatService;
 import messenger.backend.chat.general.dto.DeleteChatDto;
 import messenger.backend.chat.general.dto.GeneralChatResponseDto;
+import messenger.backend.chat.group.GroupChatService;
 import messenger.backend.chat.personal.dto.CreatePersonalChatRequestDto;
 import messenger.backend.chat.personal.dto.DeletePersonalChatRequestDto;
 import messenger.backend.chat.personal.dto.PersonalChatResponseDto;
@@ -117,17 +119,9 @@ public class PersonalChatService {
                 .anyMatch(chat -> chat.getUser().getId().equals(contextUser.getId()));
         if(!isUserMemberOfChat) throw new ContextUserNotMemberOfChatException();
 
-        List<UUID> uuidList = privateChatEntity.getUserChats().stream()
-                .map(chat -> chat.getUser().getId())
-                .collect(Collectors.toList());
-
         personalChatRepository.delete(privateChatEntity);
 
-        socketSender.send(
-                SubscribedOn.DELETE_CHAT,
-                uuidList,
-                DeleteChatDto.of(privateChatEntity.getId())
-        );
+        socketSender.sendToAllMembersInChat(SubscribedOn.DELETE_CHAT, privateChatEntity, DeleteChatDto.of(privateChatEntity.getId()));
     }
 
     public List<Map<String, String>> getAllChats() {

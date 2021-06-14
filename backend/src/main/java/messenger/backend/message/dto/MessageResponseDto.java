@@ -22,6 +22,7 @@ public class MessageResponseDto {
                 .senderName(messageEntity.getUser().getFullName())
                 .senderId(messageEntity.getUser().getId())
                 .createdAt(messageEntity.getCreatedAt().getTime())
+                .isChanged(messageEntity.getUpdatedAt() != null)
                 .chatId(messageEntity.getChat().getId())
                 .build();
     }
@@ -31,5 +32,6 @@ public class MessageResponseDto {
     private String senderName;
     private UUID senderId;
     private Long createdAt;
+    private Boolean isChanged;
     private UUID chatId;
 }
