@@ -3,15 +3,12 @@ package messenger.backend.userChat;
 
 import lombok.*;
 import messenger.backend.chat.ChatSuperclass;
-import messenger.backend.message.MessageEntity;
 import messenger.backend.user.UserEntity;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Builder
@@ -50,7 +47,6 @@ public class UserChat {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
-//    @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 

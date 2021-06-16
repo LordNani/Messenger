@@ -1,6 +1,7 @@
 package messenger.backend.auth.jwt;
 
 import io.jsonwebtoken.*;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.exceptions.JwtAuthException;
 import messenger.backend.auth.security.SecurityUser;
@@ -29,6 +30,8 @@ public class JwtTokenService {
     private String secretKey;
     @Value("${jwt.validity}")
     private long validityInMilliseconds;
+
+    @Getter
     @Value("${jwt.header}")
     private String authHeader;
 

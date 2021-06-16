@@ -9,10 +9,8 @@ import messenger.backend.chat.GroupChatEntity;
 import messenger.backend.chat.PrivateChatEntity;
 import messenger.backend.chat.general.type.ChatType;
 import messenger.backend.message.dto.LastMessageResponseDto;
-import messenger.backend.user.UserEntity;
 import messenger.backend.userChat.UserChat;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @NoArgsConstructor

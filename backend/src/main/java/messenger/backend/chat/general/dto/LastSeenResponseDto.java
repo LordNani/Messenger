@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import messenger.backend.userChat.UserChat;
 
-import java.util.Date;
 import java.util.UUID;
 
 @NoArgsConstructor

@@ -5,10 +5,8 @@ import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.PrivateChatEntity;
 import messenger.backend.chat.exceptions.ChatNotFoundException;
 import messenger.backend.chat.exceptions.ContextUserNotMemberOfChatException;
-import messenger.backend.chat.general.GeneralChatService;
 import messenger.backend.chat.general.dto.DeleteChatDto;
 import messenger.backend.chat.general.dto.GeneralChatResponseDto;
-import messenger.backend.chat.group.GroupChatService;
 import messenger.backend.chat.personal.dto.CreatePersonalChatRequestDto;
 import messenger.backend.chat.personal.dto.DeletePersonalChatRequestDto;
 import messenger.backend.chat.personal.dto.PersonalChatResponseDto;
@@ -23,6 +21,7 @@ import messenger.backend.user.exceptions.UserNotFoundException;
 import messenger.backend.userChat.UserChat;
 import messenger.backend.userChat.UserChatRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -132,6 +131,15 @@ public class PersonalChatService {
 
                     return map;
                 })
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<UUID> getAllPersonalChatsCompanions(UUID targetUserId) {
+        return personalChatRepository.findAllByUserId(targetUserId).stream()
+                .flatMap(personalChat -> personalChat.getUserChats().stream())
+                .map(userChat -> userChat.getUser().getId())
+                .filter(userId -> !userId.equals(targetUserId))
                 .collect(Collectors.toList());
     }
 }
