@@ -21,6 +21,7 @@ public class UserShortDto {
                 .bio(userChat.getUser().getBio())
                 .picture(userChat.getUser().getPicture())
                 .permissionLevel(userChat.getPermissionLevel())
+                .isOnline(!userChat.getUser().getSessions().isEmpty())
                 .build();
     }
 
@@ -30,4 +31,5 @@ public class UserShortDto {
     private String bio;
     private String picture;
     private UserChat.PermissionLevel permissionLevel;
+    private boolean isOnline;
 }

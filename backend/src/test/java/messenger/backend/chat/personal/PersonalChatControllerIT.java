@@ -67,7 +67,8 @@ class PersonalChatControllerIT {
                                 "user2",
                                 "My info 2",
                                 null,
-                                UserChat.PermissionLevel.MEMBER
+                                UserChat.PermissionLevel.MEMBER,
+                                false
                         )));
     }
 
