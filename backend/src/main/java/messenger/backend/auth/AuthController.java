@@ -17,8 +17,7 @@ import javax.validation.Valid;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final RefreshTokenRepository refreshTokenRepository;
-    private final AuthService            authService;
+    private final AuthService authService;
 
     @PostMapping("/login")
     public Response<AuthResponseDto> login(@Valid @RequestBody AuthRequestDto authRequestDto) {

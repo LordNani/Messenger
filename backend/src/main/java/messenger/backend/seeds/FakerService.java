@@ -4,6 +4,7 @@ import com.github.javafaker.Faker;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import messenger.backend.auth.access_levels.Role;
 import messenger.backend.chat.GroupChatEntity;
 import messenger.backend.chat.PrivateChatEntity;
@@ -20,8 +21,6 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service

@@ -92,4 +92,12 @@ public class UserService {
         userRepository.saveAndFlush(contextUser);
         return authService.buildAuthResponse(contextUser);
     }
+
+    public List<UUID> getAllOnlineCompanions() {
+        UserEntity contextUser = JwtTokenService.getContextUser();
+        return userRepository.findAllCompanions(contextUser.getId()).stream()
+                .filter(user -> !user.getSessions().isEmpty())
+                .map(UserEntity::getId)
+                .collect(Collectors.toList());
+    }
 }

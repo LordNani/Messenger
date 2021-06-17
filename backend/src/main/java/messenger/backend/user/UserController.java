@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 
@@ -20,7 +21,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/search") //todo @NotEmpty validation
+    @GetMapping("/search")
     public Response<UserSearchInfoDto> getUserSearchInfo(@RequestParam(name = "username") @NotBlank String username) {
         return Response.success(userService.getUserSearchInfo(username));
     }
@@ -33,6 +34,11 @@ public class UserController {
     @PostMapping("/change-password")
     public Response<AuthResponseDto> changeUserPassword(@Valid @RequestBody ChangePasswordRequestDto requestDto) {
         return Response.success(userService.changeUserPassword(requestDto));
+    }
+
+    @GetMapping("/online/companions")
+    public Response<List<UUID>> getAllOnlineCompanions() {
+        return Response.success(userService.getAllOnlineCompanions());
     }
 
 }

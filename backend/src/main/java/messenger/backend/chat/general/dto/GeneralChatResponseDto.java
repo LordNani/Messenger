@@ -9,10 +9,8 @@ import messenger.backend.chat.GroupChatEntity;
 import messenger.backend.chat.PrivateChatEntity;
 import messenger.backend.chat.general.type.ChatType;
 import messenger.backend.message.dto.LastMessageResponseDto;
-import messenger.backend.user.UserEntity;
 import messenger.backend.userChat.UserChat;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -52,13 +50,14 @@ public class GeneralChatResponseDto {
 
         var companionPicture = companion.getPicture();
 
-        return GeneralChatResponseDto.builder()
-                .id(chat.getId())
-                .type(ChatType.PERSONAL.getType())
-                .title(companionName)
-                .picture(companionPicture)
-                .lastMessage(lastMessage)
-                .build();
+        GeneralResponsePersonalExtensionDto dto = new GeneralResponsePersonalExtensionDto();
+        dto.setId(chat.getId());
+        dto.setType(ChatType.PERSONAL.getType());
+        dto.setTitle(companionName);
+        dto.setPicture(companionPicture);
+        dto.setLastMessage(lastMessage);
+        dto.setCompanionId(companion.getId());
+        return dto;
     }
 
     private UUID id;

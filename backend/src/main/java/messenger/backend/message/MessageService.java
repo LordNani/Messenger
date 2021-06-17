@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.exceptions.ChatNotFoundException;
 import messenger.backend.chat.exceptions.ContextUserNotMemberOfChatException;
-import messenger.backend.chat.general.GeneralChatService;
 import messenger.backend.message.dto.*;
 import messenger.backend.message.exceptions.MessageNotFoundException;
 import messenger.backend.message.exceptions.UserNotOwnerOfMessage;

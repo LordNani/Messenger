@@ -3,13 +3,12 @@ package messenger.backend.user;
 import lombok.*;
 import messenger.backend.auth.access_levels.Role;
 import messenger.backend.seeds.FakerService;
+import messenger.backend.sockets.SocketSessionEntity;
 import messenger.backend.userChat.UserChat;
-import org.apache.commons.lang3.ArrayUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -71,4 +70,7 @@ public class UserEntity {
     @OneToMany(mappedBy = "user")
     private List<UserChat> userChats = new ArrayList<>();
 
+    @ToString.Exclude
+    @OneToMany(mappedBy = "user")
+    private List<SocketSessionEntity> sessions;
 }
