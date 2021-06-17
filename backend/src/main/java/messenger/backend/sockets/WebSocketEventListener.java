@@ -1,8 +1,11 @@
 package messenger.backend.sockets;
 
 import lombok.RequiredArgsConstructor;
+import messenger.backend.chat.general.GeneralChatRepository;
 import messenger.backend.chat.personal.PersonalChatService;
 import messenger.backend.user.UserEntity;
+import messenger.backend.user.UserRepository;
+import messenger.backend.user.UserService;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.GenericMessage;
@@ -20,7 +23,7 @@ public class WebSocketEventListener {
 
     private final SocketSessionRepository socketSessionRepository;
     private final SocketSender socketSender;
-    private final PersonalChatService personalChatService;
+    private final UserService userService;
 
     @EventListener
     public void handleSessionConnectedEvent(SessionConnectedEvent event) {
@@ -32,7 +35,7 @@ public class WebSocketEventListener {
 
         socketSender.send(
                 SubscribedOn.SWITCHED_ONLINE,
-                personalChatService.getAllPersonalChatsCompanions(contextUser.getId()),
+                userService.getAllOnlineCompanions(),
                 contextUser.getId());
     }
 
@@ -44,7 +47,7 @@ public class WebSocketEventListener {
         if (contextUser != null && socketSessionRepository.countByUser(contextUser) == 0) {
             socketSender.send(
                     SubscribedOn.SWITCHED_OFFLINE,
-                    personalChatService.getAllPersonalChatsCompanions(contextUser.getId()),
+                    userService.getAllOnlineCompanions(),
                     contextUser.getId());
         }
     }
