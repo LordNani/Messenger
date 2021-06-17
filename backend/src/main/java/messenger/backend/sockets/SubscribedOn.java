@@ -11,6 +11,7 @@ public enum SubscribedOn {
     DELETE_MESSAGE("topic/messages/delete"),
     SWITCHED_ONLINE("/topic/users/switched-online/"),
     SWITCHED_OFFLINE("/topic/users/switched-offline/"),
+    USER_IS_TYPING("/topic/users/typing/")
     ;
 
     private final String text;

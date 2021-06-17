@@ -3,6 +3,7 @@ package messenger.backend.user;
 import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.dto.AuthResponseDto;
 import messenger.backend.user.dto.ChangePasswordRequestDto;
+import messenger.backend.user.dto.ChatIdDto;
 import messenger.backend.user.dto.UpdateProfileRequestDto;
 import messenger.backend.user.dto.UserSearchInfoDto;
 import messenger.backend.utils.Response;
@@ -39,6 +40,11 @@ public class UserController {
     @GetMapping("/online/companions")
     public Response<List<UUID>> getAllOnlineCompanions() {
         return Response.success(userService.getAllOnlineCompanions());
+    }
+
+    @PostMapping("/typing")
+    public void userIsTyping(@Valid @RequestBody ChatIdDto chatIdDto) {
+        userService.userIsTyping(chatIdDto);
     }
 
 }
