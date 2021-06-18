@@ -193,7 +193,7 @@ class MessageControllerIT {
     @SneakyThrows
     void shouldUpdateMessage() {
         UpdateMessageRequestDto requestDto = new UpdateMessageRequestDto(UUID.fromString("11111111-9e5e-4c0b-b661-4e790e76ea4d"),
-                "new text");
+                "new text", UUID.randomUUID());
         String json = objectMapper.writeValueAsString(requestDto);
         Date dateBeforeRequest = new Date();
 
@@ -216,7 +216,7 @@ class MessageControllerIT {
     @MethodSource("manageMessageTestProvider")
     void shouldNotUpdateMessage(String username, String password, UUID messageId, int statusCode) {
         UpdateMessageRequestDto requestDto = new UpdateMessageRequestDto(messageId,
-                "new text");
+                "new text", UUID.randomUUID());
         String json = objectMapper.writeValueAsString(requestDto);
 
         String jsonResponse = RestAssured

@@ -18,4 +18,6 @@ public class UpdateMessageRequestDto {
     @NotBlank
     @Size(min = 1, max = 1024)
     private String newText;
+    @NotNull
+    private UUID loadingId;
 }

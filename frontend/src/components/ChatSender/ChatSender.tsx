@@ -3,62 +3,19 @@ import styles from "./ChatSender.module.sass";
 import Textarea from "../FormComponents/Texarea/Textarea";
 import Icon from "../Icon/Icon";
 import {ICallback1} from "../../helpers/types.helper";
-import {IMessageWrapper} from "../../containers/Chat/models";
-import {IMessage} from "../../api/message/messageModels";
-import {IEditMessageRoutinePayload} from "../../containers/Chat/routines";
 
 interface IOwnProps {
     sendMessage: ICallback1<string>;
-    editingMessage?: IMessageWrapper;
-    setEditingMessage: ICallback1<IMessageWrapper | undefined>;
-    editMessage: ICallback1<IEditMessageRoutinePayload>;
-    chatId: string;
 }
 
 interface IState {
     text: string;
-    oldText?: string;
 }
 
 class ChatSender extends React.Component<IOwnProps, IState> {
     state = {
         text: ''
     } as IState;
-
-    componentDidUpdate(
-        prevProps: Readonly<IOwnProps>,
-        prevState: Readonly<{}>,
-        snapshot?: any
-    ) {
-        const {editingMessage, chatId, setEditingMessage} = this.props;
-        if (
-            editingMessage?.info &&
-            prevProps.editingMessage?.info?.id !== editingMessage.info.id
-        ) {
-            this.setState(prev => ({
-                text: (editingMessage.info as IMessage).text,
-                oldText: prev.oldText === undefined ? prev.text : prev.oldText
-            }));
-        }
-        if (
-            !editingMessage &&
-            prevProps.editingMessage
-        ) {
-            this.setState(prev => ({
-                text: prev.oldText || '',
-                oldText: undefined
-            }));
-        }
-        if (
-            chatId !== prevProps.chatId
-        ) {
-            setEditingMessage(undefined);
-            this.setState(prev => ({
-                text: prev.oldText || '',
-                oldText: undefined
-            }));
-        }
-    }
 
     isValid = () => {
         const {text} = this.state;
@@ -67,21 +24,9 @@ class ChatSender extends React.Component<IOwnProps, IState> {
 
     handleSend = () => {
         const {text} = this.state;
+        this.props.sendMessage(text);
         this.setState({text: ''});
-        const {sendMessage, editMessage, editingMessage} = this.props;
-        if (editingMessage?.info) {
-            editMessage({
-                messageId: editingMessage.info.id,
-                newText: text,
-                chatId: editingMessage.info.chatId,
-            });
-        } else {
-            sendMessage(text);
-        }
-    }
 
-    handleCancel = () => {
-        this.props.setEditingMessage(undefined);
     }
 
     handleTextAreaKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>): void => {
@@ -103,7 +48,6 @@ class ChatSender extends React.Component<IOwnProps, IState> {
 
     render() {
         const {text} = this.state;
-        const {editingMessage} = this.props;
 
         return (
             <div className={styles.wrapper}>
@@ -116,19 +60,11 @@ class ChatSender extends React.Component<IOwnProps, IState> {
                         onKeyDown={this.handleTextAreaKeyPress}
                     />
                 </div>
-                <div className={editingMessage ? styles.editButtonsWrapper : styles.buttonsWrapper}>
+                <div className={styles.buttonsWrapper}>
 
                     <Icon iconName={"fas fa-paper-plane fa-2x"}
                           className={this.isValid() ? styles.sendIcon : styles.disabledSend}
-                          onClick={this.isValid() ? this.handleSend : undefined}
-                    />
-
-                    {editingMessage && (
-                        <Icon iconName="fas fa-times fa-2x"
-                          className={styles.sendIcon}
-                          onClick={this.handleCancel}
-                        />
-                    )}
+                          onClick={this.isValid() ? this.handleSend : undefined} />
                 </div>
             </div>
         );

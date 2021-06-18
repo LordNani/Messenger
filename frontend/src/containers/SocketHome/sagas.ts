@@ -5,7 +5,7 @@ import {
     IReceiveMessageFromSocketRoutinePayload,
     IRemoveChatFromSocketRoutinePayload,
     receiveMessageFromSocketRoutine,
-    removeChatFromSocketRoutine, removeMessageFromSocketRoutine, updateMessageFromSocketRoutine
+    removeChatFromSocketRoutine
 } from "./routines";
 import {PayloadAction} from "@reduxjs/toolkit";
 import {IAppState} from "../../reducers";
@@ -19,9 +19,7 @@ import {
 } from "../ChatsList/routines";
 import {toastr} from "react-redux-toastr";
 import generalChatService from "../../api/chat/general/generalChatService";
-import {appendReadyMessageIfAbsentRoutine, editMessageInChatRoutine} from "../Chat/routines";
-import {IDeleteMessageResponse, IUpdateMessageResponse} from "../../api/message/messageModels";
-import {removeMessageByResponse} from "../Chat/sagas";
+import {appendReadyMessageIfAbsentRoutine} from "../Chat/routines";
 
 function* removeChatFromSocketSaga({payload}: PayloadAction<IRemoveChatFromSocketRoutinePayload>) {
     const {chatId} = payload;
@@ -66,22 +64,9 @@ function* receiveMessageFromSocketSaga({payload}: PayloadAction<IReceiveMessageF
     }
 }
 
-function* removeMessageFromSocketSaga({payload}: PayloadAction<IDeleteMessageResponse>) {
-    yield removeMessageByResponse(payload);
-}
-
-function* updateMessageFromSocketSaga({payload}: PayloadAction<IUpdateMessageResponse>) {
-    yield put(editMessageInChatRoutine.fulfill(payload.message));
-    yield put(updateChatLastMessageRoutine.fulfill({
-        lastMessage: payload.lastMessage, chatId: payload.message.chatId
-    }));
-}
-
 export default function* socketHomeSaga() {
     yield all([
         takeEvery(removeChatFromSocketRoutine.FULFILL, removeChatFromSocketSaga),
         takeEvery(receiveMessageFromSocketRoutine.TRIGGER, receiveMessageFromSocketSaga),
-        takeEvery(removeMessageFromSocketRoutine.FULFILL, removeMessageFromSocketSaga),
-        takeEvery(updateMessageFromSocketRoutine.FULFILL, updateMessageFromSocketSaga),
     ]);
 }

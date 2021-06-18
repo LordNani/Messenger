@@ -4,15 +4,11 @@ import LoaderWrapper from "../LoaderWrapper/LoaderWrapper";
 import MessageWrapper from "../MessageWrapper/MessageWrapper";
 import {ICurrentUser} from "../../api/auth/authModels";
 import {ChatTypeEnum} from "../../api/chat/general/generalChatModels";
-import {IChatCache, IMessageWrapper} from "../../containers/Chat/models";
-import {ICallback1} from "../../helpers/types.helper";
-import {IRemoveMessageFromChatRoutinePayload} from "../../containers/Chat/routines";
+import {IChatCache} from "../../containers/Chat/models";
 
 interface IOwnProps {
     chatInfo?: IChatCache;
     currentUser?: ICurrentUser;
-    deleteMessage: ICallback1<IRemoveMessageFromChatRoutinePayload>;
-    setEditingMessage: ICallback1<IMessageWrapper>;
 }
 
 class MessagesListWrapper extends React.Component<IOwnProps> {
@@ -29,7 +25,7 @@ class MessagesListWrapper extends React.Component<IOwnProps> {
     listBottom = null as any;
 
     render() {
-        const {chatInfo, currentUser, deleteMessage, setEditingMessage} = this.props;
+        const {chatInfo, currentUser} = this.props;
         const messages = chatInfo?.messages;
         const isVisibleName = chatInfo?.details.type !== ChatTypeEnum.PERSONAL;
 
@@ -42,11 +38,6 @@ class MessagesListWrapper extends React.Component<IOwnProps> {
                            message={message}
                            currentUser={currentUser}
                            isVisibleName={isVisibleName}
-                           deleteMessage={messageId => deleteMessage({
-                               messageId,
-                               chatId: chatInfo?.details?.id as string
-                           })}
-                           setEditingMessage={setEditingMessage}
                        />
                     ))}
                     <div className={styles.listBottom} ref={el => this.listBottom = el}/>

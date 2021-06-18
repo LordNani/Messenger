@@ -22,7 +22,6 @@ export const updateChatLastMessageAndReadRoutine = createLocalRoutine<IUpdateCha
 export const updateChatLastMessageRoutine = createLocalRoutine<IUpdateChatLastMessageRoutinePayload>('UPDATE_CHAT_LAST_MESSAGE');
 export const deleteChatInListRoutine = createLocalRoutine<string>('DELETE_CHAT_IN_LIST');
 export const setFirstChatInListRoutine = createLocalRoutine<string>('SET_FIRST_CHAT_IN_LIST');
-export const sortChatListRoutine = createLocalRoutine('SORT_CHAT_LIST_ROUTINE');
 
 export interface ISetSeenChatRoutinePayload {
     chatId: string;

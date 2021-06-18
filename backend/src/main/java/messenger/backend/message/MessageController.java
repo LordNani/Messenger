@@ -2,7 +2,10 @@ package messenger.backend.message;
 
 
 import lombok.RequiredArgsConstructor;
-import messenger.backend.message.dto.*;
+import messenger.backend.message.dto.DeleteMessageRequestDto;
+import messenger.backend.message.dto.MessageResponseDto;
+import messenger.backend.message.dto.SendMessageRequestDto;
+import messenger.backend.message.dto.UpdateMessageRequestDto;
 import messenger.backend.utils.Response;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,12 +31,12 @@ public class MessageController {
     }
 
     @PostMapping("/update")
-    public Response<UpdateMessageResponseDto> updateMessage(@Valid @RequestBody UpdateMessageRequestDto requestDto) {
-        return Response.success(messageService.updateMessage(requestDto));
+    public void updateMessage(@Valid @RequestBody UpdateMessageRequestDto requestDto) {
+        messageService.updateMessage(requestDto);
     }
 
     @PostMapping("/delete")
-    public Response<DeleteMessageResponseDto> deleteMessage(@Valid @RequestBody DeleteMessageRequestDto requestDto) {
-        return Response.success(messageService.deleteMessage(requestDto));
+    public void deleteMessage(@Valid @RequestBody DeleteMessageRequestDto requestDto) {
+        messageService.deleteMessage(requestDto);
     }
 }
