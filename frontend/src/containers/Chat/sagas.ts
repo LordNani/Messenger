@@ -3,10 +3,18 @@
 import {all, call, put, takeEvery, select} from 'redux-saga/effects';
 import {PayloadAction} from "@reduxjs/toolkit";
 import {
-    appendDetailsCachedRoutine, appendLoadingMessageRoutine,
+    appendDetailsCachedRoutine,
+    appendLoadingMessageRoutine,
+    deleteMessageRoutine, editMessageInChatRoutine, editMessageRoutine,
+    IEditMessageRoutinePayload,
+    IRemoveMessageFromChatRoutinePayload,
     ISendMessageRoutinePayload,
-    loadFullChatRoutine, sendMessageRoutine,
-    setChatMessagesRoutine, setMessageLoadedRoutine
+    loadFullChatRoutine,
+    removeMessageFromChatRoutine,
+    sendMessageRoutine,
+    setChatMessagesRoutine,
+    setDeletingMessageInChatRoutine, setEditingMessageInChatRoutine, setEditingMessageRoutine,
+    setMessageLoadedRoutine
 } from "./routines";
 import {IAppState} from "../../reducers";
 import {IChatDetails} from "../../api/chat/general/generalChatModels";
@@ -15,11 +23,11 @@ import generalChatService from "../../api/chat/general/generalChatService";
 import {toastr} from "react-redux-toastr";
 import {
     setFirstChatInListRoutine,
-    setSeenChatRoutine,
-    updateChatLastMessageAndReadRoutine
+    setSeenChatRoutine, sortChatListRoutine,
+    updateChatLastMessageAndReadRoutine, updateChatLastMessageRoutine
 } from "../ChatsList/routines";
 import {v4 as uuid} from "uuid";
-import {IMessage} from "../../api/message/messageModels";
+import {IDeleteMessageResponse, IMessage, IUpdateMessageResponse} from "../../api/message/messageModels";
 
 function* loadFullChatSaga({payload}: PayloadAction<string>) {
     try {
@@ -66,9 +74,50 @@ function* sendMessageSaga({payload}: PayloadAction<ISendMessageRoutinePayload>) 
     }
 }
 
+function* deleteMessageSaga({payload}: PayloadAction<IRemoveMessageFromChatRoutinePayload>) {
+    const {messageId, chatId} = payload;
+    try {
+        yield put(setDeletingMessageInChatRoutine.fulfill({chatId, messageId, value: true}));
+        const response: IDeleteMessageResponse = yield call(messageService.deleteMessage, messageId);
+        yield removeMessageByResponse(response);
+        yield put(deleteMessageRoutine.success());
+    } catch (e) {
+        yield put(setDeletingMessageInChatRoutine.fulfill({chatId, messageId, value: false}));
+        toastr.error('Error', e?.message);
+        yield put(deleteMessageRoutine.failure(e?.message));
+    }
+}
+
+function* updateMessageSaga({payload}: PayloadAction<IEditMessageRoutinePayload>) {
+    const {messageId, chatId, newText} = payload;
+    try {
+        yield put(setEditingMessageInChatRoutine.fulfill({chatId, messageId, value: true}));
+        const response: IUpdateMessageResponse = yield call(messageService.updateMessage, messageId, newText);
+        yield put(editMessageInChatRoutine.fulfill(response.message));
+        yield put(updateChatLastMessageRoutine.fulfill({
+            lastMessage: response.lastMessage, chatId: response.message.chatId
+        }));
+        yield put(setEditingMessageRoutine.fulfill(undefined));
+        yield put(editMessageRoutine.success());
+    } catch (e) {
+        toastr.error('Error', e?.message);
+        yield put(editMessageRoutine.failure(e?.message));
+    }
+    yield put(setEditingMessageInChatRoutine.fulfill({chatId, messageId, value: false}));
+}
+
+export function* removeMessageByResponse(response: IDeleteMessageResponse) {
+    const {chatId, messageId} = response;
+    yield put(removeMessageFromChatRoutine.fulfill({chatId, messageId}));
+    yield put(updateChatLastMessageRoutine.fulfill(response));
+    yield put(sortChatListRoutine.fulfill());
+}
+
 export default function* chatSaga() {
     yield all([
         takeEvery(loadFullChatRoutine.TRIGGER, loadFullChatSaga),
-        takeEvery(sendMessageRoutine.TRIGGER, sendMessageSaga)
+        takeEvery(sendMessageRoutine.TRIGGER, sendMessageSaga),
+        takeEvery(deleteMessageRoutine.TRIGGER, deleteMessageSaga),
+        takeEvery(editMessageRoutine.TRIGGER, updateMessageSaga),
     ]);
 }

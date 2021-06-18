@@ -15,20 +15,13 @@ import generalChatService from "../../api/chat/general/generalChatService";
 import personalChatService from "../../api/chat/personal/personalChatService";
 import {PayloadAction} from "@reduxjs/toolkit";
 import groupChatService from "../../api/chat/group/groupChatService";
+import {sortChatsList} from "../../helpers/utils.helper";
 
 function* loadChatsListSaga() {
     try {
         yield put(removeChatsListRoutine.fulfill());
         const list = yield call(generalChatService.getChatsList);
-        list.sort((a, b) => {
-            if (!a.lastMessage) {
-                return -1;
-            }
-            if (!b.lastMessage) {
-                return 1;
-            }
-            return b.lastMessage.createdAt - a.lastMessage.createdAt;
-        });
+        sortChatsList(list);
         yield put(setChatsListRoutine.fulfill(list));
         const seenAtList = yield call(generalChatService.getSeenAt);
         yield put(setAllSeenAtRoutine.fulfill(seenAtList));

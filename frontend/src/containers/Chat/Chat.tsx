@@ -9,16 +9,23 @@ import {ChatTypeEnum, IChatDetails} from "../../api/chat/general/generalChatMode
 import {IAppState} from "../../reducers";
 import {connect} from "react-redux";
 import {IAction, ICallback1} from "../../helpers/types.helper";
-import {ISendMessageRoutinePayload, loadFullChatRoutine, sendMessageRoutine} from "./routines";
+import {
+    deleteMessageRoutine, editMessageRoutine, IEditMessageRoutinePayload,
+    IRemoveMessageFromChatRoutinePayload,
+    ISendMessageRoutinePayload,
+    loadFullChatRoutine,
+    sendMessageRoutine, setEditingMessageRoutine
+} from "./routines";
 import {deleteChatInListRoutine, removeSelectedChatIdRoutine, updateChatInListRoutine} from "../ChatsList/routines";
 import {selectPersonalChatIdRoutine} from "../PersonalChatDetails/routines";
 import {selectGroupChatIdRoutine} from "../GroupChatDetails/routines";
-import {IChatCache} from "./models";
+import {IChatCache, IMessageWrapper} from "./models";
 
 interface IPropsFromState {
     currentUser?: ICurrentUser;
     chatsDetailsCached: IChatCache[];
     selectedChatId?: string;
+    editingMessage?: IMessageWrapper;
 }
 
 interface IActions {
@@ -29,17 +36,12 @@ interface IActions {
     sendMessage: ICallback1<ISendMessageRoutinePayload>;
     selectPersonalChatId: ICallback1<string>;
     selectGroupChatId: ICallback1<string>;
+    deleteMessage: ICallback1<IRemoveMessageFromChatRoutinePayload>;
+    setEditingMessage: ICallback1<IMessageWrapper | undefined>;
+    editMessage: ICallback1<IEditMessageRoutinePayload>;
 }
 
-interface IState {
-    modalShown: boolean;
-}
-
-class Chat extends React.Component<IPropsFromState & IActions, IState> {
-
-    state = {
-        modalShown: false,
-    } as IState;
+class Chat extends React.Component<IPropsFromState & IActions> {
 
     async componentDidUpdate(
         prevProps: Readonly<IPropsFromState & IActions>,
@@ -55,22 +57,11 @@ class Chat extends React.Component<IPropsFromState & IActions, IState> {
         }
     }
 
-    deleteHandler = (chatId: string) => {
-        this.props.removeSelectedId();
-        this.props.deleteChatInList(chatId);
-    }
-
-    deleteChatFromList = async (chatId: string) => {
-        this.setState({modalShown: false});
-        this.deleteHandler(chatId);
-    }
-
     render() {
         const {
-            chatsDetailsCached, selectedChatId, currentUser, sendMessage, updateChatInList,
-            selectPersonalChatId, selectGroupChatId
+            chatsDetailsCached, selectedChatId, currentUser, sendMessage, editMessage,
+            selectPersonalChatId, selectGroupChatId, deleteMessage, setEditingMessage, editingMessage
         } = this.props;
-        const {modalShown} = this.state;
         const chatInfo = chatsDetailsCached.find(c => c.details.id === selectedChatId);
 
         if (!selectedChatId) {
@@ -97,9 +88,15 @@ class Chat extends React.Component<IPropsFromState & IActions, IState> {
                 <MessagesListWrapper
                     chatInfo={chatInfo}
                     currentUser={currentUser}
+                    deleteMessage={deleteMessage}
+                    setEditingMessage={setEditingMessage}
                 />
                 <ChatSender
                     sendMessage={text => sendMessage({chatId: selectedChatId, text})}
+                    editingMessage={editingMessage}
+                    setEditingMessage={setEditingMessage}
+                    editMessage={editMessage}
+                    chatId={selectedChatId}
                 />
             </div>
         );
@@ -109,7 +106,8 @@ class Chat extends React.Component<IPropsFromState & IActions, IState> {
 const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
     currentUser: state.auth.data.currentUser,
     chatsDetailsCached: state.chat.data.chatsDetailsCached,
-    selectedChatId: state.chatsList.data.selectedChatId
+    selectedChatId: state.chatsList.data.selectedChatId,
+    editingMessage: state.chat.data.editingMessage,
 });
 
 const mapDispatchToProps: IActions = {
@@ -120,6 +118,9 @@ const mapDispatchToProps: IActions = {
     sendMessage: sendMessageRoutine,
     selectPersonalChatId: selectPersonalChatIdRoutine.fulfill,
     selectGroupChatId: selectGroupChatIdRoutine.fulfill,
+    deleteMessage: deleteMessageRoutine,
+    setEditingMessage: setEditingMessageRoutine.fulfill,
+    editMessage: editMessageRoutine,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Chat);

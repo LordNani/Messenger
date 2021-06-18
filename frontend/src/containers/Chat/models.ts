@@ -9,6 +9,8 @@ export interface IMessageLoading {
 export interface IMessageWrapper {
     info?: IMessage;
     loading?: IMessageLoading;
+    deleting?: boolean;
+    updating?: boolean;
 }
 
 export interface IChatCache {

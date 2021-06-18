@@ -8,12 +8,13 @@ interface IOwnProps {
     message: IMessageWrapper;
     isVisibleName?: boolean;
     ownMessage: boolean;
+    inactive: boolean;
 }
 
 class Message extends React.Component<IOwnProps> {
     render() {
-        const {message, isVisibleName, ownMessage} = this.props;
-        const classes = classnames(styles.message, message.loading && styles.loading);
+        const {message, isVisibleName, ownMessage, inactive} = this.props;
+        const classes = classnames(styles.message, inactive && styles.loading);
         const text = message.info?.text || message.loading?.text;
         const momentCreatedAt = moment(message.info?.createdAt);
 
@@ -29,6 +30,7 @@ class Message extends React.Component<IOwnProps> {
                         {text}
                     </div>
                     <div className={styles.datetime}>
+                        {message.info?.isChanged && "edited "}
                         {momentCreatedAt.format("DD MMM HH:mm")}
                     </div>
                 </div>
