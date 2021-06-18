@@ -8,7 +8,7 @@ public enum SubscribedOn {
     UPDATE_CHAT("/topic/chats/update/"),
     UPDATE_MESSAGES_USERNAME("/topic/messages/update/username/"),
     UPDATE_MESSAGE_TEXT("/topic/messages/update/text/"),
-    DELETE_MESSAGE("topic/messages/delete"),
+    DELETE_MESSAGE("/topic/messages/delete/"),
     SWITCHED_ONLINE("/topic/users/switched-online/"),
     SWITCHED_OFFLINE("/topic/users/switched-offline/"),
     USER_IS_TYPING("/topic/users/typing/")

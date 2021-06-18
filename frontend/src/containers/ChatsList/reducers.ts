@@ -14,12 +14,13 @@ import {
     setChatsListRoutine,
     setCreateChatModalShownRoutine,
     setFirstChatInListRoutine,
-    setSeenChatRoutine,
+    setSeenChatRoutine, sortChatListRoutine,
     updateChatInListRoutine, updateChatLastMessageAndReadRoutine, updateChatLastMessageRoutine
 } from "./routines";
 import {IChatDetails, ILastSeen} from "../../api/chat/general/generalChatModels";
 import {createReducer, PayloadAction} from "@reduxjs/toolkit";
 import {ILastMessage} from "../../api/message/messageModels";
+import {sortChatsList} from "../../helpers/utils.helper";
 
 export interface IChatsListNewState {
     requests: any;
@@ -109,6 +110,11 @@ const data = createReducer(initialStateData, {
             ...([state.chatsList?.find(c => c.id === payload)] || []),
             ...(state.chatsList?.filter(c => c.id !== payload) || [])
         ] as IChatDetails[];
+    },
+    [sortChatListRoutine.FULFILL]: state => {
+        if (state.chatsList) {
+            sortChatsList(state.chatsList);
+        }
     }
 });
 

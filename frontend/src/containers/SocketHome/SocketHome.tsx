@@ -19,8 +19,9 @@ import {
 import {
     IReceiveMessageFromSocketRoutinePayload,
     IRemoveChatFromSocketRoutinePayload, receiveMessageFromSocketRoutine,
-    removeChatFromSocketRoutine
+    removeChatFromSocketRoutine, removeMessageFromSocketRoutine, updateMessageFromSocketRoutine
 } from "./routines";
+import {IDeleteMessageResponse, IUpdateMessageResponse} from "../../api/message/messageModels";
 
 interface IOwnProps {
     children: JSX.Element[];
@@ -34,6 +35,8 @@ interface IActions {
     removeChat: ICallback1<IRemoveChatFromSocketRoutinePayload>;
     setChatSeenAt: ICallback1<ISetSeenChatRoutinePayload>;
     receiveMessage: ICallback1<IReceiveMessageFromSocketRoutinePayload>;
+    removeMessage: ICallback1<IDeleteMessageResponse>;
+    updateMessage: ICallback1<IUpdateMessageResponse>;
 }
 
 interface IPropsFromState {
@@ -93,6 +96,8 @@ class SocketHome extends React.Component<IOwnProps & IActions & IPropsFromState>
         this.stompSubscribe('/topic/chats/delete/', this.props.removeChat);
         this.stompSubscribe('/topic/chats/update/', this.props.updateChatInList);
         this.stompSubscribe('/topic/messages/update/username/', this.props.updateMessagesUsername);
+        this.stompSubscribe('/topic/messages/delete/', this.props.removeMessage);
+        this.stompSubscribe('/topic/messages/update/text/', this.props.updateMessage);
     }
 
     render() {
@@ -116,6 +121,8 @@ const mapDispatchToProps: IActions = {
     removeChat: removeChatFromSocketRoutine.fulfill,
     setChatSeenAt: setSeenChatRoutine.fulfill,
     receiveMessage: receiveMessageFromSocketRoutine,
+    removeMessage: removeMessageFromSocketRoutine.fulfill,
+    updateMessage: updateMessageFromSocketRoutine.fulfill,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SocketHome);

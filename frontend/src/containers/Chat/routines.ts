@@ -1,8 +1,8 @@
 /* eslint-disable max-len */
 import {createRoutine} from "redux-saga-routines";
 import {IChatDetails} from "../../api/chat/general/generalChatModels";
-import {IMessage} from "../../api/message/messageModels";
-import {IMessageLoading} from "./models";
+import {IDeleteMessageResponse, IMessage} from "../../api/message/messageModels";
+import {IMessageLoading, IMessageWrapper} from "./models";
 
 const createLocalRoutine = <T extends unknown>(actionName: string) =>
     createRoutine<T>(`CHAT:${actionName}`);
@@ -15,6 +15,13 @@ export const appendLoadingMessageRoutine = createLocalRoutine<IAppendLoadingMess
 export const setMessageLoadedRoutine = createLocalRoutine<ISetMessageLoadedRoutinePayload>('SET_MESSAGE_LOADED');
 export const changeMessagesUsernameRoutine = createLocalRoutine<IChangeMessagesUsernameRoutinePayload>('CHANGE_MESSAGES_USERNAME');
 export const appendReadyMessageIfAbsentRoutine = createLocalRoutine<ISetMessageLoadedRoutinePayload>('APPEND_READY_MESSAGE_IF_ABSENT');
+export const deleteMessageRoutine = createLocalRoutine<IRemoveMessageFromChatRoutinePayload>('DELETE_MESSAGE');
+export const removeMessageFromChatRoutine = createLocalRoutine<IRemoveMessageFromChatRoutinePayload>('REMOVE_MESSAGE_FROM_CHAT');
+export const setDeletingMessageInChatRoutine = createLocalRoutine<IChatMessageBooleanValueRoutinePayload>('SET_DELETING_MESSAGE_IN_CHAT');
+export const setEditingMessageRoutine = createLocalRoutine<IMessageWrapper | undefined>('SET_EDITING_MESSAGE');
+export const editMessageRoutine = createLocalRoutine<IEditMessageRoutinePayload>('EDIT_MESSAGE');
+export const editMessageInChatRoutine = createLocalRoutine<IMessage>('EDIT_MESSAGE_IN_CHAT');
+export const setEditingMessageInChatRoutine = createLocalRoutine<IChatMessageBooleanValueRoutinePayload>('SET_EDITING_MESSAGE_IN_CHAT');
 
 export interface ISetChatMessagesRoutinePayload {
     chatId: string;
@@ -40,4 +47,21 @@ export interface ISetMessageLoadedRoutinePayload {
 export interface IChangeMessagesUsernameRoutinePayload {
     newUsername: string,
     userId: string
+}
+
+export interface IRemoveMessageFromChatRoutinePayload {
+    chatId: string;
+    messageId: string;
+}
+
+export interface IChatMessageBooleanValueRoutinePayload {
+    chatId: string;
+    messageId: string;
+    value?: boolean;
+}
+
+export interface IEditMessageRoutinePayload {
+    messageId: string;
+    chatId: string;
+    newText?: string;
 }
