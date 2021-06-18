@@ -66,7 +66,7 @@ class SocketHome extends React.Component<IOwnProps & IActions & IPropsFromState>
 
     private connectSocket = () => {
         this.stompClient.connect(
-            {},
+            {'Authorization': tokenService.getAccessToken() as string},
             this.afterSocketConnect,
             (error: any) => console.log(error)
         );
@@ -85,7 +85,7 @@ class SocketHome extends React.Component<IOwnProps & IActions & IPropsFromState>
         this.stompClient.subscribe(
             endpoint,
             response => listener(JSON.parse(response.body)),
-            {'Authorization': tokenService.getAccessToken() as string}
+            {}
         );
     }
 

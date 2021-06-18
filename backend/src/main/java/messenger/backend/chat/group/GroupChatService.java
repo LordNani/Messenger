@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.GroupChatEntity;
 import messenger.backend.chat.exceptions.*;
-import messenger.backend.chat.general.GeneralChatService;
 import messenger.backend.chat.general.dto.DeleteChatDto;
 import messenger.backend.chat.general.dto.GeneralChatResponseDto;
 import messenger.backend.chat.group.dto.*;

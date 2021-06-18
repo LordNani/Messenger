@@ -1,9 +1,13 @@
 package messenger.backend.sockets;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import messenger.backend.auth.exceptions.JwtAuthException;
+import messenger.backend.auth.exceptions.NoAccessToken;
 import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.auth.security.SecurityUser;
 import messenger.backend.user.UserEntity;
+import messenger.backend.user.exceptions.UserNotFoundException;
 import messenger.backend.utils.exceptions.ValidationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +19,7 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
@@ -34,6 +38,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private String frontendUrl;
 
     private final JwtTokenService jwtTokenService;
+    private final SocketSessionRepository socketSessionRepository;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -49,26 +54,65 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(new ChannelInterceptor() {
+            @SneakyThrows
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
-                StompHeaderAccessor accessor =
+                StompHeaderAccessor headerAccessor =
                         MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
-                if (StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
-                    List<String> authorization = accessor.getNativeHeader("Authorization");
-                    String accessToken = authorization.get(0);
-                    Authentication authentication = jwtTokenService.getAuthentication(accessToken);
-                    UserEntity contextUser = ((SecurityUser) authentication.getPrincipal()).getUserEntity();
+                if (StompCommand.CONNECT.equals(headerAccessor.getCommand())) {
+                    handleConnect(headerAccessor);
 
-                    String destinationUrl = (String) message.getHeaders().get("simpDestination");
-                    String[] urlParts = destinationUrl.split("/");
-                    UUID urlUserId = UUID.fromString(urlParts[urlParts.length-1]);
+                } else if (StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand())) {
+                    handleSubscribe(headerAccessor);
 
-                    if (!contextUser.getId().equals(urlUserId))
-                        throw new ValidationException("Can't subscribe on another user messages");
+                } else if (StompCommand.DISCONNECT.equals(headerAccessor.getCommand())) {
+                    handleDisconnect(headerAccessor);
                 }
                 return message;
             }
         });
+    }
+
+    private void handleConnect(StompHeaderAccessor headerAccessor) {
+        List<String> authorization = headerAccessor.getNativeHeader(jwtTokenService.getAuthHeader());
+        if (authorization == null || authorization.isEmpty()) throw new NoAccessToken();
+
+        String accessToken = authorization.get(0);
+        if (accessToken == null || !jwtTokenService.validateToken(accessToken)) throw new JwtAuthException();
+
+        UserEntity contextUser;
+        try {
+            contextUser = ((SecurityUser) jwtTokenService.getAuthentication(accessToken).getPrincipal()).getUserEntity();
+        } catch (UsernameNotFoundException e) {
+            throw new UserNotFoundException();
+        }
+        headerAccessor.getSessionAttributes().put("contextUser", contextUser);
+        SocketSessionEntity socketSessionEntity = new SocketSessionEntity(null, contextUser);
+        socketSessionRepository.saveAndFlush(socketSessionEntity);
+        headerAccessor.getSessionAttributes().put("socketSessionId", socketSessionEntity.getId());
+    }
+
+    private void handleSubscribe(StompHeaderAccessor headerAccessor) {
+        UserEntity contextUser = (UserEntity) headerAccessor.getSessionAttributes().get("contextUser");
+
+        String destinationUrl = (String) headerAccessor.getHeader("simpDestination");
+        String[] urlParts = destinationUrl.split("/");
+        UUID urlUserId = UUID.fromString(urlParts[urlParts.length-1]);
+
+        if (!contextUser.getId().equals(urlUserId))
+            throw new ValidationException("Can't subscribe on another user messages");
+    }
+
+    private void handleDisconnect(StompHeaderAccessor headerAccessor) throws InterruptedException {
+        Long sessionId = null;
+        while (sessionId == null) {
+            sessionId = (Long) headerAccessor.getSessionAttributes().get("socketSessionId");
+            if (sessionId == null) {
+                Thread.sleep(2000);
+            }
+        }
+
+        socketSessionRepository.deleteById(sessionId);
     }
 }

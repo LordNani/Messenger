@@ -11,10 +11,7 @@ import messenger.backend.message.MessageService;
 import messenger.backend.refreshToken.RefreshTokenRepository;
 import messenger.backend.sockets.SocketSender;
 import messenger.backend.sockets.SubscribedOn;
-import messenger.backend.user.dto.ChangePasswordRequestDto;
-import messenger.backend.user.dto.ChangeUsernameResponseDto;
-import messenger.backend.user.dto.UpdateProfileRequestDto;
-import messenger.backend.user.dto.UserSearchInfoDto;
+import messenger.backend.user.dto.*;
 import messenger.backend.user.exceptions.IncorrectPasswordException;
 import messenger.backend.user.exceptions.UserNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -91,5 +88,21 @@ public class UserService {
         contextUser.setPassword(passwordEncoder.encode(requestDto.getNewPassword()));
         userRepository.saveAndFlush(contextUser);
         return authService.buildAuthResponse(contextUser);
+    }
+
+    public List<UUID> getAllOnlineCompanions() {
+        UserEntity contextUser = JwtTokenService.getContextUser();
+        return userRepository.findAllCompanions(contextUser.getId()).stream()
+                .filter(user -> !user.getSessions().isEmpty())
+                .map(UserEntity::getId)
+                .collect(Collectors.toList());
+    }
+
+    public void userIsTyping(ChatIdDto chatIdDto) {
+        socketSender.send(
+                SubscribedOn.USER_IS_TYPING,
+                getAllOnlineCompanions(),
+                new UserIsTypingDto(chatIdDto.getChatId(), JwtTokenService.getCurrentUserId())
+        );
     }
 }

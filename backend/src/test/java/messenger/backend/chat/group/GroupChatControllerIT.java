@@ -66,20 +66,19 @@ class GroupChatControllerIT {
                         UUID.fromString("51c07af2-5ed1-4e30-b054-e5a3d51da5a5"),
                         "GROUP_title",
                         List.of(new UserShortDto(
-                                UUID.fromString("dacee9b4-6789-4f03-9520-dc97b0b9470b"),
-                                "Full Name 2",
-                                "user2",
-                                "My info 2",
+                                        UUID.fromString("dacee9b4-6789-4f03-9520-dc97b0b9470b"),
+                                        "Full Name 2",
+                                        "user2",
+                                        "My info 2",
                                         null,
-                                UserChat.PermissionLevel.MEMBER),
+                                        UserChat.PermissionLevel.MEMBER),
                                 new UserShortDto(
                                         UUID.fromString("babae9b4-6789-4f03-9520-dc97b0b9470b"),
                                         "Full Name baba",
                                         "user_baba",
                                         "My info baba",
                                         null,
-                                        UserChat.PermissionLevel.ADMIN
-                                )
+                                        UserChat.PermissionLevel.ADMIN)
                         ),
                         null,
                         UserChat.PermissionLevel.OWNER
