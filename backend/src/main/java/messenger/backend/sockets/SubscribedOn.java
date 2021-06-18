@@ -8,7 +8,7 @@ public enum SubscribedOn {
     UPDATE_CHAT("/topic/chats/update/"),
     UPDATE_MESSAGES_USERNAME("/topic/messages/update/username/"),
     UPDATE_MESSAGE_TEXT("/topic/messages/update/text/"),
-    DELETE_MESSAGE("topic/messages/delete")
+    DELETE_MESSAGE("/topic/messages/delete/")
     ;
 
     private final String text;

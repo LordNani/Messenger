@@ -22,7 +22,7 @@ public class MessageResponseDto {
                 .senderName(messageEntity.getUser().getFullName())
                 .senderId(messageEntity.getUser().getId())
                 .createdAt(messageEntity.getCreatedAt().getTime())
-                .isChanged(messageEntity.getUpdatedAt() != null)
+                .isChanged(messageEntity.getUpdatedAt().toInstant().isAfter(messageEntity.getCreatedAt().toInstant()))
                 .chatId(messageEntity.getChat().getId())
                 .build();
     }

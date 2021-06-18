@@ -24,12 +24,18 @@ public class SocketSender {
         simpMessagingTemplate.convertAndSend(urlPrefix.toString() + uuid, data);
     }
 
-    public void sendToAllMembersInChat(SubscribedOn subscribedOn, ChatSuperclass groupChatEntity, Object data) {
+    public void sendToAllMembersInChat(SubscribedOn subscribedOn, ChatSuperclass chat, Object data) {
         send(
                 subscribedOn,
-                groupChatEntity.getUserChats().stream().map(chat -> chat.getUser().getId()).collect(Collectors.toList()),
+                getUsersByChat(chat),
                 data
         );
+    }
+
+    public List<UUID> getUsersByChat(ChatSuperclass chat) {
+        return chat.getUserChats().stream()
+                .map(c -> c.getUser().getId())
+                .collect(Collectors.toList());
     }
 
 }

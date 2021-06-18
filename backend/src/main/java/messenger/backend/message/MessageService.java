@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.chat.exceptions.ChatNotFoundException;
 import messenger.backend.chat.exceptions.ContextUserNotMemberOfChatException;
-import messenger.backend.chat.general.GeneralChatService;
 import messenger.backend.message.dto.*;
 import messenger.backend.message.exceptions.MessageNotFoundException;
 import messenger.backend.message.exceptions.UserNotOwnerOfMessage;
@@ -72,30 +71,46 @@ public class MessageService {
                 .orElse(null);
     }
 
-    public void updateMessage(UpdateMessageRequestDto requestDto) {
+    public UpdateMessageResponseDto updateMessage(UpdateMessageRequestDto requestDto) {
         UUID currentUserId = JwtTokenService.getCurrentUserId();
         MessageEntity messageEntity = checkMessageManagementConstraints(currentUserId, requestDto.getMessageId());
 
         messageEntity.setMessageBody(requestDto.getNewText());
         messageRepository.saveAndFlush(messageEntity);
 
+        MessageResponseDto responseMessage = MessageResponseDto.fromEntity(messageEntity);
+        LastMessageResponseDto responseLast = getLastMessageByChatId(messageEntity.getChat().getId());
+        UpdateMessageResponseDto response = new UpdateMessageResponseDto(responseMessage, responseLast);
+
         socketSender.sendToAllMembersInChat(
                 SubscribedOn.UPDATE_MESSAGE_TEXT,
                 messageEntity.getChat(),
-                MessageResponseDto.fromEntity(messageEntity));
-    }
-
-    public void deleteMessage(DeleteMessageRequestDto requestDto) {
-        UUID currentUserId = JwtTokenService.getCurrentUserId();
-        MessageEntity messageEntity = checkMessageManagementConstraints(currentUserId, requestDto.getMessageId());
-
-        socketSender.sendToAllMembersInChat(
-                SubscribedOn.DELETE_MESSAGE,
-                messageEntity.getChat(),
-                new DeleteMessageSocketDto(messageEntity.getId())
+                response
         );
 
+        return response;
+    }
+
+    public DeleteMessageResponseDto deleteMessage(DeleteMessageRequestDto requestDto) {
+        UUID currentUserId = JwtTokenService.getCurrentUserId();
+        UUID messageId = requestDto.getMessageId();
+        MessageEntity messageEntity = checkMessageManagementConstraints(currentUserId, messageId);
+
+        UUID chatId = messageEntity.getChat().getId();
+        List<UUID> companions = socketSender.getUsersByChat(messageEntity.getChat());
+
         messageRepository.deleteById(messageEntity.getId());
+
+        var lastMessage = getLastMessageByChatId(chatId);
+        var response = new DeleteMessageResponseDto(lastMessage, chatId, messageId);
+
+        socketSender.send(
+                SubscribedOn.DELETE_MESSAGE,
+                companions,
+                response
+        );
+
+        return response;
     }
 
     private MessageEntity checkMessageManagementConstraints(UUID currentUserId, UUID messageId) {
