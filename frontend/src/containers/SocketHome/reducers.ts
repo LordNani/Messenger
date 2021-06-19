@@ -5,6 +5,7 @@ import {
     setInitialOnlineRoutine, setUserTypingRoutine, switchOfflineRoutine, switchOnlineRoutine,
 } from "./routines";
 import {createReducer, PayloadAction} from "@reduxjs/toolkit";
+import {TYPING_SHOW_DURATION} from "./config";
 
 export interface ISocketHomeState {
     requests: any;
@@ -13,6 +14,24 @@ export interface ISocketHomeState {
 
 export type OnlineUsersObject = any;
 export type TypingUsersObject = any;
+
+export const typingUsersToList = (typing: TypingUsersObject, chatId: string): string[] => {
+    const chatTyping = typing[chatId];
+    if (!chatTyping) {
+        return [];
+    }
+
+    const now = new Date();
+    const ans = [];
+    for (const fullName in chatTyping) {
+        const lastPing = chatTyping[fullName];
+        if (now.getTime() - lastPing.getTime() < TYPING_SHOW_DURATION) {
+            ans.push(fullName);
+        }
+    }
+
+    return ans;
+};
 
 export interface ISocketHomeStateData {
     online: OnlineUsersObject;

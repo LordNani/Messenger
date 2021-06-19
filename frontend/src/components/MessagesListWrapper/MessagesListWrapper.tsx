@@ -7,7 +7,8 @@ import {ChatTypeEnum} from "../../api/chat/general/generalChatModels";
 import {IChatCache, IMessageWrapper} from "../../containers/Chat/models";
 import {ICallback1} from "../../helpers/types.helper";
 import {IRemoveMessageFromChatRoutinePayload} from "../../containers/Chat/routines";
-import {OnlineUsersObject} from "../../containers/SocketHome/reducers";
+import {OnlineUsersObject, TypingUsersObject} from "../../containers/SocketHome/reducers";
+import IsTypingBlock from "../IsTypingBlock/IsTypingBlock";
 
 interface IOwnProps {
     chatInfo?: IChatCache;
@@ -15,6 +16,7 @@ interface IOwnProps {
     deleteMessage: ICallback1<IRemoveMessageFromChatRoutinePayload>;
     setEditingMessage: ICallback1<IMessageWrapper>;
     onlineUsers: OnlineUsersObject;
+    typingUsers: TypingUsersObject;
 }
 
 class MessagesListWrapper extends React.Component<IOwnProps> {
@@ -31,7 +33,7 @@ class MessagesListWrapper extends React.Component<IOwnProps> {
     listBottom = null as any;
 
     render() {
-        const {chatInfo, currentUser, deleteMessage, setEditingMessage, onlineUsers} = this.props;
+        const {chatInfo, currentUser, deleteMessage, setEditingMessage, onlineUsers, typingUsers} = this.props;
         const messages = chatInfo?.messages;
         const isVisibleName = chatInfo?.details.type !== ChatTypeEnum.PERSONAL;
 
@@ -52,6 +54,9 @@ class MessagesListWrapper extends React.Component<IOwnProps> {
                            onlineUsers={onlineUsers}
                        />
                     ))}
+                    {chatInfo?.details && (
+                        <IsTypingBlock typingUsers={typingUsers} chatId={chatInfo.details.id} />
+                    )}
                     <div className={styles.listBottom} ref={el => this.listBottom = el}/>
                 </LoaderWrapper>
             </div>
