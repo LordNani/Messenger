@@ -131,7 +131,7 @@ class ChatSender extends React.Component<IOwnProps, IState> {
                 </div>
                 <div className={editingMessage ? styles.editButtonsWrapper : styles.buttonsWrapper}>
 
-                    <Icon iconName={"fas fa-paper-plane fa-2x"}
+                    <Icon iconName={`fas fa-${editingMessage ? "check" : "paper-plane"} fa-2x`}
                           className={this.isValid() ? styles.sendIcon : styles.disabledSend}
                           onClick={this.isValid() ? this.handleSend : undefined}
                     />
