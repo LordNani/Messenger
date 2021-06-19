@@ -6,6 +6,7 @@ import {ICallback1} from "../../helpers/types.helper";
 import {IMessageWrapper} from "../../containers/Chat/models";
 import {IMessage} from "../../api/message/messageModels";
 import {IEditMessageRoutinePayload} from "../../containers/Chat/routines";
+import userService from "../../api/user/userService";
 
 interface IOwnProps {
     sendMessage: ICallback1<string>;
@@ -18,7 +19,10 @@ interface IOwnProps {
 interface IState {
     text: string;
     oldText?: string;
+    lastTyped?: Date;
 }
+
+export const typingInterval = 5 * 1000;
 
 class ChatSender extends React.Component<IOwnProps, IState> {
     state = {
@@ -55,7 +59,8 @@ class ChatSender extends React.Component<IOwnProps, IState> {
             setEditingMessage(undefined);
             this.setState(prev => ({
                 text: prev.oldText || '',
-                oldText: undefined
+                oldText: undefined,
+                lastTyped: undefined,
             }));
         }
     }
@@ -94,11 +99,20 @@ class ChatSender extends React.Component<IOwnProps, IState> {
     };
 
     handleChange = (e: any) => {
+        const {lastTyped} = this.state;
+        const {chatId} = this.props;
+
         let val = e.target.value;
         if (val.length > 1024) {
             val = val.substring(0, 1024);
         }
         this.setState({text: val});
+
+        const now = new Date();
+        if (!lastTyped || (now.getTime() - lastTyped.getTime()) > typingInterval) {
+            userService.sendTyping(chatId).then();
+            this.setState({lastTyped: now});
+        }
     }
 
     render() {
