@@ -20,6 +20,11 @@ const userService = {
         const {accessToken, refreshToken} = response.data.data;
         tokenService.setTokens(accessToken, refreshToken);
     },
+
+    getOnlineCompanions: async (): Promise<string[]> => {
+        const response = await apiClient.get(`/api/users/online/companions`);
+        return response.data.data;
+    },
 };
 
 export default userService;

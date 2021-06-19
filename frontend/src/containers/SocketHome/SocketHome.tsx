@@ -7,7 +7,7 @@ import SockJS from "sockjs-client";
 import tokenService from "../../api/token/tokenService";
 import {CompatClient, Stomp} from "@stomp/stompjs";
 import {env} from "../../env";
-import {ICallback1} from "../../helpers/types.helper";
+import {IAction, ICallback1} from "../../helpers/types.helper";
 import {changeMessagesUsernameRoutine, IChangeMessagesUsernameRoutinePayload} from "../Chat/routines";
 import {setCurrentUserRoutine} from "../Auth/routines";
 import {
@@ -17,6 +17,7 @@ import {
     updateChatInListRoutine
 } from "../ChatsList/routines";
 import {
+    fetchInitialOnlineRoutine,
     IReceiveMessageFromSocketRoutinePayload,
     IRemoveChatFromSocketRoutinePayload, receiveMessageFromSocketRoutine,
     removeChatFromSocketRoutine, removeMessageFromSocketRoutine, updateMessageFromSocketRoutine
@@ -37,6 +38,7 @@ interface IActions {
     receiveMessage: ICallback1<IReceiveMessageFromSocketRoutinePayload>;
     removeMessage: ICallback1<IDeleteMessageResponse>;
     updateMessage: ICallback1<IUpdateMessageResponse>;
+    fetchInitialOnline: IAction;
 }
 
 interface IPropsFromState {
@@ -48,6 +50,7 @@ class SocketHome extends React.Component<IOwnProps & IActions & IPropsFromState>
     private stompClient: CompatClient = Stomp.over(this.socket);
 
     async componentDidMount() {
+        this.props.fetchInitialOnline();
         this.configureSocket();
         this.connectSocket();
     }
@@ -123,6 +126,7 @@ const mapDispatchToProps: IActions = {
     receiveMessage: receiveMessageFromSocketRoutine,
     removeMessage: removeMessageFromSocketRoutine.fulfill,
     updateMessage: updateMessageFromSocketRoutine.fulfill,
+    fetchInitialOnline: fetchInitialOnlineRoutine,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SocketHome);

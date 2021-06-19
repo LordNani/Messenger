@@ -2,10 +2,11 @@
 // @ts-nocheck
 import {all, put, takeEvery, select, call} from 'redux-saga/effects';
 import {
+    fetchInitialOnlineRoutine,
     IReceiveMessageFromSocketRoutinePayload,
     IRemoveChatFromSocketRoutinePayload,
     receiveMessageFromSocketRoutine,
-    removeChatFromSocketRoutine, removeMessageFromSocketRoutine, updateMessageFromSocketRoutine
+    removeChatFromSocketRoutine, removeMessageFromSocketRoutine, setInitialOnlineRoutine, updateMessageFromSocketRoutine
 } from "./routines";
 import {PayloadAction} from "@reduxjs/toolkit";
 import {IAppState} from "../../reducers";
@@ -22,6 +23,7 @@ import generalChatService from "../../api/chat/general/generalChatService";
 import {appendReadyMessageIfAbsentRoutine, editMessageInChatRoutine} from "../Chat/routines";
 import {IDeleteMessageResponse, IUpdateMessageResponse} from "../../api/message/messageModels";
 import {removeMessageByResponse} from "../Chat/sagas";
+import userService from "../../api/user/userService";
 
 function* removeChatFromSocketSaga({payload}: PayloadAction<IRemoveChatFromSocketRoutinePayload>) {
     const {chatId} = payload;
@@ -77,11 +79,22 @@ function* updateMessageFromSocketSaga({payload}: PayloadAction<IUpdateMessageRes
     }));
 }
 
+function* fetchInitialOnlineSaga() {
+    try {
+        const response = yield call(userService.getOnlineCompanions);
+        yield put(setInitialOnlineRoutine.fulfill(response));
+        yield put(fetchInitialOnlineRoutine.success());
+    } catch (e) {
+        yield put(fetchInitialOnlineRoutine.failure());
+    }
+}
+
 export default function* socketHomeSaga() {
     yield all([
         takeEvery(removeChatFromSocketRoutine.FULFILL, removeChatFromSocketSaga),
         takeEvery(receiveMessageFromSocketRoutine.TRIGGER, receiveMessageFromSocketSaga),
         takeEvery(removeMessageFromSocketRoutine.FULFILL, removeMessageFromSocketSaga),
         takeEvery(updateMessageFromSocketRoutine.FULFILL, updateMessageFromSocketSaga),
+        takeEvery(fetchInitialOnlineRoutine, fetchInitialOnlineSaga),
     ]);
 }
