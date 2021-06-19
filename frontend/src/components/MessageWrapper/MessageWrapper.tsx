@@ -6,6 +6,7 @@ import classnames from "classnames";
 import {IMessageWrapper} from "../../containers/Chat/models";
 import Icon from "../Icon/Icon";
 import {ICallback1} from "../../helpers/types.helper";
+import {OnlineUsersObject} from "../../containers/SocketHome/reducers";
 
 interface IOwnProps {
     message: IMessageWrapper;
@@ -13,13 +14,15 @@ interface IOwnProps {
     isVisibleName?: boolean;
     deleteMessage: ICallback1<string>;
     setEditingMessage: ICallback1<IMessageWrapper>;
+    onlineUsers: OnlineUsersObject;
 }
 
 class MessageWrapper extends React.Component<IOwnProps> {
     render() {
-        const {message, currentUser, isVisibleName, deleteMessage, setEditingMessage} = this.props;
+        const {message, currentUser, isVisibleName, deleteMessage, setEditingMessage, onlineUsers} = this.props;
         const inactive = !!message.loading || !!message.deleting || !!message.updating;
         const ownMessage = message.info?.senderId === currentUser?.id || message.loading;
+        const online = message.info?.senderId && onlineUsers[message.info.senderId];
         const classes = classnames(
             styles.messageWrapper,
             ownMessage ? styles.messageWrapperRight : styles.messageWrapperLeft
@@ -46,6 +49,7 @@ class MessageWrapper extends React.Component<IOwnProps> {
                     isVisibleName={isVisibleName}
                     ownMessage={!!ownMessage}
                     inactive={inactive}
+                    online={online}
                 />
             </div>
         );

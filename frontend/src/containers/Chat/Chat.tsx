@@ -93,6 +93,7 @@ class Chat extends React.Component<IPropsFromState & IActions> {
                     currentUser={currentUser}
                     deleteMessage={deleteMessage}
                     setEditingMessage={setEditingMessage}
+                    onlineUsers={onlineUsers}
                 />
                 <ChatSender
                     sendMessage={text => sendMessage({chatId: selectedChatId, text})}

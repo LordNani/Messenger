@@ -7,12 +7,14 @@ import {ChatTypeEnum} from "../../api/chat/general/generalChatModels";
 import {IChatCache, IMessageWrapper} from "../../containers/Chat/models";
 import {ICallback1} from "../../helpers/types.helper";
 import {IRemoveMessageFromChatRoutinePayload} from "../../containers/Chat/routines";
+import {OnlineUsersObject} from "../../containers/SocketHome/reducers";
 
 interface IOwnProps {
     chatInfo?: IChatCache;
     currentUser?: ICurrentUser;
     deleteMessage: ICallback1<IRemoveMessageFromChatRoutinePayload>;
     setEditingMessage: ICallback1<IMessageWrapper>;
+    onlineUsers: OnlineUsersObject;
 }
 
 class MessagesListWrapper extends React.Component<IOwnProps> {
@@ -29,7 +31,7 @@ class MessagesListWrapper extends React.Component<IOwnProps> {
     listBottom = null as any;
 
     render() {
-        const {chatInfo, currentUser, deleteMessage, setEditingMessage} = this.props;
+        const {chatInfo, currentUser, deleteMessage, setEditingMessage, onlineUsers} = this.props;
         const messages = chatInfo?.messages;
         const isVisibleName = chatInfo?.details.type !== ChatTypeEnum.PERSONAL;
 
@@ -47,6 +49,7 @@ class MessagesListWrapper extends React.Component<IOwnProps> {
                                chatId: chatInfo?.details?.id as string
                            })}
                            setEditingMessage={setEditingMessage}
+                           onlineUsers={onlineUsers}
                        />
                     ))}
                     <div className={styles.listBottom} ref={el => this.listBottom = el}/>
