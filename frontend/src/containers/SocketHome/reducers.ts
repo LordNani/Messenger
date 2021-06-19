@@ -11,8 +11,10 @@ export interface ISocketHomeState {
     data: ISocketHomeStateData;
 }
 
+export type OnlineUsersObject = any;
+
 export interface ISocketHomeStateData {
-    users: any;
+    users: OnlineUsersObject;
 }
 
 const initialStateData: ISocketHomeStateData = {

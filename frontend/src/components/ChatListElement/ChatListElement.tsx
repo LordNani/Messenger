@@ -8,6 +8,7 @@ interface IOwnProps {
     elementData: IChatDetails;
     onClick: () => void;
     selected: boolean;
+    online?: boolean;
 }
 
 class ChatListElement extends React.Component<IOwnProps> {
@@ -43,10 +44,10 @@ class ChatListElement extends React.Component<IOwnProps> {
     }
 
     render() {
-        const {elementData, onClick, selected} = this.props;
+        const {elementData, onClick, selected, online} = this.props;
         const classes = classNames(styles.wrapper, selected && styles.selected);
         const iconName = this.iconOfChat(elementData);
-        const defaultUserPicture = 
+        const defaultUserPicture =
             'https://www.pngkey.com/png/full/282-2820067_taste-testing-at-baskin-robbins-empty-profile-picture.png';
         return (
             <div className={classes} onClick={onClick} >
@@ -71,6 +72,9 @@ class ChatListElement extends React.Component<IOwnProps> {
 
                 {!this.isRead(elementData) && (
                     <div className={styles.unread} />
+                )}
+                {online && (
+                    <div className={styles.online} />
                 )}
             </div>
         );
