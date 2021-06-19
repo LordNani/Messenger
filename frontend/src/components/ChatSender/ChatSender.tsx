@@ -7,6 +7,7 @@ import {IMessageWrapper} from "../../containers/Chat/models";
 import {IMessage} from "../../api/message/messageModels";
 import {IEditMessageRoutinePayload} from "../../containers/Chat/routines";
 import userService from "../../api/user/userService";
+import {TYPING_PING_INTERVAL} from "../../containers/SocketHome/config";
 
 interface IOwnProps {
     sendMessage: ICallback1<string>;
@@ -21,8 +22,6 @@ interface IState {
     oldText?: string;
     lastTyped?: Date;
 }
-
-export const typingInterval = 5 * 1000;
 
 class ChatSender extends React.Component<IOwnProps, IState> {
     state = {
@@ -109,7 +108,7 @@ class ChatSender extends React.Component<IOwnProps, IState> {
         this.setState({text: val});
 
         const now = new Date();
-        if (!lastTyped || (now.getTime() - lastTyped.getTime()) > typingInterval) {
+        if (!lastTyped || (now.getTime() - lastTyped.getTime()) > TYPING_PING_INTERVAL) {
             userService.sendTyping(chatId).then();
             this.setState({lastTyped: now});
         }
