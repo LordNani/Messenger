@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./ChatHeader.module.sass";
 import LoaderWrapper from "../LoaderWrapper/LoaderWrapper";
 import {IChatDetails} from "../../api/chat/general/generalChatModels";
+import OnlineMark from "../OnlineMark/OnlineMark";
 
 interface IOwnProps {
     chatDetails?: IChatDetails;
@@ -16,7 +17,7 @@ class ChatHeader extends React.Component<IOwnProps> {
             <div className={styles.wrapper} onClick={openModal}>
                 <LoaderWrapper loading={!chatDetails}>
                     {chatDetails?.title || "-"}
-                    {online && " (online)"}
+                    {online && <OnlineMark />}
                 </LoaderWrapper>
             </div>
         );
