@@ -28,7 +28,7 @@ class IsTypingBlock extends React.Component<IOwnProps> {
 
         return (
             <div className={styles.container}>
-                {fullNames}
+                {fullNames.join(" and ")}
                 {` ${fullNames.length === 1 ? 'is' : 'are'} typing...`}
             </div>
         );
