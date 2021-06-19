@@ -2,7 +2,7 @@ import {combineReducers} from 'redux';
 import {reducerCreator} from "../../helpers/reducer.helper";
 import {
     fetchInitialOnlineRoutine,
-    setInitialOnlineRoutine,
+    setInitialOnlineRoutine, switchOfflineRoutine, switchOnlineRoutine,
 } from "./routines";
 import {createReducer, PayloadAction} from "@reduxjs/toolkit";
 
@@ -28,6 +28,12 @@ const data = createReducer(initialStateData, {
         for (const user of payload) {
             state.users[user] = true;
         }
+    },
+    [switchOnlineRoutine.FULFILL]: (state, {payload}: PayloadAction<string>) => {
+        state.users[payload] = true;
+    },
+    [switchOfflineRoutine.FULFILL]: (state, {payload}: PayloadAction<string>) => {
+        state.users[payload] = false;
     },
 });
 

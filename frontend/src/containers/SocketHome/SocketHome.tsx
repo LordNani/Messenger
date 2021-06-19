@@ -19,8 +19,13 @@ import {
 import {
     fetchInitialOnlineRoutine,
     IReceiveMessageFromSocketRoutinePayload,
-    IRemoveChatFromSocketRoutinePayload, receiveMessageFromSocketRoutine,
-    removeChatFromSocketRoutine, removeMessageFromSocketRoutine, updateMessageFromSocketRoutine
+    IRemoveChatFromSocketRoutinePayload,
+    receiveMessageFromSocketRoutine,
+    removeChatFromSocketRoutine,
+    removeMessageFromSocketRoutine,
+    switchOfflineRoutine,
+    switchOnlineRoutine,
+    updateMessageFromSocketRoutine
 } from "./routines";
 import {IDeleteMessageResponse, IUpdateMessageResponse} from "../../api/message/messageModels";
 
@@ -39,6 +44,8 @@ interface IActions {
     removeMessage: ICallback1<IDeleteMessageResponse>;
     updateMessage: ICallback1<IUpdateMessageResponse>;
     fetchInitialOnline: IAction;
+    switchOnline: ICallback1<string>;
+    switchOffline: ICallback1<string>;
 }
 
 interface IPropsFromState {
@@ -101,6 +108,8 @@ class SocketHome extends React.Component<IOwnProps & IActions & IPropsFromState>
         this.stompSubscribe('/topic/messages/update/username/', this.props.updateMessagesUsername);
         this.stompSubscribe('/topic/messages/delete/', this.props.removeMessage);
         this.stompSubscribe('/topic/messages/update/text/', this.props.updateMessage);
+        this.stompSubscribe('/topic/users/switched-online/', this.props.switchOnline);
+        this.stompSubscribe('/topic/users/switched-offline/', this.props.switchOffline);
     }
 
     render() {
@@ -127,6 +136,8 @@ const mapDispatchToProps: IActions = {
     removeMessage: removeMessageFromSocketRoutine.fulfill,
     updateMessage: updateMessageFromSocketRoutine.fulfill,
     fetchInitialOnline: fetchInitialOnlineRoutine,
+    switchOnline: switchOnlineRoutine.fulfill,
+    switchOffline: switchOfflineRoutine.fulfill,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SocketHome);

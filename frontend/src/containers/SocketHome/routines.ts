@@ -11,6 +11,8 @@ export const removeMessageFromSocketRoutine = createLocalRoutine<IDeleteMessageR
 export const updateMessageFromSocketRoutine = createLocalRoutine<IUpdateMessageResponse>('UPDATE_MESSAGE_FROM_SOCKET');
 export const fetchInitialOnlineRoutine = createLocalRoutine('FETCH_INITIAL_ONLINE');
 export const setInitialOnlineRoutine = createLocalRoutine<string[]>('SET_INITIAL_ONLINE');
+export const switchOnlineRoutine = createLocalRoutine<string>('SWITCH_ONLINE');
+export const switchOfflineRoutine = createLocalRoutine<string>('SWITCH_OFFLINE');
 
 export interface IRemoveChatFromSocketRoutinePayload {
     chatId: string;
