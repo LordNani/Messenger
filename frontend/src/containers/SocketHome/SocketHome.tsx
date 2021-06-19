@@ -19,10 +19,10 @@ import {
 import {
     fetchInitialOnlineRoutine,
     IReceiveMessageFromSocketRoutinePayload,
-    IRemoveChatFromSocketRoutinePayload,
+    IRemoveChatFromSocketRoutinePayload, ISetUserTypingRoutinePayload,
     receiveMessageFromSocketRoutine,
     removeChatFromSocketRoutine,
-    removeMessageFromSocketRoutine,
+    removeMessageFromSocketRoutine, setUserTypingRoutine,
     switchOfflineRoutine,
     switchOnlineRoutine,
     updateMessageFromSocketRoutine
@@ -46,6 +46,7 @@ interface IActions {
     fetchInitialOnline: IAction;
     switchOnline: ICallback1<string>;
     switchOffline: ICallback1<string>;
+    setTyping: ICallback1<ISetUserTypingRoutinePayload>;
 }
 
 interface IPropsFromState {
@@ -110,6 +111,7 @@ class SocketHome extends React.Component<IOwnProps & IActions & IPropsFromState>
         this.stompSubscribe('/topic/messages/update/text/', this.props.updateMessage);
         this.stompSubscribe('/topic/users/switched-online/', this.props.switchOnline);
         this.stompSubscribe('/topic/users/switched-offline/', this.props.switchOffline);
+        this.stompSubscribe('/topic/users/typing/', this.props.setTyping);
     }
 
     render() {
@@ -138,6 +140,7 @@ const mapDispatchToProps: IActions = {
     fetchInitialOnline: fetchInitialOnlineRoutine,
     switchOnline: switchOnlineRoutine.fulfill,
     switchOffline: switchOfflineRoutine.fulfill,
+    setTyping: setUserTypingRoutine.fulfill,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SocketHome);

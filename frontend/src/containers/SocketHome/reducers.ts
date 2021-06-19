@@ -1,8 +1,8 @@
 import {combineReducers} from 'redux';
 import {reducerCreator} from "../../helpers/reducer.helper";
 import {
-    fetchInitialOnlineRoutine,
-    setInitialOnlineRoutine, switchOfflineRoutine, switchOnlineRoutine,
+    fetchInitialOnlineRoutine, ISetUserTypingRoutinePayload,
+    setInitialOnlineRoutine, setUserTypingRoutine, switchOfflineRoutine, switchOnlineRoutine,
 } from "./routines";
 import {createReducer, PayloadAction} from "@reduxjs/toolkit";
 
@@ -39,6 +39,12 @@ const data = createReducer(initialStateData, {
     },
     [switchOfflineRoutine.FULFILL]: (state, {payload}: PayloadAction<string>) => {
         state.online[payload] = false;
+    },
+    [setUserTypingRoutine.FULFILL]: (state, {payload}: PayloadAction<ISetUserTypingRoutinePayload>) => {
+        state.typing[payload.chatId] = {
+            ...state.typing[payload.chatId],
+            [payload.fullName]: new Date(),
+        };
     },
 });
 
