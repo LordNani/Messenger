@@ -26,6 +26,7 @@ import {
     selectGroupChatIdRoutine, toggleMemberRoleGroupChatRoutine, updateGroupChatRoutine
 } from "./routines";
 import Modal from "../../components/Modal/Modal";
+import {OnlineUsersObject} from "../SocketHome/reducers";
 
 interface IPropsFromState {
     selectedId?: string;
@@ -35,6 +36,7 @@ interface IPropsFromState {
     leaveChatLoading: boolean;
     addMemberLoading: boolean;
     updateChatLoading: boolean;
+    onlineUsers: OnlineUsersObject;
 }
 
 interface IActions {
@@ -99,7 +101,7 @@ class GroupChatDetails extends React.Component<IPropsFromState & IActions, IStat
         const {
             setSelectedId, selectedId, loadInfoLoading, info, deleteChatLoading, leaveChatLoading,
             deleteChat, leaveChat, addMemberLoading, addMember, deleteMember, toggleMemberRole,
-            updateChatLoading
+            updateChatLoading, onlineUsers
         } = this.props;
 
         if (!selectedId) {
@@ -195,6 +197,7 @@ class GroupChatDetails extends React.Component<IPropsFromState & IActions, IStat
                             onToggleUpgrade={() => toggleMemberRole({
                                 userId: user.id, currentRole: user.permissionLevel, chatId: info.id
                             })}
+                            online={onlineUsers[user.id]}
                         />
                     ))}
                     {info?.permissionLevel === RoleEnum.OWNER && (
@@ -229,6 +232,7 @@ const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
     leaveChatLoading: state.groupChat.requests.leaveChat.loading,
     addMemberLoading: state.groupChat.requests.addMember.loading,
     updateChatLoading: state.groupChat.requests.updateChat.loading,
+    onlineUsers: state.socketHome.data.users,
 });
 
 const mapDispatchToProps: IActions = {
