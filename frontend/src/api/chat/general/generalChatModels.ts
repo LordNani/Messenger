@@ -12,6 +12,7 @@ export interface IChatDetails {
     picture: string | null;
     lastMessage: ILastMessage | null;
     seenAt?: number;
+    companionId?: string;
 }
 
 export interface ILastSeen {

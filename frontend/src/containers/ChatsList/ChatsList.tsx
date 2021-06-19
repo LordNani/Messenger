@@ -17,6 +17,7 @@ import {
     setCreateChatModalShownRoutine
 } from "./routines";
 import {connect} from "react-redux";
+import {OnlineUsersObject} from "../SocketHome/reducers";
 
 interface IPropsFromState {
     chatsList?: IChatDetails[];
@@ -27,6 +28,7 @@ interface IPropsFromState {
     createGroupChatError: string | null;
     createModalShown?: boolean;
     selectedChatId?: string;
+    onlineUsers: OnlineUsersObject;
 }
 
 interface IActions {
@@ -55,7 +57,7 @@ class ChatsList extends React.Component<IPropsFromState & IActions, IState> {
         const {
             chatsList, chatsListLoading, selectChatId, selectedChatId, createPersonalChat, createGroupChat,
             createPersonalChatError, createPersonalChatLoading, createGroupChatError, createGroupChatLoading,
-            createModalShown, setCreateModalShown
+            createModalShown, setCreateModalShown, onlineUsers
         } = this.props;
 
         const {filter} = this.state;
@@ -97,6 +99,7 @@ class ChatsList extends React.Component<IPropsFromState & IActions, IState> {
                                 elementData={chat}
                                 onClick={() => selectChatId(chat.id)}
                                 selected={selectedChatId === chat.id}
+                                online={chat.companionId && onlineUsers[chat.companionId]}
                             />
                         ))
                     }
@@ -126,6 +129,7 @@ const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
     createGroupChatError: state.chatsList.requests.createGroupChat.error,
     createModalShown: state.chatsList.data.createModalShown,
     selectedChatId: state.chatsList.data.selectedChatId,
+    onlineUsers: state.socketHome.data.users,
 });
 
 const mapDispatchToProps: IActions = {

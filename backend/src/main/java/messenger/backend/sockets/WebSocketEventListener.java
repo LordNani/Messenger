@@ -35,7 +35,7 @@ public class WebSocketEventListener {
 
         socketSender.send(
                 SubscribedOn.SWITCHED_ONLINE,
-                userService.getAllOnlineCompanions(),
+                userService.getAllOnlineCompanions(contextUser),
                 contextUser.getId());
     }
 
@@ -44,10 +44,10 @@ public class WebSocketEventListener {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         UserEntity contextUser = (UserEntity) headerAccessor.getSessionAttributes().get("contextUser");
 
-        if (contextUser != null && socketSessionRepository.countByUser(contextUser) == 0) {
+        if (contextUser != null && socketSessionRepository.countByUser(contextUser) == 1) {
             socketSender.send(
                     SubscribedOn.SWITCHED_OFFLINE,
-                    userService.getAllOnlineCompanions(),
+                    userService.getAllOnlineCompanions(contextUser),
                     contextUser.getId());
         }
     }

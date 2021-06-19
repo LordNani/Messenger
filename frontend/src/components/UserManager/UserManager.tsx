@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./UserManager.module.sass";
 import {IUserShortDto} from "../../api/user/userModels";
 import Icon from "../Icon/Icon";
+import OnlineMark from "../OnlineMark/OnlineMark";
 
 interface IOwnProps {
     user: IUserShortDto;
@@ -10,16 +11,20 @@ interface IOwnProps {
     upgradable?: boolean;
     upgraded?: boolean;
     onToggleUpgrade: () => void;
+    online?: boolean;
 }
 
 class UserManager extends React.Component<IOwnProps> {
     render() {
-        const {user, deletable, onDelete, upgradable, upgraded, onToggleUpgrade} = this.props;
+        const {user, deletable, onDelete, upgradable, upgraded, onToggleUpgrade, online} = this.props;
 
         return (
             <div className={styles.wrapper}>
                 <div className={styles.meta}>
-                    <div className={styles.fullName}>{user.fullName}</div>
+                    <div className={styles.fullName}>
+                        {user.fullName}
+                        {online && <OnlineMark />}
+                    </div>
                     <div className={styles.username}>@{user.username}</div>
                     <div className={styles.role}>{user.permissionLevel}</div>
                 </div>

@@ -7,7 +7,7 @@ import SockJS from "sockjs-client";
 import tokenService from "../../api/token/tokenService";
 import {CompatClient, Stomp} from "@stomp/stompjs";
 import {env} from "../../env";
-import {ICallback1} from "../../helpers/types.helper";
+import {IAction, ICallback1} from "../../helpers/types.helper";
 import {changeMessagesUsernameRoutine, IChangeMessagesUsernameRoutinePayload} from "../Chat/routines";
 import {setCurrentUserRoutine} from "../Auth/routines";
 import {
@@ -17,9 +17,15 @@ import {
     updateChatInListRoutine
 } from "../ChatsList/routines";
 import {
+    fetchInitialOnlineRoutine,
     IReceiveMessageFromSocketRoutinePayload,
-    IRemoveChatFromSocketRoutinePayload, receiveMessageFromSocketRoutine,
-    removeChatFromSocketRoutine, removeMessageFromSocketRoutine, updateMessageFromSocketRoutine
+    IRemoveChatFromSocketRoutinePayload,
+    receiveMessageFromSocketRoutine,
+    removeChatFromSocketRoutine,
+    removeMessageFromSocketRoutine,
+    switchOfflineRoutine,
+    switchOnlineRoutine,
+    updateMessageFromSocketRoutine
 } from "./routines";
 import {IDeleteMessageResponse, IUpdateMessageResponse} from "../../api/message/messageModels";
 
@@ -37,6 +43,9 @@ interface IActions {
     receiveMessage: ICallback1<IReceiveMessageFromSocketRoutinePayload>;
     removeMessage: ICallback1<IDeleteMessageResponse>;
     updateMessage: ICallback1<IUpdateMessageResponse>;
+    fetchInitialOnline: IAction;
+    switchOnline: ICallback1<string>;
+    switchOffline: ICallback1<string>;
 }
 
 interface IPropsFromState {
@@ -48,6 +57,7 @@ class SocketHome extends React.Component<IOwnProps & IActions & IPropsFromState>
     private stompClient: CompatClient = Stomp.over(this.socket);
 
     async componentDidMount() {
+        this.props.fetchInitialOnline();
         this.configureSocket();
         this.connectSocket();
     }
@@ -98,6 +108,8 @@ class SocketHome extends React.Component<IOwnProps & IActions & IPropsFromState>
         this.stompSubscribe('/topic/messages/update/username/', this.props.updateMessagesUsername);
         this.stompSubscribe('/topic/messages/delete/', this.props.removeMessage);
         this.stompSubscribe('/topic/messages/update/text/', this.props.updateMessage);
+        this.stompSubscribe('/topic/users/switched-online/', this.props.switchOnline);
+        this.stompSubscribe('/topic/users/switched-offline/', this.props.switchOffline);
     }
 
     render() {
@@ -123,6 +135,9 @@ const mapDispatchToProps: IActions = {
     receiveMessage: receiveMessageFromSocketRoutine,
     removeMessage: removeMessageFromSocketRoutine.fulfill,
     updateMessage: updateMessageFromSocketRoutine.fulfill,
+    fetchInitialOnline: fetchInitialOnlineRoutine,
+    switchOnline: switchOnlineRoutine.fulfill,
+    switchOffline: switchOfflineRoutine.fulfill,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SocketHome);

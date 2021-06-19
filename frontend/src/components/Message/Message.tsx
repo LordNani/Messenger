@@ -3,17 +3,19 @@ import styles from "./Message.module.sass";
 import classnames from "classnames";
 import moment from "moment";
 import {IMessageWrapper} from "../../containers/Chat/models";
+import OnlineMark from "../OnlineMark/OnlineMark";
 
 interface IOwnProps {
     message: IMessageWrapper;
     isVisibleName?: boolean;
     ownMessage: boolean;
     inactive: boolean;
+    online: boolean;
 }
 
 class Message extends React.Component<IOwnProps> {
     render() {
-        const {message, isVisibleName, ownMessage, inactive} = this.props;
+        const {message, isVisibleName, ownMessage, inactive, online} = this.props;
         const classes = classnames(styles.message, inactive && styles.loading);
         const text = message.info?.text || message.loading?.text;
         const momentCreatedAt = moment(message.info?.createdAt);
@@ -23,6 +25,7 @@ class Message extends React.Component<IOwnProps> {
                 {isVisibleName && !ownMessage && (
                     <div className={styles.name}>
                         {message.info?.senderName}
+                        {online && <OnlineMark />}
                     </div>
                 )}
                 <div className={styles.content}>

@@ -20,12 +20,14 @@ import {deleteChatInListRoutine, removeSelectedChatIdRoutine, updateChatInListRo
 import {selectPersonalChatIdRoutine} from "../PersonalChatDetails/routines";
 import {selectGroupChatIdRoutine} from "../GroupChatDetails/routines";
 import {IChatCache, IMessageWrapper} from "./models";
+import {OnlineUsersObject} from "../SocketHome/reducers";
 
 interface IPropsFromState {
     currentUser?: ICurrentUser;
     chatsDetailsCached: IChatCache[];
     selectedChatId?: string;
     editingMessage?: IMessageWrapper;
+    onlineUsers: OnlineUsersObject;
 }
 
 interface IActions {
@@ -59,7 +61,7 @@ class Chat extends React.Component<IPropsFromState & IActions> {
 
     render() {
         const {
-            chatsDetailsCached, selectedChatId, currentUser, sendMessage, editMessage,
+            chatsDetailsCached, selectedChatId, currentUser, sendMessage, editMessage, onlineUsers,
             selectPersonalChatId, selectGroupChatId, deleteMessage, setEditingMessage, editingMessage
         } = this.props;
         const chatInfo = chatsDetailsCached.find(c => c.details.id === selectedChatId);
@@ -84,12 +86,14 @@ class Chat extends React.Component<IPropsFromState & IActions> {
                             selectGroupChatId(chatInfo.details.id);
                         }
                     }}
+                    online={chatInfo?.details?.companionId && onlineUsers[chatInfo.details.companionId]}
                 />
                 <MessagesListWrapper
                     chatInfo={chatInfo}
                     currentUser={currentUser}
                     deleteMessage={deleteMessage}
                     setEditingMessage={setEditingMessage}
+                    onlineUsers={onlineUsers}
                 />
                 <ChatSender
                     sendMessage={text => sendMessage({chatId: selectedChatId, text})}
@@ -108,6 +112,7 @@ const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
     chatsDetailsCached: state.chat.data.chatsDetailsCached,
     selectedChatId: state.chatsList.data.selectedChatId,
     editingMessage: state.chat.data.editingMessage,
+    onlineUsers: state.socketHome.data.users,
 });
 
 const mapDispatchToProps: IActions = {
