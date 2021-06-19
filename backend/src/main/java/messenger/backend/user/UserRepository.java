@@ -16,7 +16,7 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     Optional<UserEntity> getByUsername(String username);
 
     @Query("select distinct(uc.user) " +
-           "from UserChat as uc " +
+           "from UserChat as uc left join fetch uc.user.sessions " +
            "where uc.user.id <> :userId and uc.chat.id in (select uc2.chat.id " +
                                                           "from UserChat as uc2 " +
                                                           "where uc2.user.id = :userId)")

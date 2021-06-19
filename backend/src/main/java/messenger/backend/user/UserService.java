@@ -17,6 +17,7 @@ import messenger.backend.user.exceptions.UserNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -91,7 +92,11 @@ public class UserService {
     }
 
     public List<UUID> getAllOnlineCompanions() {
-        UserEntity contextUser = JwtTokenService.getContextUser();
+        return getAllOnlineCompanions(JwtTokenService.getContextUser());
+    }
+
+    public List<UUID> getAllOnlineCompanions(UserEntity contextUser) {
+        var companions = userRepository.findAllCompanions(contextUser.getId());
         return userRepository.findAllCompanions(contextUser.getId()).stream()
                 .filter(user -> !user.getSessions().isEmpty())
                 .map(UserEntity::getId)
