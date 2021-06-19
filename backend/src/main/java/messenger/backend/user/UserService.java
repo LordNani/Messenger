@@ -104,10 +104,11 @@ public class UserService {
     }
 
     public void userIsTyping(ChatIdDto chatIdDto) {
+        var user = userRepository.findById(JwtTokenService.getCurrentUserId()).orElseThrow();
         socketSender.send(
                 SubscribedOn.USER_IS_TYPING,
                 getAllOnlineCompanions(),
-                new UserIsTypingDto(chatIdDto.getChatId(), JwtTokenService.getCurrentUserId())
+                new UserIsTypingDto(chatIdDto.getChatId(), user.getFullName())
         );
     }
 }

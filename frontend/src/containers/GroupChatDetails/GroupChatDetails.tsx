@@ -232,7 +232,7 @@ const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
     leaveChatLoading: state.groupChat.requests.leaveChat.loading,
     addMemberLoading: state.groupChat.requests.addMember.loading,
     updateChatLoading: state.groupChat.requests.updateChat.loading,
-    onlineUsers: state.socketHome.data.users,
+    onlineUsers: state.socketHome.data.online,
 });
 
 const mapDispatchToProps: IActions = {

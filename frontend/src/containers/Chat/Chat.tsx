@@ -20,7 +20,7 @@ import {deleteChatInListRoutine, removeSelectedChatIdRoutine, updateChatInListRo
 import {selectPersonalChatIdRoutine} from "../PersonalChatDetails/routines";
 import {selectGroupChatIdRoutine} from "../GroupChatDetails/routines";
 import {IChatCache, IMessageWrapper} from "./models";
-import {OnlineUsersObject} from "../SocketHome/reducers";
+import {OnlineUsersObject, TypingUsersObject} from "../SocketHome/reducers";
 
 interface IPropsFromState {
     currentUser?: ICurrentUser;
@@ -28,6 +28,7 @@ interface IPropsFromState {
     selectedChatId?: string;
     editingMessage?: IMessageWrapper;
     onlineUsers: OnlineUsersObject;
+    typingUsers: TypingUsersObject;
 }
 
 interface IActions {
@@ -61,7 +62,7 @@ class Chat extends React.Component<IPropsFromState & IActions> {
 
     render() {
         const {
-            chatsDetailsCached, selectedChatId, currentUser, sendMessage, editMessage, onlineUsers,
+            chatsDetailsCached, selectedChatId, currentUser, sendMessage, editMessage, onlineUsers, typingUsers,
             selectPersonalChatId, selectGroupChatId, deleteMessage, setEditingMessage, editingMessage
         } = this.props;
         const chatInfo = chatsDetailsCached.find(c => c.details.id === selectedChatId);
@@ -94,6 +95,7 @@ class Chat extends React.Component<IPropsFromState & IActions> {
                     deleteMessage={deleteMessage}
                     setEditingMessage={setEditingMessage}
                     onlineUsers={onlineUsers}
+                    typingUsers={typingUsers}
                 />
                 <ChatSender
                     sendMessage={text => sendMessage({chatId: selectedChatId, text})}
@@ -112,7 +114,8 @@ const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
     chatsDetailsCached: state.chat.data.chatsDetailsCached,
     selectedChatId: state.chatsList.data.selectedChatId,
     editingMessage: state.chat.data.editingMessage,
-    onlineUsers: state.socketHome.data.users,
+    onlineUsers: state.socketHome.data.online,
+    typingUsers: state.socketHome.data.typing,
 });
 
 const mapDispatchToProps: IActions = {

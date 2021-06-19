@@ -1,0 +1,3 @@
+export const TYPING_PING_INTERVAL = 2 * 1000;
+export const TYPING_SHOW_DURATION = 3 * 1000;
+export const TYPING_RERENDER_INTERVAL = 1000;
