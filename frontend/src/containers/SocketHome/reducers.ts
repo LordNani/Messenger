@@ -12,13 +12,16 @@ export interface ISocketHomeState {
 }
 
 export type OnlineUsersObject = any;
+export type TypingUsersObject = any;
 
 export interface ISocketHomeStateData {
-    users: OnlineUsersObject;
+    online: OnlineUsersObject;
+    typing: TypingUsersObject;
 }
 
 const initialStateData: ISocketHomeStateData = {
-    users: {},
+    online: {},
+    typing: {},
 };
 
 const requests = combineReducers({
@@ -28,14 +31,14 @@ const requests = combineReducers({
 const data = createReducer(initialStateData, {
     [setInitialOnlineRoutine.FULFILL]: (state, {payload}: PayloadAction<string[]>) => {
         for (const user of payload) {
-            state.users[user] = true;
+            state.online[user] = true;
         }
     },
     [switchOnlineRoutine.FULFILL]: (state, {payload}: PayloadAction<string>) => {
-        state.users[payload] = true;
+        state.online[payload] = true;
     },
     [switchOfflineRoutine.FULFILL]: (state, {payload}: PayloadAction<string>) => {
-        state.users[payload] = false;
+        state.online[payload] = false;
     },
 });
 

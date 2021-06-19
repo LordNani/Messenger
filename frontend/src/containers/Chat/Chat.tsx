@@ -112,7 +112,7 @@ const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
     chatsDetailsCached: state.chat.data.chatsDetailsCached,
     selectedChatId: state.chatsList.data.selectedChatId,
     editingMessage: state.chat.data.editingMessage,
-    onlineUsers: state.socketHome.data.users,
+    onlineUsers: state.socketHome.data.online,
 });
 
 const mapDispatchToProps: IActions = {
