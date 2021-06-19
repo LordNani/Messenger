@@ -129,7 +129,7 @@ const mapStateToProps: (state:IAppState) => IPropsFromState = state => ({
     createGroupChatError: state.chatsList.requests.createGroupChat.error,
     createModalShown: state.chatsList.data.createModalShown,
     selectedChatId: state.chatsList.data.selectedChatId,
-    onlineUsers: state.socketHome.data.users,
+    onlineUsers: state.socketHome.data.online,
 });
 
 const mapDispatchToProps: IActions = {

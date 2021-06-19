@@ -25,6 +25,10 @@ const userService = {
         const response = await apiClient.get(`/api/users/online/companions`);
         return response.data.data;
     },
+
+    sendTyping: async (chatId: string): Promise<void> => {
+        await apiClient.post(`/api/users/typing`, {chatId});
+    },
 };
 
 export default userService;

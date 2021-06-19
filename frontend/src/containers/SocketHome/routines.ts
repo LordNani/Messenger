@@ -13,6 +13,7 @@ export const fetchInitialOnlineRoutine = createLocalRoutine('FETCH_INITIAL_ONLIN
 export const setInitialOnlineRoutine = createLocalRoutine<string[]>('SET_INITIAL_ONLINE');
 export const switchOnlineRoutine = createLocalRoutine<string>('SWITCH_ONLINE');
 export const switchOfflineRoutine = createLocalRoutine<string>('SWITCH_OFFLINE');
+export const setUserTypingRoutine = createLocalRoutine<ISetUserTypingRoutinePayload>('SET_USER_TYPING');
 
 export interface IRemoveChatFromSocketRoutinePayload {
     chatId: string;
@@ -21,5 +22,10 @@ export interface IRemoveChatFromSocketRoutinePayload {
 export interface IReceiveMessageFromSocketRoutinePayload {
     loadingId: string;
     message: IMessage;
+}
+
+export interface ISetUserTypingRoutinePayload {
+    chatId: string;
+    fullName: string;
 }
 

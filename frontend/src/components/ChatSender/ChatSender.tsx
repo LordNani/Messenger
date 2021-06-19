@@ -6,6 +6,8 @@ import {ICallback1} from "../../helpers/types.helper";
 import {IMessageWrapper} from "../../containers/Chat/models";
 import {IMessage} from "../../api/message/messageModels";
 import {IEditMessageRoutinePayload} from "../../containers/Chat/routines";
+import userService from "../../api/user/userService";
+import {TYPING_PING_INTERVAL} from "../../containers/SocketHome/config";
 
 interface IOwnProps {
     sendMessage: ICallback1<string>;
@@ -18,6 +20,7 @@ interface IOwnProps {
 interface IState {
     text: string;
     oldText?: string;
+    lastTyped?: Date;
 }
 
 class ChatSender extends React.Component<IOwnProps, IState> {
@@ -55,7 +58,8 @@ class ChatSender extends React.Component<IOwnProps, IState> {
             setEditingMessage(undefined);
             this.setState(prev => ({
                 text: prev.oldText || '',
-                oldText: undefined
+                oldText: undefined,
+                lastTyped: undefined,
             }));
         }
     }
@@ -94,11 +98,20 @@ class ChatSender extends React.Component<IOwnProps, IState> {
     };
 
     handleChange = (e: any) => {
+        const {lastTyped} = this.state;
+        const {chatId} = this.props;
+
         let val = e.target.value;
         if (val.length > 1024) {
             val = val.substring(0, 1024);
         }
         this.setState({text: val});
+
+        const now = new Date();
+        if (!lastTyped || (now.getTime() - lastTyped.getTime()) > TYPING_PING_INTERVAL) {
+            userService.sendTyping(chatId).then();
+            this.setState({lastTyped: now});
+        }
     }
 
     render() {
@@ -118,7 +131,7 @@ class ChatSender extends React.Component<IOwnProps, IState> {
                 </div>
                 <div className={editingMessage ? styles.editButtonsWrapper : styles.buttonsWrapper}>
 
-                    <Icon iconName={"fas fa-paper-plane fa-2x"}
+                    <Icon iconName={`fas fa-${editingMessage ? "check" : "paper-plane"} fa-2x`}
                           className={this.isValid() ? styles.sendIcon : styles.disabledSend}
                           onClick={this.isValid() ? this.handleSend : undefined}
                     />

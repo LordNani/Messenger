@@ -9,5 +9,5 @@ import java.util.UUID;
 @Data
 public class UserIsTypingDto {
     private UUID chatId;
-    private UUID userId;
+    private String fullName;
 }
