@@ -7,10 +7,13 @@ import messenger.backend.auth.exceptions.NoAccessToken;
 import messenger.backend.auth.jwt.JwtTokenService;
 import messenger.backend.auth.security.SecurityUser;
 import messenger.backend.user.UserEntity;
+import messenger.backend.user.UserService;
 import messenger.backend.user.exceptions.UserNotFoundException;
 import messenger.backend.utils.exceptions.ValidationException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -39,6 +42,18 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final JwtTokenService jwtTokenService;
     private final SocketSessionRepository socketSessionRepository;
+    private SocketSender socketSender;
+    private UserService userService;
+
+    @Autowired
+    public void setUserService(@Lazy UserService userService) {
+        this.userService = userService;
+    }
+
+    @Autowired
+    public void setSocketSender(@Lazy SocketSender socketSender) {
+        this.socketSender = socketSender;
+    }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -91,6 +106,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         SocketSessionEntity socketSessionEntity = new SocketSessionEntity(null, contextUser);
         socketSessionRepository.saveAndFlush(socketSessionEntity);
         headerAccessor.getSessionAttributes().put("socketSessionId", socketSessionEntity.getId());
+
+        socketSender.send(
+                SubscribedOn.SWITCHED_ONLINE,
+                userService.getAllOnlineCompanions(contextUser),
+                contextUser.getId());
     }
 
     private void handleSubscribe(StompHeaderAccessor headerAccessor) {
@@ -114,5 +134,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         }
 
         socketSessionRepository.deleteById(sessionId);
+
+        UserEntity contextUser = (UserEntity) headerAccessor.getSessionAttributes().get("contextUser");
+        if (contextUser != null && socketSessionRepository.countByUser(contextUser) == 0) {
+            socketSender.send(
+                    SubscribedOn.SWITCHED_OFFLINE,
+                    userService.getAllOnlineCompanions(contextUser),
+                    contextUser.getId());
+        }
     }
 }
