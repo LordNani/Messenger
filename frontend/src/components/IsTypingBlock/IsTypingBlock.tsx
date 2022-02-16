@@ -18,18 +18,33 @@ class IsTypingBlock extends React.Component<IOwnProps> {
         clearInterval(this.interval);
     }
 
+    getMessage = (fullNames: string[]): string => {
+        const numberTyping = fullNames.length;
+        if (numberTyping === 0) {
+            return '';
+        }
+        if (numberTyping === 1) {
+            return `${fullNames[0]} is typing...`;
+        }
+        if (numberTyping === 2) {
+            return `${fullNames.join(" and ")} are typing...`;
+        }
+        return `${numberTyping} users are typing...`;
+    }
+
     render() {
         const {typingUsers, chatId} = this.props;
         const fullNames = typingUsersToList(typingUsers, chatId);
 
-        if (fullNames.length === 0) {
+        const message = this.getMessage(fullNames);
+
+        if (!message) {
             return null;
         }
 
         return (
             <div className={styles.container}>
-                {fullNames.join(" and ")}
-                {` ${fullNames.length === 1 ? 'is' : 'are'} typing...`}
+                {message}
             </div>
         );
     }
